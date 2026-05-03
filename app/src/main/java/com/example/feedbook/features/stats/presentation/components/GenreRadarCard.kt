@@ -2,6 +2,8 @@ package com.example.feedbook.features.stats.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -187,7 +190,14 @@ internal fun GenreRadarCard(
 
             HorizontalDivider(color = ProfileColors.Divider)
 
-            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            val rankingScrollState = rememberScrollState()
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 188.dp)
+                    .verticalScroll(rankingScrollState),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
                 ranking.forEach { item ->
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(14.dp),

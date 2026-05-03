@@ -6,6 +6,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -40,6 +42,16 @@ object AppRoutes {
     fun detail(bookId: String): String = "bookDetail/$bookId"
 }
 
+private fun NavHostController.navigateTopLevel(route: String) {
+    navigate(route) {
+        launchSingleTop = true
+        restoreState = true
+        popUpTo(graph.findStartDestination().id) {
+            saveState = true
+        }
+    }
+}
+
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
@@ -58,11 +70,12 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             ProfileScreen(
                 state = state,
-                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
-                onStatsClick = { navController.navigate(AppRoutes.STATS) },
-                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) },
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onEditProfileClick = { navController.navigate(AppRoutes.EDIT_PROFILE) },
-                onPreviewPublicProfileClick = { navController.navigate(AppRoutes.PUBLIC_PROFILE_PREVIEW) }
+                onPreviewPublicProfileClick = { navController.navigate(AppRoutes.PUBLIC_PROFILE_PREVIEW) },
+                onRetry = viewModel::retry
             )
         }
 
@@ -78,7 +91,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             EditProfileScreen(
                 state = state,
                 onBackClick = { navController.popBackStack() },
-                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onSave = { updatedState ->
                     viewModel.saveProfile(updatedState) {
                         navController.popBackStack()
@@ -95,9 +108,10 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             ProfileScreen(
                 state = state,
-                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
-                onStatsClick = { navController.navigate(AppRoutes.STATS) },
-                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) }
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onRetry = viewModel::retry
             )
         }
 
@@ -111,9 +125,10 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             ProfileScreen(
                 state = state,
-                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
-                onStatsClick = { navController.navigate(AppRoutes.STATS) },
-                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) }
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onRetry = viewModel::retry
             )
         }
 
@@ -128,10 +143,11 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             StatsScreen(
                 state = state,
-                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
-                onStatsClick = { navController.navigate(AppRoutes.STATS) },
-                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) },
-                onModeSelected = viewModel::selectMode
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onModeSelected = viewModel::selectMode,
+                onRetry = viewModel::retry
             )
         }
 
@@ -146,9 +162,10 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             NotificationsScreen(
                 state = state,
-                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
-                onStatsClick = { navController.navigate(AppRoutes.STATS) },
-                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) }
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onRetry = viewModel::retry
             )
         }
 

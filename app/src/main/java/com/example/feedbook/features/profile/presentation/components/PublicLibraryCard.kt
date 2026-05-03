@@ -19,9 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feedbook.R
+import com.example.feedbook.core.ui.components.RemoteBookCover
 import com.example.feedbook.features.profile.presentation.LibraryBook
 
 @Composable
@@ -39,12 +42,12 @@ internal fun PublicLibraryCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "PUBLIC LIBRARY",
+                    text = stringResource(R.string.profile_public_library),
                     style = ProfileTypography.LabelUppercase,
                     color = ProfileColors.PrimaryText
                 )
                 Text(
-                    text = "${books.size} books",
+                    text = stringResource(R.string.profile_public_library_count, books.size),
                     style = ProfileTypography.Label,
                     color = ProfileColors.SecondaryText
                 )
@@ -62,13 +65,14 @@ internal fun PublicLibraryCard(
                             modifier = Modifier.width(coverWidth),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Box(
+                            RemoteBookCover(
+                                title = book.title,
+                                coverImageUrl = book.coverImageUrl,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(coverHeight)
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(book.accent)
-                                    .padding(10.dp)
+                                    .padding(0.dp)
                             ) {
                                 Box(
                                     modifier = Modifier

@@ -4,23 +4,46 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.feedbook.features.profile.domain.usecase.ObserveOwnPublicProfilePreviewUseCase
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class PublicProfilePreviewViewModel(
-    observeOwnPublicProfilePreviewUseCase: ObserveOwnPublicProfilePreviewUseCase
+    private val observeOwnPublicProfilePreviewUseCase: ObserveOwnPublicProfilePreviewUseCase
 ) : ViewModel() {
-    private val _state = MutableStateFlow(samplePublicProfileUiState())
+    private val _state = MutableStateFlow(
+        emptyProfileUiState(ProfileVariant.PUBLIC).copy(isLoading = true)
+    )
     val state: StateFlow<ProfileUiState> = _state.asStateFlow()
 
+    private var loadJob: Job? = null
+
     init {
-        viewModelScope.launch {
-            observeOwnPublicProfilePreviewUseCase().collectLatest { profile ->
-                _state.value = profile.toPublicProfileUiState()
-            }
+        loadPreview()
+    }
+
+    fun retry() {
+        loadPreview()
+    }
+
+    private fun loadPreview() {
+        loadJob?.cancel()
+        _state.value = _state.value.copy(isLoading = true, errorMessage = null)
+        loadJob = viewModelScope.launch {
+            observeOwnPublicProfilePreviewUseCase()
+                .catch { throwable ->
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        errorMessage = throwable.message
+                    )
+                }
+                .collectLatest { profile ->
+                    _state.value = profile.toPublicProfileUiState()
+                }
         }
     }
 

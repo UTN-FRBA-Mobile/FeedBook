@@ -13,8 +13,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.feedbook.R
+import com.example.feedbook.core.ui.components.ErrorScreen
+import com.example.feedbook.core.ui.components.LoadingScreen
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 import com.example.feedbook.features.profile.presentation.components.CurrentlyReadingCard
 import com.example.feedbook.features.profile.presentation.components.FeaturedReviewCard
@@ -33,13 +37,30 @@ import com.example.feedbook.features.profile.presentation.components.UpNextCard
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
-    state: ProfileUiState = sampleProfileUiState(),
+    state: ProfileUiState,
     onProfileClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
     onEditProfileClick: () -> Unit = {},
-    onPreviewPublicProfileClick: () -> Unit = {}
+    onPreviewPublicProfileClick: () -> Unit = {},
+    onRetry: () -> Unit = {}
 ) {
+    when {
+        state.isLoading -> {
+            LoadingScreen(modifier = modifier)
+            return
+        }
+        state.errorMessage != null -> {
+            ErrorScreen(
+                message = state.errorMessage ?: stringResource(R.string.common_error_generic),
+                modifier = modifier,
+                retryLabel = stringResource(R.string.common_retry),
+                onRetry = onRetry
+            )
+            return
+        }
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = ProfileColors.Background,
@@ -78,7 +99,7 @@ fun ProfileScreen(
                         name = state.name,
                         handle = state.handle,
                         quote = state.quote,
-                        actionLabel = state.actionLabel,
+                        actionLabelRes = state.actionLabelRes,
                         avatarStyle = state.avatarStyle,
                         avatarImageUri = state.avatarImageUri,
                         onActionClick = {
@@ -89,7 +110,7 @@ fun ProfileScreen(
                     if (state.variant == ProfileVariant.OWN) {
                         TextButton(onClick = onPreviewPublicProfileClick) {
                             Text(
-                                text = "Preview Public View",
+                                text = stringResource(R.string.profile_preview_public_view),
                                 style = com.example.feedbook.features.profile.presentation.components.ProfileTypography.Label,
                                 color = ProfileColors.SecondaryText
                             )
@@ -169,7 +190,7 @@ fun ProfileScreen(
 @Composable
 private fun ProfileScreenPreview() {
     FeedBookTheme(dynamicColor = false) {
-        ProfileScreen()
+        ProfileScreen(state = previewOwnProfileUiState())
     }
 }
 
@@ -177,6 +198,6 @@ private fun ProfileScreenPreview() {
 @Composable
 private fun PublicProfileScreenPreview() {
     FeedBookTheme(dynamicColor = false) {
-        ProfileScreen(state = samplePublicProfileUiState())
+        ProfileScreen(state = previewPublicProfileUiState())
     }
 }

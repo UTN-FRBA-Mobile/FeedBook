@@ -1,7 +1,9 @@
 package com.example.feedbook.shared.fakebackend
 
-import com.example.feedbook.features.notifications.data.remote.dto.NotificationBookPreviewDto
+import com.example.feedbook.features.notifications.data.remote.dto.NotificationActorDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationEntryDto
+import com.example.feedbook.features.notifications.data.remote.dto.NotificationBookSummaryDto
+import com.example.feedbook.features.notifications.data.remote.dto.NotificationTypes
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationsDto
 import com.example.feedbook.features.profile.data.remote.dto.AvatarDto
 import com.example.feedbook.features.profile.data.remote.dto.CurrentBookDto
@@ -24,6 +26,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 
 class FakeFeedBookBackend {
+    private fun coverUrl(isbn: String): String =
+        "https://covers.openlibrary.org/b/isbn/$isbn-L.jpg"
+
     private val ownProfileState = MutableStateFlow(
         ProfileDto(
             name = "Evelyn Vance",
@@ -49,12 +54,12 @@ class FakeFeedBookBackend {
                 page = 248,
                 totalPages = 559,
                 progress = 0.44f,
-                coverAccentHex = 0xFF6E918B
+                coverImageUrl = coverUrl("9781400031702")
             ),
             upNextBooks = listOf(
-                QueuedBookDto("Foucault's Pendulum", "Umberto Eco"),
-                QueuedBookDto("The Shadow of the Wind", "Carlos Ruiz Zafon"),
-                QueuedBookDto("If on a winter's night a traveler", "Italo Calvino")
+                QueuedBookDto("Foucault's Pendulum", "Umberto Eco", coverUrl("9780156032971")),
+                QueuedBookDto("The Shadow of the Wind", "Carlos Ruiz Zafon", coverUrl("9780143034902")),
+                QueuedBookDto("If on a winter's night a traveler", "Italo Calvino", coverUrl("9780156439619"))
             ),
             completedBooks = 142,
             profileStats = listOf(
@@ -62,12 +67,12 @@ class FakeFeedBookBackend {
                 ProfileStatDto("This year", "19")
             ),
             publicLibrary = listOf(
-                LibraryBookDto("The Secret History", 0xFF6E918B),
-                LibraryBookDto("Ficciones", 0xFF8C6B5A),
-                LibraryBookDto("Never Let Me Go", 0xFF536E8A),
-                LibraryBookDto("Beloved", 0xFF82645A),
-                LibraryBookDto("Pale Fire", 0xFF627A92),
-                LibraryBookDto("The Waves", 0xFF6C8A80)
+                LibraryBookDto("The Secret History", coverUrl("9781400031702")),
+                LibraryBookDto("Ficciones", coverUrl("9780802130303")),
+                LibraryBookDto("Never Let Me Go", coverUrl("9781400078776")),
+                LibraryBookDto("Beloved", coverUrl("9781400033416")),
+                LibraryBookDto("Pale Fire", coverUrl("9780679723424")),
+                LibraryBookDto("The Waves", coverUrl("9780156949606"))
             ),
             featuredReviews = listOf(
                 FeaturedReviewDto(
@@ -75,14 +80,14 @@ class FakeFeedBookBackend {
                     rating = 5,
                     timeAgo = "2d ago",
                     excerpt = "\"A novel built on obsession, elitism and silence. Tartt makes every scene feel both intimate and dangerous.\"",
-                    accentHex = 0xFF6E918B
+                    coverImageUrl = coverUrl("9781400031702")
                 ),
                 FeaturedReviewDto(
                     bookTitle = "Beloved",
                     rating = 5,
                     timeAgo = "1w ago",
                     excerpt = "\"Morrison writes memory like weather. Every return to this novel feels heavier and more precise.\"",
-                    accentHex = 0xFF82645A
+                    coverImageUrl = coverUrl("9781400033416")
                 )
             )
         )
@@ -112,7 +117,7 @@ class FakeFeedBookBackend {
             page = 312,
             totalPages = 512,
             progress = 0.61f,
-            coverAccentHex = 0xFF56728A
+            coverImageUrl = coverUrl("9780156001311")
         ),
         upNextBooks = emptyList(),
         completedBooks = 58,
@@ -121,20 +126,20 @@ class FakeFeedBookBackend {
             ProfileStatDto("Followers", "2.4K")
         ),
         publicLibrary = listOf(
-            LibraryBookDto("One Hundred Years of Solitude", 0xFF9A7B5A),
-            LibraryBookDto("The Shadow of the Wind", 0xFF5C6D8A),
-            LibraryBookDto("Ficciones", 0xFF6A8474),
-            LibraryBookDto("Invisible Cities", 0xFF967E66),
-            LibraryBookDto("Austerlitz", 0xFF7A8798),
-            LibraryBookDto("If on a winter's night a traveler", 0xFF8A6B58),
-            LibraryBookDto("The Left Hand of Darkness", 0xFF5D7287),
-            LibraryBookDto("Pedro Paramo", 0xFF7B6A61),
-            LibraryBookDto("The Master and Margarita", 0xFF5F7F74)
+            LibraryBookDto("One Hundred Years of Solitude", coverUrl("9780060883287")),
+            LibraryBookDto("The Shadow of the Wind", coverUrl("9780143034902")),
+            LibraryBookDto("Ficciones", coverUrl("9780802130303")),
+            LibraryBookDto("Invisible Cities", coverUrl("9780156453806")),
+            LibraryBookDto("Austerlitz", coverUrl("9780811216548")),
+            LibraryBookDto("If on a winter's night a traveler", coverUrl("9780156439619")),
+            LibraryBookDto("The Left Hand of Darkness", coverUrl("9780441478125")),
+            LibraryBookDto("Pedro Paramo", coverUrl("9780802133908")),
+            LibraryBookDto("The Master and Margarita", coverUrl("9780143108276"))
         ),
         featuredReviews = listOf(
-            FeaturedReviewDto("The Name of the Rose", 5, "4h ago", "\"A profound meditation on destiny. The novel keeps its labyrinth open long after the final page.\"", 0xFF56728A),
-            FeaturedReviewDto("Invisible Cities", 4, "3d ago", "\"Calvino turns urban imagination into something light and exact. Every fragment expands after you finish it.\"", 0xFF967E66),
-            FeaturedReviewDto("Austerlitz", 5, "1w ago", "\"A quiet, relentless novel. Sebald makes memory feel architectural, fragile and impossible to escape.\"", 0xFF7A8798)
+            FeaturedReviewDto("The Name of the Rose", 5, "4h ago", "\"A profound meditation on destiny. The novel keeps its labyrinth open long after the final page.\"", coverUrl("9780156001311")),
+            FeaturedReviewDto("Invisible Cities", 4, "3d ago", "\"Calvino turns urban imagination into something light and exact. Every fragment expands after you finish it.\"", coverUrl("9780156453806")),
+            FeaturedReviewDto("Austerlitz", 5, "1w ago", "\"A quiet, relentless novel. Sebald makes memory feel architectural, fragile and impossible to escape.\"", coverUrl("9780811216548"))
         )
     )
 
@@ -172,7 +177,10 @@ class FakeFeedBookBackend {
                 ),
                 ranking = listOf(
                     RankingItemDto(1, "Drama"),
-                    RankingItemDto(2, "Science Fiction")
+                    RankingItemDto(2, "Science Fiction"),
+                    RankingItemDto(3, "Fantasy"),
+                    RankingItemDto(4, "Mystery"),
+                    RankingItemDto(5, "Romance")
                 )
             ),
             RadarSectionDto(
@@ -189,7 +197,10 @@ class FakeFeedBookBackend {
                 ),
                 ranking = listOf(
                     RankingItemDto(1, "J.R.R. Tolkien"),
-                    RankingItemDto(2, "Isaac Asimov")
+                    RankingItemDto(2, "Isaac Asimov"),
+                    RankingItemDto(3, "Ursula K. Le Guin"),
+                    RankingItemDto(4, "Margaret Atwood"),
+                    RankingItemDto(5, "Arthur Conan Doyle")
                 )
             )
         )
@@ -198,16 +209,96 @@ class FakeFeedBookBackend {
     private val notifications = NotificationsDto(
         title = "Activity and Notifications",
         items = listOf(
-            NotificationEntryDto("A Juan le gustó tu reseña.\n\"Una exploración fascinante sobre alimentación y memoria. La prosa fluye\"", "HOY · 10:24", 0xFF35566F, 0xFFC8A988, "♥", null),
-            NotificationEntryDto("Sofía comenzó a seguirte.", "HOY · 07:12", 0xFFB9CBE3, 0xFFE7EEF7, null, null),
-            NotificationEntryDto("Elena compartió un nuevo libro.", "AYER · 14:30", 0xFF534D61, 0xFFD9B89C, "⇪", NotificationBookPreviewDto("El Laberinto de los Espíritus", "CARLOS RUIZ ZAFÓN", 0xFFD6E1EB)),
-            NotificationEntryDto("Martina comentó tu estado de lectura.\n\"Ese final me dejó pensando días.\"", "AYER · 09:18", 0xFF6D7FA2, 0xFFDAB596, "✦", null),
-            NotificationEntryDto("Tomás empezó a seguirte.", "LUNES · 21:04", 0xFF4E697F, 0xFFE6C7AA, null, null),
-            NotificationEntryDto("Lucía guardó uno de tus libros en su lista de lectura.", "LUNES · 17:42", 0xFF7A8B6A, 0xFFDCC6A7, "⌁", null),
-            NotificationEntryDto("A Bruno le gustó tu reseña de \"Beloved\".", "DOMINGO · 19:26", 0xFF5A556A, 0xFFCDA58B, "♥", null),
-            NotificationEntryDto("Camila compartió un nuevo libro.", "DOMINGO · 11:03", 0xFF7D6B8D, 0xFFE2C39F, "⇪", NotificationBookPreviewDto("Piranesi", "SUSANNA CLARKE", 0xFFC7D6DD)),
-            NotificationEntryDto("Nicolás comenzó a seguirte.", "SÁBADO · 16:58", 0xFF4D6B73, 0xFFD3B08C, null, null),
-            NotificationEntryDto("A Irene le gustó tu cita destacada de \"The Waves\".", "SÁBADO · 08:41", 0xFF607D8B, 0xFFE5CDB4, "♥", null)
+            NotificationEntryDto(
+                id = "notif_1",
+                type = NotificationTypes.LIKED_YOUR_REVIEW,
+                timestamp = "HOY · 10:24",
+                actor = NotificationActorDto("Juan", 0xFF35566F, 0xFFC8A988),
+                fallbackText = "A Juan le gustó tu reseña."
+            ),
+            NotificationEntryDto(
+                id = "notif_2",
+                type = NotificationTypes.FOLLOWED_YOU,
+                timestamp = "HOY · 07:12",
+                actor = NotificationActorDto("Sofía", 0xFFB9CBE3, 0xFFE7EEF7),
+                fallbackText = "Sofía comenzó a seguirte."
+            ),
+            NotificationEntryDto(
+                id = "notif_3",
+                type = NotificationTypes.REVIEWED_BOOK,
+                timestamp = "AYER · 14:30",
+                actor = NotificationActorDto("Elena", 0xFF534D61, 0xFFD9B89C),
+                book = NotificationBookSummaryDto(
+                    "El Laberinto de los Espíritus",
+                    "CARLOS RUIZ ZAFÓN",
+                    coverUrl("9788408163381")
+                ),
+                fallbackText = "Elena hizo una reseña sobre un libro."
+            ),
+            NotificationEntryDto(
+                id = "notif_4",
+                type = NotificationTypes.STARTED_READING,
+                timestamp = "AYER · 09:18",
+                actor = NotificationActorDto("Martina", 0xFF6D7FA2, 0xFFDAB596),
+                book = NotificationBookSummaryDto(
+                    "The Left Hand of Darkness",
+                    "URSULA K. LE GUIN",
+                    coverUrl("9780441478125")
+                ),
+                fallbackText = "Martina empezó a leer un nuevo libro."
+            ),
+            NotificationEntryDto(
+                id = "notif_5",
+                type = NotificationTypes.FOLLOWED_YOU,
+                timestamp = "LUNES · 21:04",
+                actor = NotificationActorDto("Tomás", 0xFF4E697F, 0xFFE6C7AA),
+                fallbackText = "Tomás comenzó a seguirte."
+            ),
+            NotificationEntryDto(
+                id = "notif_6",
+                type = NotificationTypes.SAVED_YOUR_BOOK,
+                timestamp = "LUNES · 17:42",
+                actor = NotificationActorDto("Lucía", 0xFF7A8B6A, 0xFFDCC6A7),
+                book = NotificationBookSummaryDto(
+                    "Beloved",
+                    "TONI MORRISON",
+                    coverUrl("9781400033416")
+                ),
+                fallbackText = "Lucía guardó uno de tus libros en su lista."
+            ),
+            NotificationEntryDto(
+                id = "notif_7",
+                type = NotificationTypes.LIKED_YOUR_REVIEW,
+                timestamp = "DOMINGO · 19:26",
+                actor = NotificationActorDto("Bruno", 0xFF5A556A, 0xFFCDA58B),
+                fallbackText = "A Bruno le gustó tu reseña."
+            ),
+            NotificationEntryDto(
+                id = "notif_8",
+                type = NotificationTypes.REVIEWED_BOOK,
+                timestamp = "DOMINGO · 11:03",
+                actor = NotificationActorDto("Camila", 0xFF7D6B8D, 0xFFE2C39F),
+                book = NotificationBookSummaryDto(
+                    "Piranesi",
+                    "SUSANNA CLARKE",
+                    coverUrl("9781635575637")
+                ),
+                fallbackText = "Camila hizo una reseña sobre un libro."
+            ),
+            NotificationEntryDto(
+                id = "notif_9",
+                type = NotificationTypes.FOLLOWED_YOU,
+                timestamp = "SÁBADO · 16:58",
+                actor = NotificationActorDto("Nicolás", 0xFF4D6B73, 0xFFD3B08C),
+                fallbackText = "Nicolás comenzó a seguirte."
+            ),
+            NotificationEntryDto(
+                id = "notif_10",
+                type = "quote_liked",
+                timestamp = "SÁBADO · 08:41",
+                actor = NotificationActorDto("Irene", 0xFF607D8B, 0xFFE5CDB4),
+                fallbackText = "A Irene le gustó tu cita destacada de \"The Waves\"."
+            )
         )
     )
 

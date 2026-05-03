@@ -14,6 +14,7 @@ fun ReadingStats.toUiState(
     heatmapMonths = heatmapMonths,
     heatmapRows = heatmapRows,
     heatmapValues = heatmapValues,
+    heatmapScale = defaultHeatmapScale(),
     selectedRadarMode = radarSections.firstOrNull()?.mode.orEmpty(),
     radarSections = radarSections.map { section ->
         RadarSection(

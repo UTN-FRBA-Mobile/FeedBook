@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
@@ -39,9 +38,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.feedbook.R
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
 import com.example.feedbook.features.profile.presentation.components.ProfileSurfaceCard
@@ -121,12 +122,12 @@ fun EditProfileScreen(
                 variant = state.variant,
                 avatarStyle = selectedAvatarStyle,
                 avatarImageUri = selectedAvatarImageUri,
-                title = "Edit Profile",
+                title = stringResource(R.string.edit_profile_title),
                 onAvatarClick = onProfileClick,
                 trailingContent = { iconSize ->
                     ProfileTopBarActionIcon(
                         imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = stringResource(R.string.edit_profile_back),
                         iconSize = iconSize,
                         onClick = onBackClick
                     )
@@ -146,7 +147,7 @@ fun EditProfileScreen(
                 ProfileSurfaceCard(modifier = Modifier.fillMaxWidth()) {
                     Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
                         Text(
-                            text = "Basic Details",
+                            text = stringResource(R.string.edit_profile_basic_details),
                             style = ProfileTypography.SectionTitle,
                             color = ProfileColors.PrimaryText
                         )
@@ -154,8 +155,8 @@ fun EditProfileScreen(
                             value = name,
                             onValueChange = { name = it },
                             modifier = Modifier.fillMaxWidth(),
-                            label = { Text("Name") },
-                            placeholder = { Text("Evelyn Vance") },
+                            label = { Text(stringResource(R.string.edit_profile_name_label)) },
+                            placeholder = { Text(stringResource(R.string.edit_profile_name_placeholder)) },
                             colors = fieldColors,
                             singleLine = true
                         )
@@ -168,8 +169,8 @@ fun EditProfileScreen(
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            label = { Text("Handle") },
-                            placeholder = { Text("@evelynv") },
+                            label = { Text(stringResource(R.string.edit_profile_handle_label)) },
+                            placeholder = { Text(stringResource(R.string.edit_profile_handle_placeholder)) },
                             colors = fieldColors,
                             singleLine = true
                         )
@@ -177,8 +178,8 @@ fun EditProfileScreen(
                             value = quote,
                             onValueChange = { quote = it },
                             modifier = Modifier.fillMaxWidth(),
-                            label = { Text("Bio / Quote") },
-                            placeholder = { Text("Write a short line about your reading taste") },
+                            label = { Text(stringResource(R.string.edit_profile_bio_label)) },
+                            placeholder = { Text(stringResource(R.string.edit_profile_bio_placeholder)) },
                             colors = fieldColors,
                             minLines = 4
                         )
@@ -190,12 +191,12 @@ fun EditProfileScreen(
                 ProfileSurfaceCard(modifier = Modifier.fillMaxWidth()) {
                     Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
                         Text(
-                            text = "Avatar Style",
+                            text = stringResource(R.string.edit_profile_avatar_title),
                             style = ProfileTypography.SectionTitle,
                             color = ProfileColors.PrimaryText
                         )
                         Text(
-                            text = "Pick the palette used by your profile mark.",
+                            text = stringResource(R.string.edit_profile_avatar_body),
                             style = ProfileTypography.Body,
                             color = ProfileColors.SecondaryText
                         )
@@ -268,7 +269,7 @@ fun EditProfileScreen(
                                         modifier = Modifier.fillMaxSize(),
                                         fallbackContent = {
                                             Text(
-                                                text = "EV",
+                                                text = stringResource(R.string.edit_profile_avatar_initials),
                                                 style = ProfileTypography.LabelUppercase,
                                                 color = ProfileColors.Accent
                                             )
@@ -280,15 +281,15 @@ fun EditProfileScreen(
                                     verticalArrangement = Arrangement.spacedBy(4.dp)
                                 ) {
                                     Text(
-                                        text = "Custom photo",
+                                        text = stringResource(R.string.edit_profile_avatar_custom_title),
                                         style = ProfileTypography.Body.copy(fontWeight = FontWeight.SemiBold),
                                         color = ProfileColors.PrimaryText
                                     )
                                     Text(
                                         text = if (selectedAvatarImageUri == null) {
-                                            "Choose an image from your device"
+                                            stringResource(R.string.edit_profile_avatar_custom_empty)
                                         } else {
-                                            "Photo selected. Tap to replace it."
+                                            stringResource(R.string.edit_profile_avatar_custom_selected)
                                         },
                                         style = ProfileTypography.Label,
                                         color = ProfileColors.SecondaryText
@@ -304,12 +305,12 @@ fun EditProfileScreen(
                 ProfileSurfaceCard(modifier = Modifier.fillMaxWidth()) {
                     Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
                         Text(
-                            text = "Reading Goal",
+                            text = stringResource(R.string.edit_profile_goal_title),
                             style = ProfileTypography.SectionTitle,
                             color = ProfileColors.PrimaryText
                         )
                         Text(
-                            text = "Leave target empty if you do not want a daily goal on your profile.",
+                            text = stringResource(R.string.edit_profile_goal_body),
                             style = ProfileTypography.Body,
                             color = ProfileColors.SecondaryText
                         )
@@ -317,17 +318,17 @@ fun EditProfileScreen(
                             value = targetPagesInput,
                             onValueChange = { targetPagesInput = it.filter(Char::isDigit).take(3) },
                             modifier = Modifier.fillMaxWidth(),
-                            label = { Text("Daily target pages") },
-                            placeholder = { Text("40") },
+                            label = { Text(stringResource(R.string.edit_profile_goal_label)) },
+                            placeholder = { Text(stringResource(R.string.edit_profile_goal_placeholder)) },
                             colors = fieldColors,
                             singleLine = true
                         )
                         HorizontalDivider(color = ProfileColors.Divider)
                         Text(
                             text = if (targetPagesInput.isBlank()) {
-                                "No reading goal will be shown."
+                                stringResource(R.string.edit_profile_goal_empty_hint)
                             } else {
-                                "The profile card will compare your current pace against this daily target."
+                                stringResource(R.string.edit_profile_goal_filled_hint)
                             },
                             style = ProfileTypography.Label,
                             color = ProfileColors.SecondaryText
@@ -348,7 +349,7 @@ fun EditProfileScreen(
                         .height(48.dp)
                 ) {
                     Text(
-                        text = "SAVE CHANGES",
+                        text = stringResource(R.string.edit_profile_save),
                         style = ProfileTypography.Button.copy(fontWeight = FontWeight.SemiBold)
                     )
                 }
@@ -362,7 +363,7 @@ fun EditProfileScreen(
 private fun EditProfileScreenPreview() {
     FeedBookTheme(dynamicColor = false) {
         EditProfileScreen(
-            state = sampleProfileUiState(),
+            state = previewOwnProfileUiState(),
             onBackClick = {},
             onProfileClick = {},
             onSave = {}

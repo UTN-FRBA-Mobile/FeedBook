@@ -30,8 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.example.feedbook.R
 
 internal enum class BottomBarTab {
     FEED,
@@ -75,7 +77,7 @@ internal fun ProfileBottomBar(
             ) {
                 BottomNavItem(
                     icon = Icons.Rounded.Home,
-                    contentDescription = "Feed",
+                    contentDescription = stringResource(R.string.profile_bottom_nav_feed),
                     active = activeTab == BottomBarTab.FEED,
                     onClick = onProfileClick,
                     iconSize = iconSize,
@@ -85,7 +87,7 @@ internal fun ProfileBottomBar(
                 )
                 BottomNavItem(
                     icon = Icons.Outlined.Search,
-                    contentDescription = "Explore",
+                    contentDescription = stringResource(R.string.profile_bottom_nav_explore),
                     active = activeTab == BottomBarTab.EXPLORE,
                     iconSize = iconSize,
                     indicatorWidth = indicatorWidth,
@@ -94,7 +96,7 @@ internal fun ProfileBottomBar(
                 )
                 BottomNavItem(
                     icon = Icons.AutoMirrored.Rounded.MenuBook,
-                    contentDescription = "Library",
+                    contentDescription = stringResource(R.string.profile_bottom_nav_library),
                     active = activeTab == BottomBarTab.LIBRARY,
                     iconSize = iconSize,
                     indicatorWidth = indicatorWidth,
@@ -103,7 +105,7 @@ internal fun ProfileBottomBar(
                 )
                 BottomNavItem(
                     icon = Icons.Outlined.BarChart,
-                    contentDescription = "Stats",
+                    contentDescription = stringResource(R.string.profile_bottom_nav_stats),
                     active = activeTab == BottomBarTab.STATS,
                     onClick = onStatsClick,
                     iconSize = iconSize,
@@ -113,7 +115,7 @@ internal fun ProfileBottomBar(
                 )
                 BottomNavItem(
                     icon = Icons.Outlined.NotificationsNone,
-                    contentDescription = "Notifications",
+                    contentDescription = stringResource(R.string.profile_bottom_nav_notifications),
                     active = activeTab == BottomBarTab.NOTIFICATIONS,
                     onClick = onNotificationsClick,
                     iconSize = iconSize,

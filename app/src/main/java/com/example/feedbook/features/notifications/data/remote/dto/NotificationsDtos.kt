@@ -6,16 +6,30 @@ data class NotificationsDto(
 )
 
 data class NotificationEntryDto(
-    val message: String,
+    val id: String,
+    val type: String,
     val timestamp: String,
-    val avatarTopColorHex: Long,
-    val avatarBottomColorHex: Long,
-    val badge: String?,
-    val bookPreview: NotificationBookPreviewDto?
+    val actor: NotificationActorDto,
+    val book: NotificationBookSummaryDto? = null,
+    val fallbackText: String
 )
 
-data class NotificationBookPreviewDto(
+data class NotificationActorDto(
+    val name: String,
+    val avatarTopColorHex: Long,
+    val avatarBottomColorHex: Long
+)
+
+data class NotificationBookSummaryDto(
     val title: String,
     val author: String,
-    val accentHex: Long
+    val coverImageUrl: String?
 )
+
+object NotificationTypes {
+    const val FOLLOWED_YOU = "followed_you"
+    const val STARTED_READING = "started_reading"
+    const val REVIEWED_BOOK = "reviewed_book"
+    const val LIKED_YOUR_REVIEW = "liked_your_review"
+    const val SAVED_YOUR_BOOK = "saved_your_book"
+}

@@ -17,9 +17,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feedbook.R
 import com.example.feedbook.features.profile.presentation.ReadingGoal
 
 @Composable
@@ -32,12 +34,12 @@ internal fun ReadingGoalCard(
         if (readingGoal == null) {
             Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
                 Text(
-                    text = "Reading Goal",
+                    text = stringResource(R.string.profile_reading_goal_title),
                     style = ProfileTypography.SectionTitle,
                     color = ProfileColors.PrimaryText
                 )
                 Text(
-                    text = "Create a daily target to keep your reading pace intentional and visible in your profile.",
+                    text = stringResource(R.string.profile_reading_goal_empty_body),
                     style = ProfileTypography.Body,
                     color = ProfileColors.SecondaryText
                 )
@@ -47,7 +49,7 @@ internal fun ReadingGoalCard(
                     modifier = Modifier.height(42.dp)
                 ) {
                     Text(
-                        text = "CREATE GOAL",
+                        text = stringResource(R.string.profile_reading_goal_create),
                         style = ProfileTypography.Button
                     )
                 }
@@ -66,18 +68,22 @@ internal fun ReadingGoalCard(
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
                     Text(
-                        text = "Reading Goal",
+                        text = stringResource(R.string.profile_reading_goal_title),
                         style = ProfileTypography.SectionTitle,
                         color = ProfileColors.PrimaryText
                     )
                     Text(
-                        text = "Pages per day",
+                        text = stringResource(R.string.profile_reading_goal_pages_per_day),
                         style = ProfileTypography.Label,
                         color = ProfileColors.SecondaryText
                     )
                 }
                 Text(
-                    text = "${readingGoal.currentAveragePagesPerDay}/${readingGoal.targetPagesPerDay}",
+                    text = stringResource(
+                        R.string.profile_reading_goal_progress,
+                        readingGoal.currentAveragePagesPerDay,
+                        readingGoal.targetPagesPerDay
+                    ),
                     style = ProfileTypography.StatNumber.copy(fontSize = 34.sp, lineHeight = 38.sp),
                     color = ProfileColors.Accent
                 )
@@ -88,8 +94,11 @@ internal fun ReadingGoalCard(
             Text(
                 text = when {
                     readingGoal.currentAveragePagesPerDay >= readingGoal.targetPagesPerDay ->
-                        "You are currently reading above your target."
-                    else -> "You are ${readingGoal.targetPagesPerDay - readingGoal.currentAveragePagesPerDay} pages below your target."
+                        stringResource(R.string.profile_reading_goal_above_target)
+                    else -> stringResource(
+                        R.string.profile_reading_goal_below_target,
+                        readingGoal.targetPagesPerDay - readingGoal.currentAveragePagesPerDay
+                    )
                 },
                 style = ProfileTypography.Body,
                 color = ProfileColors.SecondaryText
@@ -119,7 +128,7 @@ internal fun ReadingGoalCard(
                 modifier = Modifier.height(42.dp)
             ) {
                 Text(
-                    text = "MODIFY GOAL",
+                    text = stringResource(R.string.profile_reading_goal_modify),
                     style = ProfileTypography.Button.copy(fontWeight = FontWeight.SemiBold)
                 )
             }

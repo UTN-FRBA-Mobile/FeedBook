@@ -19,10 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feedbook.R
+import com.example.feedbook.core.ui.components.RemoteBookCover
 import com.example.feedbook.features.profile.presentation.CurrentBook
 
 @Composable
@@ -43,7 +46,7 @@ internal fun CurrentlyReadingCard(
         Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
             BookCover(
                 title = currentBook.title,
-                accent = currentBook.coverAccent
+                coverImageUrl = currentBook.coverImageUrl
             )
             Column(
                 modifier = Modifier.weight(1f),
@@ -59,7 +62,7 @@ internal fun CurrentlyReadingCard(
                         color = ProfileColors.Accent
                     )
                     Text(
-                        text = "CURRENTLY READING",
+                        text = stringResource(R.string.profile_currently_reading_label),
                         style = ProfileTypography.LabelUppercase,
                         color = ProfileColors.Accent
                     )
@@ -85,7 +88,11 @@ internal fun CurrentlyReadingCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Page ${currentBook.page} of ${currentBook.totalPages}",
+                        text = stringResource(
+                            R.string.profile_currently_reading_progress,
+                            currentBook.page,
+                            currentBook.totalPages
+                        ),
                         style = ProfileTypography.Label,
                         color = ProfileColors.SecondaryText
                     )
@@ -118,15 +125,17 @@ internal fun CurrentlyReadingCard(
 @Composable
 private fun BookCover(
     title: String,
-    accent: Color,
+    coverImageUrl: String?,
     modifier: Modifier = Modifier
 ) {
-    Box(
+    RemoteBookCover(
+        title = title,
+        coverImageUrl = coverImageUrl,
         modifier = modifier
             .size(width = 96.dp, height = 144.dp)
             .clip(RoundedCornerShape(2.dp))
-            .background(accent)
-            .padding(10.dp)
+            .padding(0.dp),
+        fallbackBackground = Color(0xFFE8E3DE)
     ) {
         Box(
             modifier = Modifier

@@ -44,12 +44,13 @@ data class CurrentBook(
     val page: Int,
     val totalPages: Int,
     val progress: Float,
-    val coverAccentHex: Long
+    val coverImageUrl: String?
 )
 
 data class QueuedBook(
     val title: String,
-    val author: String
+    val author: String,
+    val coverImageUrl: String?
 )
 
 data class ProfileStat(
@@ -59,7 +60,7 @@ data class ProfileStat(
 
 data class LibraryBook(
     val title: String,
-    val accentHex: Long
+    val coverImageUrl: String?
 )
 
 data class FeaturedReview(
@@ -67,7 +68,7 @@ data class FeaturedReview(
     val rating: Int,
     val timeAgo: String,
     val excerpt: String,
-    val accentHex: Long
+    val coverImageUrl: String?
 )
 
 data class UpdateProfileCommand(

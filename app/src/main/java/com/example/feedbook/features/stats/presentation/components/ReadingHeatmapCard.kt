@@ -29,17 +29,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feedbook.R
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
 import com.example.feedbook.features.profile.presentation.components.ProfileSurfaceCard
 import com.example.feedbook.features.profile.presentation.components.ProfileTypography
+import com.example.feedbook.features.stats.presentation.HeatmapScale
 
 @Composable
 internal fun ReadingHeatmapCard(
     months: List<String>,
     rows: List<String>,
     values: List<List<Float>>,
+    scale: HeatmapScale,
     modifier: Modifier = Modifier
 ) {
     var showLegend by remember { mutableStateOf(false) }
@@ -52,7 +56,7 @@ internal fun ReadingHeatmapCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Daily Cadence",
+                    text = stringResource(R.string.stats_daily_cadence),
                     style = ProfileTypography.SectionTitle.copy(fontSize = 26.sp),
                     color = ProfileColors.PrimaryText
                 )
@@ -64,7 +68,7 @@ internal fun ReadingHeatmapCard(
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Info,
-                            contentDescription = "Ver referencia de colores",
+                            contentDescription = stringResource(R.string.stats_heatmap_info),
                             tint = ProfileColors.SecondaryText
                         )
                     }
@@ -74,26 +78,12 @@ internal fun ReadingHeatmapCard(
                         onDismissRequest = { showLegend = false },
                         modifier = Modifier.background(ProfileColors.Surface)
                     ) {
-                        HeatmapLegendEntry(
-                            color = heatColor(0f),
-                            label = "No leiste"
-                        )
-                        HeatmapLegendEntry(
-                            color = heatColor(0.25f),
-                            label = "Mucho menos que el objetivo"
-                        )
-                        HeatmapLegendEntry(
-                            color = heatColor(0.5f),
-                            label = "Casi llegas al objetivo"
-                        )
-                        HeatmapLegendEntry(
-                            color = heatColor(0.7f),
-                            label = "Objetivo cumplido"
-                        )
-                        HeatmapLegendEntry(
-                            color = heatColor(0.92f),
-                            label = "Un poco o mucho mas del objetivo"
-                        )
+                        scale.levels.forEach { level ->
+                            HeatmapLegendEntry(
+                                color = level.color,
+                                label = level.label
+                            )
+                        }
                     }
                 }
             }
@@ -156,7 +146,7 @@ internal fun ReadingHeatmapCard(
                                                 .weight(1f)
                                                 .height(12.dp)
                                                 .clip(RoundedCornerShape(2.dp))
-                                                .background(heatColor(intensity))
+                                                .background(scale.colorFor(intensity))
                                         )
                                     }
                                 }
@@ -166,17 +156,6 @@ internal fun ReadingHeatmapCard(
                 }
             }
         }
-    }
-}
-
-private fun heatColor(intensity: Float): Color {
-    val clamped = intensity.coerceIn(0f, 1f)
-    return when {
-        clamped < 0.12f -> Color(0xFFF3EFEB)
-        clamped < 0.35f -> Color(0xFFE0D0BC)
-        clamped < 0.60f -> Color(0xFFC5A583)
-        clamped < 0.82f -> Color(0xFF7B8EA3)
-        else -> Color(0xFF32475E)
     }
 }
 
