@@ -27,6 +27,7 @@ class NotificationsViewModel(
     private var baseFeed: NotificationsFeed? = null
     private var avatarPresentation = AvatarPresentation(
         style = defaultAvatarStyle(),
+        preset = null,
         imageUri = null
     )
 
@@ -56,6 +57,7 @@ class NotificationsViewModel(
                 .onFailure { throwable ->
                     _state.value = emptyNotificationsUiState().copy(
                         avatarStyle = avatarPresentation.style,
+                        avatarPreset = avatarPresentation.preset,
                         avatarImageUri = avatarPresentation.imageUri,
                         isLoading = false,
                         errorMessage = throwable.message
@@ -68,6 +70,7 @@ class NotificationsViewModel(
         val feed = baseFeed ?: return
         _state.value = feed.toUiState(
             avatarStyle = avatarPresentation.style,
+            avatarPreset = avatarPresentation.preset,
             avatarImageUri = avatarPresentation.imageUri
         )
             .copy(isLoading = false, errorMessage = null)

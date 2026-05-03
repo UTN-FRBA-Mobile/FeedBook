@@ -1,6 +1,7 @@
 package com.example.feedbook.features.stats.presentation
 
 import androidx.compose.ui.graphics.Color
+import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.defaultAvatarStyle
 
@@ -15,6 +16,7 @@ data class StatsUiState(
     val selectedRadarMode: String,
     val radarSections: List<RadarSection>,
     val avatarStyle: AvatarStyle,
+    val avatarPreset: AvatarPreset?,
     val avatarImageUri: String?,
     val isLoading: Boolean = false,
     val errorMessage: String? = null
@@ -99,5 +101,6 @@ fun emptyStatsUiState(): StatsUiState = StatsUiState(
     selectedRadarMode = "",
     radarSections = emptyList(),
     avatarStyle = defaultAvatarStyle(),
+    avatarPreset = null,
     avatarImageUri = null
 )

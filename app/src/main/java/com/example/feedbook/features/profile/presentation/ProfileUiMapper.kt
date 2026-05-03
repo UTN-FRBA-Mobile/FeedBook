@@ -1,6 +1,7 @@
 package com.example.feedbook.features.profile.presentation
 
 import com.example.feedbook.R
+import androidx.compose.ui.graphics.Color
 import com.example.feedbook.features.profile.domain.model.ReaderProfile
 
 fun ReaderProfile.toOwnProfileUiState(): ProfileUiState = toUiState(
@@ -28,7 +29,15 @@ private fun ReaderProfile.toUiState(
         quote = quote,
         actionLabelRes = actionLabelRes,
         avatarStyle = avatarPresentation.style,
+        avatarPreset = avatarPresentation.preset,
         avatarImageUri = avatarPresentation.imageUri,
+        availableAvatarPresets = availableAvatarPresets.map {
+            avatarPresetFromData(
+                id = it.id,
+                style = AvatarStyle(Color(it.topColorHex), Color(it.bottomColorHex)),
+                imageUrl = it.imageUrl
+            )
+        }.filterNotNull(),
     readingGoal = readingGoal?.let {
         ReadingGoal(
             targetPagesPerDay = it.targetPagesPerDay,

@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.feedbook.R
+import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.ProfileVariant
 
@@ -35,6 +36,7 @@ internal fun ProfileHeaderSection(
     quote: String,
     actionLabelRes: Int,
     avatarStyle: AvatarStyle,
+    avatarPreset: AvatarPreset?,
     avatarImageUri: String?,
     onActionClick: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -65,6 +67,7 @@ internal fun ProfileHeaderSection(
             ) {
                 ProfileAvatarArtwork(
                     avatarStyle = avatarStyle,
+                    avatarPreset = avatarPreset,
                     avatarImageUri = avatarImageUri,
                     modifier = Modifier.fillMaxSize(),
                     fallbackContent = {

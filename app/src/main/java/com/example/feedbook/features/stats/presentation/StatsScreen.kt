@@ -72,6 +72,7 @@ fun StatsScreen(
             ProfileTopBar(
                 variant = ProfileVariant.OWN,
                 avatarStyle = state.avatarStyle,
+                avatarPreset = state.avatarPreset,
                 avatarImageUri = state.avatarImageUri,
                 onAvatarClick = onProfileClick,
                 trailingContent = { iconSize ->

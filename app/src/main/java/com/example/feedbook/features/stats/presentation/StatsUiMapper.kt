@@ -1,11 +1,13 @@
 package com.example.feedbook.features.stats.presentation
 
 import androidx.compose.ui.graphics.Color
+import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.stats.domain.model.ReadingStats
 
 fun ReadingStats.toUiState(
     avatarStyle: AvatarStyle,
+    avatarPreset: AvatarPreset?,
     avatarImageUri: String?
 ): StatsUiState = StatsUiState(
     title = title,
@@ -24,5 +26,6 @@ fun ReadingStats.toUiState(
         )
     },
     avatarStyle = avatarStyle,
+    avatarPreset = avatarPreset,
     avatarImageUri = avatarImageUri
 )

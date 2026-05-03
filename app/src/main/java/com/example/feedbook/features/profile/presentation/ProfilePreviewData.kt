@@ -5,10 +5,44 @@ import androidx.compose.ui.graphics.Color
 private fun previewCoverUrl(isbn: String): String =
     "https://covers.openlibrary.org/b/isbn/$isbn-L.jpg"
 
+private fun previewAvatarUrl(seed: String): String =
+    "https://api.dicebear.com/9.x/adventurer/png?seed=$seed&size=128"
+
+private fun previewAvatarPreset(
+    id: String,
+    topColor: Long,
+    bottomColor: Long
+): AvatarPreset = avatarPresetFromData(
+    id = id,
+    style = AvatarStyle(Color(topColor), Color(bottomColor)),
+    imageUrl = previewAvatarUrl(id.replace('_', '-'))
+)!!
+
+private val previewAvatarPresets = listOf(
+    previewAvatarPreset("vampire", 0xFF382845, 0xFFBFA7CF),
+    previewAvatarPreset("werewolf", 0xFF4A3C32, 0xFFC8AE96),
+    previewAvatarPreset("witch", 0xFF344B39, 0xFFC8D3B5),
+    previewAvatarPreset("wizard", 0xFF29496B, 0xFFC5D5E8),
+    previewAvatarPreset("harry_potter", 0xFF6B2E2A, 0xFFE5C77F),
+    previewAvatarPreset("astronaut", 0xFF24364D, 0xFFCAD8E7),
+    previewAvatarPreset("grim_reaper", 0xFF2B2B31, 0xFFB8BBC4),
+    previewAvatarPreset("fairy", 0xFF5B4A80, 0xFFF0CCE9),
+    previewAvatarPreset("pirate", 0xFF5A3527, 0xFFE2C09A),
+    previewAvatarPreset("princess", 0xFF9A5C8D, 0xFFF2D8EB),
+    previewAvatarPreset("king", 0xFF70511F, 0xFFF0D9A0),
+    previewAvatarPreset("ghost", 0xFF5B6775, 0xFFE6EBF0)
+)
+
+private fun previewPreset(id: String): AvatarPreset =
+    previewAvatarPresets.first { it.id == id }
+
 fun previewOwnProfileUiState(): ProfileUiState = emptyProfileUiState(ProfileVariant.OWN).copy(
     name = "Evelyn Vance",
     handle = "@evelynv",
     quote = "\"Reading is a conversation. All books talk. But a good book listens as well.\"",
+    avatarStyle = previewPreset("witch").style,
+    avatarPreset = previewPreset("witch"),
+    availableAvatarPresets = previewAvatarPresets,
     readingGoal = ReadingGoal(
         targetPagesPerDay = 40,
         currentAveragePagesPerDay = 28
@@ -77,6 +111,8 @@ fun previewPublicProfileUiState(): ProfileUiState = emptyProfileUiState(ProfileV
         topColor = Color(0xFF48627B),
         bottomColor = Color(0xFFE1B996)
     ),
+    avatarPreset = previewPreset("pirate"),
+    availableAvatarPresets = previewAvatarPresets,
     readingStreak = ReadingStreak(
         days = 0,
         week = listOf(

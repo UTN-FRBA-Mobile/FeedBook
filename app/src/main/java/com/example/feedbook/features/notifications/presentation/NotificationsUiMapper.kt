@@ -11,15 +11,18 @@ import com.example.feedbook.features.notifications.domain.model.ReviewedBookNoti
 import com.example.feedbook.features.notifications.domain.model.SavedYourBookNotification
 import com.example.feedbook.features.notifications.domain.model.StartedReadingNotification
 import com.example.feedbook.features.notifications.domain.model.UnknownNotification
+import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 
 fun NotificationsFeed.toUiState(
     avatarStyle: AvatarStyle,
+    avatarPreset: AvatarPreset?,
     avatarImageUri: String?
 ): NotificationsUiState = NotificationsUiState(
     title = title,
     items = items.map(NotificationEntry::toUiItem),
     avatarStyle = avatarStyle,
+    avatarPreset = avatarPreset,
     avatarImageUri = avatarImageUri
 )
 

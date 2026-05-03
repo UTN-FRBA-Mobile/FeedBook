@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.feedbook.R
+import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.ProfileVariant
 
@@ -46,6 +47,7 @@ internal fun ProfileTopBar(
         topColor = Color(0xFF315A73),
         bottomColor = Color(0xFFF0C6A8)
     ),
+    avatarPreset: AvatarPreset? = null,
     avatarImageUri: String? = null,
     title: String = stringResource(R.string.profile_topbar_title),
     onAvatarClick: () -> Unit = {},
@@ -87,7 +89,7 @@ internal fun ProfileTopBar(
         ) {
             val iconSize = (maxWidth * 0.05f).coerceIn(20.dp, 26.dp)
             val avatarSize = (maxWidth * 0.085f).coerceIn(32.dp, 42.dp)
-            val innerAvatarSize = (avatarSize * 0.68f).coerceIn(22.dp, 28.dp)
+            val innerAvatarSize = (avatarSize * 0.76f).coerceIn(24.dp, 31.dp)
             val horizontalPadding = (maxWidth * 0.041f).coerceIn(16.dp, 20.dp)
 
             Row(
@@ -108,6 +110,7 @@ internal fun ProfileTopBar(
                 ) {
                     ProfileTopBarAvatarFill(
                         avatarStyle = avatarStyle,
+                        avatarPreset = avatarPreset,
                         avatarImageUri = avatarImageUri,
                         modifier = Modifier.size(innerAvatarSize).clip(CircleShape)
                     )

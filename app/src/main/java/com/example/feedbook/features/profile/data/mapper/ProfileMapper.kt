@@ -8,6 +8,7 @@ fun ProfileDto.toDomain(): ReaderProfile = ReaderProfile(
     handle = handle,
     quote = quote,
     avatar = avatar.toDomain(),
+    availableAvatarPresets = availableAvatarPresets.map(AvatarPresetDto::toDomain),
     readingGoal = readingGoal?.toDomain(),
     readingStreak = readingStreak.toDomain(),
     currentBook = currentBook.toDomain(),
@@ -24,11 +25,13 @@ fun UpdateProfileCommand.toDto(): UpdateProfileRequestDto = UpdateProfileRequest
     quote = quote,
     avatarTopColorHex = avatarTopColorHex,
     avatarBottomColorHex = avatarBottomColorHex,
+    avatarPresetId = avatarPresetId,
     avatarImageUri = avatarImageUri,
     targetPagesPerDay = targetPagesPerDay
 )
 
-private fun AvatarDto.toDomain(): AvatarInfo = AvatarInfo(topColorHex, bottomColorHex, imageUri)
+private fun AvatarDto.toDomain(): AvatarInfo = AvatarInfo(topColorHex, bottomColorHex, avatarPresetId, presetImageUrl, imageUri)
+private fun AvatarPresetDto.toDomain(): AvatarPresetInfo = AvatarPresetInfo(id, topColorHex, bottomColorHex, imageUrl)
 private fun ReadingGoalDto.toDomain(): ReadingGoal = ReadingGoal(targetPagesPerDay, currentAveragePagesPerDay)
 private fun ReadingStreakDto.toDomain(): ReadingStreak = ReadingStreak(days, week.map(StreakDayDto::toDomain))
 private fun StreakDayDto.toDomain(): StreakDay = StreakDay(label, fillFraction, isToday, completed)

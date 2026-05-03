@@ -6,6 +6,7 @@ import com.example.feedbook.features.notifications.data.remote.dto.NotificationB
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationTypes
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationsDto
 import com.example.feedbook.features.profile.data.remote.dto.AvatarDto
+import com.example.feedbook.features.profile.data.remote.dto.AvatarPresetDto
 import com.example.feedbook.features.profile.data.remote.dto.CurrentBookDto
 import com.example.feedbook.features.profile.data.remote.dto.FeaturedReviewDto
 import com.example.feedbook.features.profile.data.remote.dto.LibraryBookDto
@@ -29,12 +30,31 @@ class FakeFeedBookBackend {
     private fun coverUrl(isbn: String): String =
         "https://covers.openlibrary.org/b/isbn/$isbn-L.jpg"
 
+    private fun avatarUrl(seed: String): String =
+        "https://api.dicebear.com/9.x/adventurer/png?seed=$seed&size=128"
+
+    private fun avatarPresets(): List<AvatarPresetDto> = listOf(
+        AvatarPresetDto("vampire", 0xFF382845, 0xFFBFA7CF, avatarUrl("vampire")),
+        AvatarPresetDto("werewolf", 0xFF4A3C32, 0xFFC8AE96, avatarUrl("werewolf")),
+        AvatarPresetDto("witch", 0xFF344B39, 0xFFC8D3B5, avatarUrl("witch")),
+        AvatarPresetDto("wizard", 0xFF29496B, 0xFFC5D5E8, avatarUrl("wizard")),
+        AvatarPresetDto("harry_potter", 0xFF6B2E2A, 0xFFE5C77F, avatarUrl("harry-potter")),
+        AvatarPresetDto("astronaut", 0xFF24364D, 0xFFCAD8E7, avatarUrl("astronaut")),
+        AvatarPresetDto("grim_reaper", 0xFF2B2B31, 0xFFB8BBC4, avatarUrl("grim-reaper")),
+        AvatarPresetDto("fairy", 0xFF5B4A80, 0xFFF0CCE9, avatarUrl("fairy")),
+        AvatarPresetDto("pirate", 0xFF5A3527, 0xFFE2C09A, avatarUrl("pirate")),
+        AvatarPresetDto("princess", 0xFF9A5C8D, 0xFFF2D8EB, avatarUrl("princess")),
+        AvatarPresetDto("king", 0xFF70511F, 0xFFF0D9A0, avatarUrl("king")),
+        AvatarPresetDto("ghost", 0xFF5B6775, 0xFFE6EBF0, avatarUrl("ghost"))
+    )
+
     private val ownProfileState = MutableStateFlow(
         ProfileDto(
             name = "Evelyn Vance",
             handle = "@evelynv",
             quote = "\"Reading is a conversation. All books talk. But a good book listens as well.\"",
-            avatar = AvatarDto(0xFF315A73, 0xFFF0C6A8, null),
+            avatar = AvatarDto(0xFF5B4A80, 0xFFF0CCE9, "witch", avatarUrl("witch"), null),
+            availableAvatarPresets = avatarPresets(),
             readingGoal = ReadingGoalDto(40, 28),
             readingStreak = ReadingStreakDto(
                 days = 5,
@@ -97,7 +117,8 @@ class FakeFeedBookBackend {
         name = "Julian Thorne",
         handle = "@julianthorne",
         quote = "\"I collect stories that feel like half-remembered dreams and impossible cities.\"",
-        avatar = AvatarDto(0xFF48627B, 0xFFE1B996, null),
+        avatar = AvatarDto(0xFF5A3527, 0xFFE2C09A, "pirate", avatarUrl("pirate"), null),
+        availableAvatarPresets = avatarPresets(),
         readingGoal = null,
         readingStreak = ReadingStreakDto(
             days = 0,
@@ -327,6 +348,8 @@ class FakeFeedBookBackend {
             avatar = previous.avatar.copy(
                 topColorHex = request.avatarTopColorHex,
                 bottomColorHex = request.avatarBottomColorHex,
+                avatarPresetId = request.avatarPresetId,
+                presetImageUrl = avatarPresets().firstOrNull { it.id == request.avatarPresetId }?.imageUrl,
                 imageUri = request.avatarImageUri
             ),
             readingGoal = request.targetPagesPerDay?.let { target ->

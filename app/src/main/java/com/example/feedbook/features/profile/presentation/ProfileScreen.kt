@@ -68,6 +68,7 @@ fun ProfileScreen(
             ProfileTopBar(
                 variant = state.variant,
                 avatarStyle = state.avatarStyle,
+                avatarPreset = state.avatarPreset,
                 avatarImageUri = state.avatarImageUri,
                 onAvatarClick = onProfileClick
             )
@@ -101,6 +102,7 @@ fun ProfileScreen(
                         quote = state.quote,
                         actionLabelRes = state.actionLabelRes,
                         avatarStyle = state.avatarStyle,
+                        avatarPreset = state.avatarPreset,
                         avatarImageUri = state.avatarImageUri,
                         onActionClick = {
                             if (state.variant == ProfileVariant.OWN) onEditProfileClick()

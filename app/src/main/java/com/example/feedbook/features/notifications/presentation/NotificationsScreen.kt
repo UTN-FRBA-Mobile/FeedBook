@@ -75,6 +75,7 @@ fun NotificationsScreen(
             ProfileTopBar(
                 variant = com.example.feedbook.features.profile.presentation.ProfileVariant.OWN,
                 avatarStyle = state.avatarStyle,
+                avatarPreset = state.avatarPreset,
                 avatarImageUri = state.avatarImageUri,
                 onAvatarClick = onProfileClick,
                 trailingContent = { iconSize ->

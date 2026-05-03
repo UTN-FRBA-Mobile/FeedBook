@@ -27,6 +27,7 @@ class StatsViewModel(
     private var baseStats: ReadingStats? = null
     private var avatarPresentation = AvatarPresentation(
         style = defaultAvatarStyle(),
+        preset = null,
         imageUri = null
     )
 
@@ -60,6 +61,7 @@ class StatsViewModel(
                 .onFailure { throwable ->
                     _state.value = emptyStatsUiState().copy(
                         avatarStyle = avatarPresentation.style,
+                        avatarPreset = avatarPresentation.preset,
                         avatarImageUri = avatarPresentation.imageUri,
                         isLoading = false,
                         errorMessage = throwable.message
@@ -72,6 +74,7 @@ class StatsViewModel(
         val stats = baseStats ?: return
         val mapped = stats.toUiState(
             avatarStyle = avatarPresentation.style,
+            avatarPreset = avatarPresentation.preset,
             avatarImageUri = avatarPresentation.imageUri
         )
         val validMode = mapped.radarSections.firstOrNull { it.mode == selectedMode }?.mode

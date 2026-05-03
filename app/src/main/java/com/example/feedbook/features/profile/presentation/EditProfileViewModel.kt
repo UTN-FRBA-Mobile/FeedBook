@@ -43,6 +43,7 @@ class EditProfileViewModel(
                     quote = updatedState.quote,
                     avatarTopColorHex = updatedState.avatarStyle.topColor.toArgb().toLong(),
                     avatarBottomColorHex = updatedState.avatarStyle.bottomColor.toArgb().toLong(),
+                    avatarPresetId = updatedState.avatarPreset?.id,
                     avatarImageUri = updatedState.avatarImageUri,
                     targetPagesPerDay = updatedState.readingGoal?.targetPagesPerDay
                 )

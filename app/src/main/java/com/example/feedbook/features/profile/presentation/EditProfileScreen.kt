@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -51,13 +50,6 @@ import com.example.feedbook.features.profile.presentation.components.ProfileTopB
 import com.example.feedbook.features.profile.presentation.components.ProfileTypography
 import com.example.feedbook.features.profile.presentation.components.ProfileAvatarArtwork
 
-private val avatarPresets = listOf(
-    AvatarStyle(Color(0xFF315A73), Color(0xFFF0C6A8)),
-    AvatarStyle(Color(0xFF5C6D8A), Color(0xFFD8C1A0)),
-    AvatarStyle(Color(0xFF6E918B), Color(0xFFE8D7BF)),
-    AvatarStyle(Color(0xFF8A5C52), Color(0xFFF1D4B5))
-)
-
 @Composable
 fun EditProfileScreen(
     state: ProfileUiState,
@@ -72,8 +64,9 @@ fun EditProfileScreen(
     var targetPagesInput by remember(state.readingGoal?.targetPagesPerDay) {
         mutableStateOf(state.readingGoal?.targetPagesPerDay?.toString().orEmpty())
     }
-    var selectedAvatarStyle by remember(state.avatarStyle) { mutableStateOf(state.avatarStyle) }
+    var selectedAvatarPreset by remember(state.avatarPreset) { mutableStateOf(state.avatarPreset) }
     var selectedAvatarImageUri by remember(state.avatarImageUri) { mutableStateOf(state.avatarImageUri) }
+    val selectedAvatarStyle = selectedAvatarPreset?.style ?: state.avatarStyle
     val fieldColors = OutlinedTextFieldDefaults.colors(
         focusedTextColor = ProfileColors.PrimaryText,
         unfocusedTextColor = ProfileColors.PrimaryText,
@@ -109,6 +102,7 @@ fun EditProfileScreen(
             handle = handle.trim().ifEmpty { state.handle },
             quote = quote.trim().ifEmpty { state.quote },
             avatarStyle = selectedAvatarStyle,
+            avatarPreset = selectedAvatarPreset,
             avatarImageUri = selectedAvatarImageUri,
             readingGoal = readingGoal
         )
@@ -121,6 +115,7 @@ fun EditProfileScreen(
             ProfileTopBar(
                 variant = state.variant,
                 avatarStyle = selectedAvatarStyle,
+                avatarPreset = selectedAvatarPreset,
                 avatarImageUri = selectedAvatarImageUri,
                 title = stringResource(R.string.edit_profile_title),
                 onAvatarClick = onProfileClick,
@@ -200,38 +195,26 @@ fun EditProfileScreen(
                             style = ProfileTypography.Body,
                             color = ProfileColors.SecondaryText
                         )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            avatarPresets.forEach { preset ->
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(72.dp)
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .background(
-                                            Brush.verticalGradient(
-                                                listOf(preset.topColor, preset.bottomColor)
-                                            )
-                                        )
-                                        .border(
-                                            width = if (preset == selectedAvatarStyle) 2.dp else 1.dp,
-                                            color = if (preset == selectedAvatarStyle && selectedAvatarImageUri == null) ProfileColors.SurfaceStrong else ProfileColors.Border,
-                                            shape = RoundedCornerShape(12.dp)
-                                        )
-                                        .clickable {
-                                            selectedAvatarStyle = preset
-                                            selectedAvatarImageUri = null
-                                        },
-                                    contentAlignment = Alignment.Center
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            state.availableAvatarPresets.chunked(3).forEach { rowPresets ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(26.dp)
-                                            .clip(CircleShape)
-                                            .background(Color.White.copy(alpha = 0.22f))
-                                    )
+                                    rowPresets.forEach { preset ->
+                                        AvatarPresetCard(
+                                            preset = preset,
+                                            selected = preset == selectedAvatarPreset && selectedAvatarImageUri == null,
+                                            onClick = {
+                                                selectedAvatarPreset = preset
+                                                selectedAvatarImageUri = null
+                                            },
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
+                                    repeat(3 - rowPresets.size) {
+                                        Box(modifier = Modifier.weight(1f))
+                                    }
                                 }
                             }
                         }
@@ -265,6 +248,7 @@ fun EditProfileScreen(
                                 ) {
                                     ProfileAvatarArtwork(
                                         avatarStyle = selectedAvatarStyle,
+                                        avatarPreset = selectedAvatarPreset,
                                         avatarImageUri = selectedAvatarImageUri,
                                         modifier = Modifier.fillMaxSize(),
                                         fallbackContent = {
@@ -354,6 +338,52 @@ fun EditProfileScreen(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun AvatarPresetCard(
+    preset: AvatarPreset,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .height(96.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .background(
+                Brush.verticalGradient(
+                    listOf(preset.style.topColor, preset.style.bottomColor)
+                )
+            )
+            .border(
+                width = if (selected) 2.dp else 1.dp,
+                color = if (selected) ProfileColors.SurfaceStrong else ProfileColors.Border,
+                shape = RoundedCornerShape(14.dp)
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 8.dp, vertical = 10.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            ProfileAvatarArtwork(
+                avatarStyle = preset.style,
+                avatarPreset = preset,
+                avatarImageUri = null,
+                modifier = Modifier
+                    .size(42.dp)
+                    .clip(RoundedCornerShape(14.dp))
+            )
+            Text(
+                text = stringResource(preset.labelRes),
+                style = ProfileTypography.Label.copy(fontWeight = FontWeight.SemiBold),
+                color = Color.White
+            )
         }
     }
 }
