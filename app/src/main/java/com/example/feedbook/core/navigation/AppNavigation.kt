@@ -2,28 +2,30 @@ package com.example.feedbook.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.feedbook.FeedBookApplication
-import com.example.feedbook.presentation.books.BookListScreen
-import com.example.feedbook.presentation.books.BookListViewModel
-import com.example.feedbook.presentation.detail.BookDetailScreen
-import com.example.feedbook.presentation.detail.BookDetailViewModel
-import com.example.feedbook.presentation.notifications.NotificationsScreen
-import com.example.feedbook.presentation.profile.EditProfileScreen
-import com.example.feedbook.presentation.profile.ProfileScreen
-import com.example.feedbook.presentation.profile.sampleProfileUiState
-import com.example.feedbook.presentation.profile.samplePublicProfileUiState
-import com.example.feedbook.presentation.stats.StatsScreen
+import com.example.feedbook.features.books.presentation.list.BookListScreen
+import com.example.feedbook.features.books.presentation.list.BookListViewModel
+import com.example.feedbook.features.books.presentation.detail.BookDetailScreen
+import com.example.feedbook.features.books.presentation.detail.BookDetailViewModel
+import com.example.feedbook.features.notifications.presentation.NotificationsScreen
+import com.example.feedbook.features.notifications.presentation.NotificationsViewModel
+import com.example.feedbook.features.profile.presentation.EditProfileScreen
+import com.example.feedbook.features.profile.presentation.EditProfileViewModel
+import com.example.feedbook.features.profile.presentation.ProfileScreen
+import com.example.feedbook.features.profile.presentation.ProfileViewModel
+import com.example.feedbook.features.profile.presentation.PublicProfilePreviewViewModel
+import com.example.feedbook.features.profile.presentation.PublicProfileViewModel
+import com.example.feedbook.features.stats.presentation.StatsScreen
+import com.example.feedbook.features.stats.presentation.StatsViewModel
 
 object AppRoutes {
     const val PROFILE = "profile"
@@ -41,18 +43,7 @@ object AppRoutes {
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
-    val application = LocalContext.current.applicationContext as FeedBookApplication
-    val container = remember(application) { application.container }
-    var ownProfileState by remember { mutableStateOf(sampleProfileUiState()) }
-    val navigateToTopLevel: (String) -> Unit = { route ->
-        navController.navigate(route) {
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
-        }
-    }
+    val appContainer = (LocalContext.current.applicationContext as FeedBookApplication).container
 
     NavHost(
         navController = navController,
@@ -60,69 +51,110 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         modifier = modifier
     ) {
         composable(route = AppRoutes.PROFILE) {
+            val viewModel: ProfileViewModel = viewModel(
+                factory = ProfileViewModel.provideFactory(appContainer.observeOwnProfileUseCase)
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
             ProfileScreen(
-                state = ownProfileState,
-                onProfileClick = { navigateToTopLevel(AppRoutes.PROFILE) },
-                onStatsClick = { navigateToTopLevel(AppRoutes.STATS) },
-                onNotificationsClick = { navigateToTopLevel(AppRoutes.NOTIFICATIONS) },
+                state = state,
+                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
+                onStatsClick = { navController.navigate(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) },
                 onEditProfileClick = { navController.navigate(AppRoutes.EDIT_PROFILE) },
                 onPreviewPublicProfileClick = { navController.navigate(AppRoutes.PUBLIC_PROFILE_PREVIEW) }
             )
         }
 
         composable(route = AppRoutes.EDIT_PROFILE) {
+            val viewModel: EditProfileViewModel = viewModel(
+                factory = EditProfileViewModel.provideFactory(
+                    observeOwnProfileUseCase = appContainer.observeOwnProfileUseCase,
+                    updateProfileUseCase = appContainer.updateProfileUseCase
+                )
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
             EditProfileScreen(
-                state = ownProfileState,
+                state = state,
                 onBackClick = { navController.popBackStack() },
-                onProfileClick = { navigateToTopLevel(AppRoutes.PROFILE) },
+                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
                 onSave = { updatedState ->
-                    ownProfileState = updatedState
-                    navController.popBackStack()
+                    viewModel.saveProfile(updatedState) {
+                        navController.popBackStack()
+                    }
                 }
             )
         }
 
         composable(route = AppRoutes.PUBLIC_PROFILE) {
+            val viewModel: PublicProfileViewModel = viewModel(
+                factory = PublicProfileViewModel.provideFactory(appContainer.getPublicProfileUseCase)
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
             ProfileScreen(
-                state = samplePublicProfileUiState(),
-                onProfileClick = { navigateToTopLevel(AppRoutes.PROFILE) },
-                onStatsClick = { navigateToTopLevel(AppRoutes.STATS) },
-                onNotificationsClick = { navigateToTopLevel(AppRoutes.NOTIFICATIONS) }
+                state = state,
+                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
+                onStatsClick = { navController.navigate(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) }
             )
         }
 
         composable(route = AppRoutes.PUBLIC_PROFILE_PREVIEW) {
+            val viewModel: PublicProfilePreviewViewModel = viewModel(
+                factory = PublicProfilePreviewViewModel.provideFactory(
+                    appContainer.observeOwnPublicProfilePreviewUseCase
+                )
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
             ProfileScreen(
-                state = ownProfileState.asPublicPreview(),
-                onProfileClick = { navigateToTopLevel(AppRoutes.PROFILE) },
-                onStatsClick = { navigateToTopLevel(AppRoutes.STATS) },
-                onNotificationsClick = { navigateToTopLevel(AppRoutes.NOTIFICATIONS) }
+                state = state,
+                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
+                onStatsClick = { navController.navigate(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) }
             )
         }
 
         composable(route = AppRoutes.STATS) {
+            val viewModel: StatsViewModel = viewModel(
+                factory = StatsViewModel.provideFactory(
+                    getStatsUseCase = appContainer.getStatsUseCase,
+                    observeOwnProfileUseCase = appContainer.observeOwnProfileUseCase
+                )
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
             StatsScreen(
-                avatarStyle = ownProfileState.avatarStyle,
-                avatarImageUri = ownProfileState.avatarImageUri,
-                onProfileClick = { navigateToTopLevel(AppRoutes.PROFILE) },
-                onStatsClick = { navigateToTopLevel(AppRoutes.STATS) },
-                onNotificationsClick = { navigateToTopLevel(AppRoutes.NOTIFICATIONS) }
+                state = state,
+                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
+                onStatsClick = { navController.navigate(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) },
+                onModeSelected = viewModel::selectMode
             )
         }
 
         composable(route = AppRoutes.NOTIFICATIONS) {
+            val viewModel: NotificationsViewModel = viewModel(
+                factory = NotificationsViewModel.provideFactory(
+                    getNotificationsUseCase = appContainer.getNotificationsUseCase,
+                    observeOwnProfileUseCase = appContainer.observeOwnProfileUseCase
+                )
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
             NotificationsScreen(
-                avatarStyle = ownProfileState.avatarStyle,
-                avatarImageUri = ownProfileState.avatarImageUri,
-                onProfileClick = { navigateToTopLevel(AppRoutes.PROFILE) },
-                onStatsClick = { navigateToTopLevel(AppRoutes.STATS) },
-                onNotificationsClick = { navigateToTopLevel(AppRoutes.NOTIFICATIONS) }
+                state = state,
+                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
+                onStatsClick = { navController.navigate(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) }
             )
         }
 
         composable(route = AppRoutes.BOOKS) {
             BookListScreen(
-                viewModelFactory = BookListViewModel.provideFactory(container.getBooksUseCase),
+                viewModelFactory = BookListViewModel.provideFactory(appContainer.getBooksUseCase),
                 onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) }
             )
         }
@@ -130,28 +162,14 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         composable(
             route = AppRoutes.BOOK_DETAIL,
             arguments = listOf(navArgument("bookId") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val bookId = backStackEntry.arguments?.getString("bookId").orEmpty()
+        ) {
             BookDetailScreen(
                 viewModelFactory = BookDetailViewModel.provideFactory(
-                    bookId = bookId,
-                    getBookByIdUseCase = container.getBookByIdUseCase
+                    bookId = it.arguments?.getString("bookId").orEmpty(),
+                    getBookByIdUseCase = appContainer.getBookByIdUseCase
                 ),
                 onBackClick = { navController.popBackStack() }
             )
         }
     }
 }
-
-private fun com.example.feedbook.presentation.profile.ProfileUiState.asPublicPreview() =
-    copy(
-        variant = com.example.feedbook.presentation.profile.ProfileVariant.PUBLIC,
-        actionLabel = "FOLLOW",
-        profileStats = listOf(
-            com.example.feedbook.presentation.profile.ProfileStat(label = "Books read", value = completedBooks.toString()),
-            com.example.feedbook.presentation.profile.ProfileStat(
-                label = "Daily goal",
-                value = readingGoal?.targetPagesPerDay?.let { "$it pgs" } ?: "None"
-            )
-        )
-    )
