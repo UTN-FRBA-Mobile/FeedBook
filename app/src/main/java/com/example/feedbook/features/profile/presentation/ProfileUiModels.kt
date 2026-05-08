@@ -38,6 +38,7 @@ data class StreakDay(
 )
 
 data class CurrentBook(
+    val id: String,
     val title: String,
     val author: String,
     val page: Int,
@@ -107,6 +108,7 @@ fun sampleProfileUiState(): ProfileUiState = ProfileUiState(
         )
     ),
     currentBook = CurrentBook(
+        id = "1",
         title = "The Secret History",
         author = "Donna Tartt",
         page = 248,
@@ -175,6 +177,7 @@ fun samplePublicProfileUiState(): ProfileUiState = ProfileUiState(
         )
     ),
     currentBook = CurrentBook(
+        id = "2",
         title = "The Name of the Rose",
         author = "Umberto Eco",
         page = 312,

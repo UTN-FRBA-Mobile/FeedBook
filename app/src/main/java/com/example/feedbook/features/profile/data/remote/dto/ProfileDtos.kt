@@ -39,6 +39,7 @@ data class StreakDayDto(
 )
 
 data class CurrentBookDto(
+    val id: String,
     val title: String,
     val author: String,
     val page: Int,

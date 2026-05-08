@@ -28,9 +28,13 @@ import com.example.feedbook.features.profile.presentation.CurrentBook
 @Composable
 internal fun CurrentlyReadingCard(
     currentBook: CurrentBook,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBookClick: (String) -> Unit = {}
 ) {
-    ProfileSurfaceCard(modifier = modifier.fillMaxWidth()) {
+    ProfileSurfaceCard(
+        modifier = modifier.fillMaxWidth(),
+        onClick = { onBookClick(currentBook.id) }
+    ) {
         Box(
             modifier = Modifier
                 .matchParentSize()

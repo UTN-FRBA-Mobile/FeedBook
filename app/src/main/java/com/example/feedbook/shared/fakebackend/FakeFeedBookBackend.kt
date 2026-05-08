@@ -44,6 +44,7 @@ class FakeFeedBookBackend {
                 )
             ),
             currentBook = CurrentBookDto(
+                id = "1",
                 title = "The Secret History",
                 author = "Donna Tartt",
                 page = 248,
@@ -107,6 +108,7 @@ class FakeFeedBookBackend {
             )
         ),
         currentBook = CurrentBookDto(
+            id = "2",
             title = "The Name of the Rose",
             author = "Umberto Eco",
             page = 312,

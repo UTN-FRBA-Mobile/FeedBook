@@ -62,7 +62,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onStatsClick = { navController.navigate(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) },
                 onEditProfileClick = { navController.navigate(AppRoutes.EDIT_PROFILE) },
-                onPreviewPublicProfileClick = { navController.navigate(AppRoutes.PUBLIC_PROFILE_PREVIEW) }
+                onPreviewPublicProfileClick = { navController.navigate(AppRoutes.PUBLIC_PROFILE_PREVIEW) },
+                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) }
             )
         }
 
@@ -97,7 +98,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 state = state,
                 onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
                 onStatsClick = { navController.navigate(AppRoutes.STATS) },
-                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) }
+                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) },
+                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) }
             )
         }
 
@@ -113,7 +115,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 state = state,
                 onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
                 onStatsClick = { navController.navigate(AppRoutes.STATS) },
-                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) }
+                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) },
+                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) }
             )
         }
 
@@ -166,7 +169,9 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             BookDetailScreen(
                 viewModelFactory = BookDetailViewModel.provideFactory(
                     bookId = it.arguments?.getString("bookId").orEmpty(),
-                    getBookByIdUseCase = appContainer.getBookByIdUseCase
+                    getBookByIdUseCase = appContainer.getBookByIdUseCase,
+                    getReviewsUseCase = appContainer.getReviewsUseCase,
+                    getReadingProgressUseCase = appContainer.getReadingProgress
                 ),
                 onBackClick = { navController.popBackStack() }
             )

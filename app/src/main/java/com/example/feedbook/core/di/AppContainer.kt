@@ -12,6 +12,8 @@ import com.example.feedbook.features.profile.data.repository.ProfileRepositoryIm
 import com.example.feedbook.features.stats.data.repository.StatsRepositoryImpl
 import com.example.feedbook.features.books.domain.usecase.GetBookByIdUseCase
 import com.example.feedbook.features.books.domain.usecase.GetBooksUseCase
+import com.example.feedbook.features.books.domain.usecase.GetReadingProgressUseCase
+import com.example.feedbook.features.books.domain.usecase.GetReviewsUseCase
 import com.example.feedbook.features.notifications.domain.usecase.GetNotificationsUseCase
 import com.example.feedbook.features.profile.domain.usecase.GetPublicProfileUseCase
 import com.example.feedbook.features.stats.domain.usecase.GetStatsUseCase
@@ -35,6 +37,11 @@ class AppContainer {
 
     val getBooksUseCase = GetBooksUseCase(bookRepository)
     val getBookByIdUseCase = GetBookByIdUseCase(bookRepository)
+
+    val getReadingProgress = GetReadingProgressUseCase(bookRepository)
+
+    val getReviewsUseCase = GetReviewsUseCase(bookRepository)
+
     val observeOwnProfileUseCase = ObserveOwnProfileUseCase(profileRepository)
     val observeOwnPublicProfilePreviewUseCase =
         ObserveOwnPublicProfilePreviewUseCase(profileRepository)

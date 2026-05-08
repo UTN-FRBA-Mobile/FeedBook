@@ -38,7 +38,8 @@ fun ProfileScreen(
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
     onEditProfileClick: () -> Unit = {},
-    onPreviewPublicProfileClick: () -> Unit = {}
+    onPreviewPublicProfileClick: () -> Unit = {},
+    onBookClick: (String) -> Unit = {}
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -115,6 +116,7 @@ fun ProfileScreen(
                     item {
                         CurrentlyReadingCard(
                             currentBook = state.currentBook,
+                            onBookClick = onBookClick,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
                     }
@@ -144,6 +146,7 @@ fun ProfileScreen(
                     item {
                         CurrentlyReadingCard(
                             currentBook = state.currentBook,
+                            onBookClick = onBookClick,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
                     }
