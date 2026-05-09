@@ -47,6 +47,7 @@ internal enum class BottomBarTab {
 internal fun ProfileBottomBar(
     activeTab: BottomBarTab = BottomBarTab.FEED,
     onProfileClick: () -> Unit = {},
+    onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -98,6 +99,7 @@ internal fun ProfileBottomBar(
                     icon = Icons.AutoMirrored.Rounded.MenuBook,
                     contentDescription = stringResource(R.string.profile_bottom_nav_library),
                     active = activeTab == BottomBarTab.LIBRARY,
+                    onClick = onLibraryClick,
                     iconSize = iconSize,
                     indicatorWidth = indicatorWidth,
                     indicatorHeight = indicatorHeight,

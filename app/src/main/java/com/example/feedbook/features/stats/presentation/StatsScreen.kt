@@ -41,6 +41,7 @@ fun StatsScreen(
     modifier: Modifier = Modifier,
     state: StatsUiState,
     onProfileClick: () -> Unit = {},
+    onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
     onModeSelected: (String) -> Unit = {},
@@ -95,6 +96,7 @@ fun StatsScreen(
             ProfileBottomBar(
                 activeTab = BottomBarTab.STATS,
                 onProfileClick = onProfileClick,
+                onLibraryClick = onLibraryClick,
                 onStatsClick = onStatsClick,
                 onNotificationsClick = onNotificationsClick
             )

@@ -48,6 +48,7 @@ fun NotificationsScreen(
     modifier: Modifier = Modifier,
     state: NotificationsUiState,
     onProfileClick: () -> Unit = {},
+    onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
     onRetry: () -> Unit = {}
@@ -98,6 +99,7 @@ fun NotificationsScreen(
             ProfileBottomBar(
                 activeTab = BottomBarTab.NOTIFICATIONS,
                 onProfileClick = onProfileClick,
+                onLibraryClick = onLibraryClick,
                 onStatsClick = onStatsClick,
                 onNotificationsClick = onNotificationsClick
             )

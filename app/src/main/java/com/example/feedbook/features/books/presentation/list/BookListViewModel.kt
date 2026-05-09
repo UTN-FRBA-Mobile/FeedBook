@@ -29,7 +29,7 @@ class BookListViewModel(
                 }
                 .onFailure { throwable ->
                     _state.value = BookListState(
-                        error = throwable.message ?: "No se pudieron cargar los libros."
+                        error = throwable.message ?: "Unable to load books."
                     )
                 }
         }

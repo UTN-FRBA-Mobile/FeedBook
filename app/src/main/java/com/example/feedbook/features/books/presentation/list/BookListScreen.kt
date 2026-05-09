@@ -44,14 +44,14 @@ fun BookListScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = { TopAppBar(title = { Text("Biblioteca remota") }) },
+        topBar = { TopAppBar(title = { Text("Remote Library") }) },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
         when {
             state.isLoading -> {
                 LoadingScreen(
                     modifier = Modifier.padding(innerPadding),
-                    message = "Consultando el backend..."
+                    message = "Fetching books from the backend..."
                 )
             }
 
@@ -97,7 +97,7 @@ private fun EmptyBookList(
         contentAlignment = Alignment.Center
     ) {
         Button(onClick = onRetry) {
-            Text("Reintentar carga")
+            Text("Retry")
         }
     }
 }

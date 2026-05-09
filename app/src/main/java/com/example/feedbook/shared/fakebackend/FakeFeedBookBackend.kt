@@ -5,6 +5,8 @@ import com.example.feedbook.features.notifications.data.remote.dto.NotificationE
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationBookSummaryDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationTypes
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationsDto
+import com.example.feedbook.features.library.data.remote.dto.LibraryDto
+import com.example.feedbook.features.library.data.remote.dto.ReadBookDto
 import com.example.feedbook.features.profile.data.remote.dto.AvatarDto
 import com.example.feedbook.features.profile.data.remote.dto.AvatarPresetDto
 import com.example.feedbook.features.profile.data.remote.dto.CurrentBookDto
@@ -333,6 +335,30 @@ class FakeFeedBookBackend {
                     "Daily goal",
                     profile.readingGoal?.targetPagesPerDay?.let { "$it pgs" } ?: "None"
                 )
+            )
+        )
+    }
+
+    fun observeOwnLibrary() = ownProfileState.map { profile ->
+        LibraryDto(
+            title = "My Library",
+            subtitle = "Your personal collection, current read, and completed shelf.",
+            avatar = profile.avatar,
+            currentBook = profile.currentBook,
+            readingBooks = listOf(
+                LibraryBookDto(profile.currentBook.title, profile.currentBook.coverImageUrl),
+                LibraryBookDto("Foucault's Pendulum", coverUrl("9780156032971")),
+                LibraryBookDto("If on a winter's night a traveler", coverUrl("9780156439619"))
+            ),
+            shelfBooks = profile.publicLibrary,
+            completedBooks = profile.completedBooks,
+            readHistory = listOf(
+                ReadBookDto("Beloved", "Toni Morrison", "Jan 12, 2026", "Jan 29, 2026", 5, 0xFF82645A),
+                ReadBookDto("Pale Fire", "Vladimir Nabokov", "Feb 02, 2026", "Feb 18, 2026", 4, 0xFF627A92),
+                ReadBookDto("The Waves", "Virginia Woolf", "Mar 03, 2026", "Mar 21, 2026", 5, 0xFF6C8A80),
+                ReadBookDto("Never Let Me Go", "Kazuo Ishiguro", "Apr 01, 2026", "Apr 14, 2026", 4, 0xFF536E8A),
+                ReadBookDto("Fictions", "Jorge Luis Borges", "Apr 20, 2026", "May 03, 2026", 5, 0xFF8C6B5A),
+                ReadBookDto("The Secret History", "Donna Tartt", "May 08, 2026", "May 28, 2026", 5, 0xFF6E918B)
             )
         )
     }

@@ -1,6 +1,7 @@
 package com.example.feedbook.features.profile.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import com.example.feedbook.R
 @Composable
 internal fun LibraryArchiveCard(
     completedBooks: Int,
+    onViewCollectionClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     ProfileSurfaceCard(
@@ -60,7 +62,9 @@ internal fun LibraryArchiveCard(
             }
             HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onViewCollectionClick),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {

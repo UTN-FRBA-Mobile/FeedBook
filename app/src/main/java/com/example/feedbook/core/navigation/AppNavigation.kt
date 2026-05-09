@@ -18,6 +18,8 @@ import com.example.feedbook.features.books.presentation.list.BookListScreen
 import com.example.feedbook.features.books.presentation.list.BookListViewModel
 import com.example.feedbook.features.books.presentation.detail.BookDetailScreen
 import com.example.feedbook.features.books.presentation.detail.BookDetailViewModel
+import com.example.feedbook.features.library.presentation.LibraryScreen
+import com.example.feedbook.features.library.presentation.LibraryViewModel
 import com.example.feedbook.features.notifications.presentation.NotificationsScreen
 import com.example.feedbook.features.notifications.presentation.NotificationsViewModel
 import com.example.feedbook.features.profile.presentation.EditProfileScreen
@@ -34,6 +36,7 @@ object AppRoutes {
     const val EDIT_PROFILE = "editProfile"
     const val PUBLIC_PROFILE = "publicProfile"
     const val PUBLIC_PROFILE_PREVIEW = "publicProfilePreview"
+    const val LIBRARY = "library"
     const val STATS = "stats"
     const val NOTIFICATIONS = "notifications"
     const val BOOKS = "books"
@@ -71,6 +74,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             ProfileScreen(
                 state = state,
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onEditProfileClick = { navController.navigate(AppRoutes.EDIT_PROFILE) },
@@ -109,6 +113,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             ProfileScreen(
                 state = state,
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onRetry = viewModel::retry
@@ -126,9 +131,25 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             ProfileScreen(
                 state = state,
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onRetry = viewModel::retry
+            )
+        }
+
+        composable(route = AppRoutes.LIBRARY) {
+            val viewModel: LibraryViewModel = viewModel(
+                factory = LibraryViewModel.provideFactory(appContainer.observeOwnLibraryUseCase)
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            LibraryScreen(
+                state = state,
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) }
             )
         }
 
@@ -144,6 +165,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             StatsScreen(
                 state = state,
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onModeSelected = viewModel::selectMode,
@@ -163,6 +185,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             NotificationsScreen(
                 state = state,
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onRetry = viewModel::retry
