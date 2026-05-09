@@ -40,6 +40,7 @@ import com.example.feedbook.features.stats.presentation.components.StatsMetricCa
 fun StatsScreen(
     modifier: Modifier = Modifier,
     state: StatsUiState,
+    onFeedClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
@@ -95,7 +96,7 @@ fun StatsScreen(
         bottomBar = {
             ProfileBottomBar(
                 activeTab = BottomBarTab.STATS,
-                onProfileClick = onProfileClick,
+                onFeedClick = onFeedClick,
                 onLibraryClick = onLibraryClick,
                 onStatsClick = onStatsClick,
                 onNotificationsClick = onNotificationsClick

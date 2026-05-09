@@ -5,6 +5,9 @@ import com.example.feedbook.features.books.data.repository.BookRepositoryImpl
 import com.example.feedbook.features.books.data.remote.BookRemoteDataSource
 import com.example.feedbook.features.books.domain.usecase.GetBookByIdUseCase
 import com.example.feedbook.features.books.domain.usecase.GetBooksUseCase
+import com.example.feedbook.features.home.data.remote.HomeRemoteDataSource
+import com.example.feedbook.features.home.data.repository.HomeRepositoryImpl
+import com.example.feedbook.features.home.domain.usecase.ObserveHomeFeedUseCase
 import com.example.feedbook.features.library.data.remote.LibraryRemoteDataSource
 import com.example.feedbook.features.library.data.repository.LibraryRepositoryImpl
 import com.example.feedbook.features.library.domain.usecase.ObserveOwnLibraryUseCase
@@ -27,12 +30,14 @@ class AppContainer {
     private val fakeBackend = FakeFeedBookBackend()
 
     private val bookRemoteDataSource = BookRemoteDataSource(apiService)
+    private val homeRemoteDataSource = HomeRemoteDataSource(fakeBackend)
     private val profileRemoteDataSource = ProfileRemoteDataSource(fakeBackend)
     private val libraryRemoteDataSource = LibraryRemoteDataSource(fakeBackend)
     private val statsRemoteDataSource = StatsRemoteDataSource(fakeBackend)
     private val notificationsRemoteDataSource = NotificationsRemoteDataSource(fakeBackend)
 
     private val bookRepository = BookRepositoryImpl(bookRemoteDataSource)
+    private val homeRepository = HomeRepositoryImpl(homeRemoteDataSource)
     private val profileRepository = ProfileRepositoryImpl(profileRemoteDataSource)
     private val libraryRepository = LibraryRepositoryImpl(libraryRemoteDataSource)
     private val statsRepository = StatsRepositoryImpl(statsRemoteDataSource)
@@ -40,6 +45,7 @@ class AppContainer {
 
     val getBooksUseCase = GetBooksUseCase(bookRepository)
     val getBookByIdUseCase = GetBookByIdUseCase(bookRepository)
+    val observeHomeFeedUseCase = ObserveHomeFeedUseCase(homeRepository)
     val observeOwnProfileUseCase = ObserveOwnProfileUseCase(profileRepository)
     val observeOwnPublicProfilePreviewUseCase =
         ObserveOwnPublicProfilePreviewUseCase(profileRepository)

@@ -5,6 +5,11 @@ import com.example.feedbook.features.notifications.data.remote.dto.NotificationE
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationBookSummaryDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationTypes
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationsDto
+import com.example.feedbook.features.home.data.remote.dto.HomeCuratorDto
+import com.example.feedbook.features.home.data.remote.dto.HomeDto
+import com.example.feedbook.features.home.data.remote.dto.HomeFeaturedBookDto
+import com.example.feedbook.features.home.data.remote.dto.HomeRankedBookDto
+import com.example.feedbook.features.home.data.remote.dto.HomeReadingRoomDto
 import com.example.feedbook.features.library.data.remote.dto.LibraryDto
 import com.example.feedbook.features.library.data.remote.dto.ReadBookDto
 import com.example.feedbook.features.profile.data.remote.dto.AvatarDto
@@ -359,6 +364,65 @@ class FakeFeedBookBackend {
                 ReadBookDto("Never Let Me Go", "Kazuo Ishiguro", "Apr 01, 2026", "Apr 14, 2026", 4, 0xFF536E8A),
                 ReadBookDto("Fictions", "Jorge Luis Borges", "Apr 20, 2026", "May 03, 2026", 5, 0xFF8C6B5A),
                 ReadBookDto("The Secret History", "Donna Tartt", "May 08, 2026", "May 28, 2026", 5, 0xFF6E918B)
+            )
+        )
+    }
+
+    fun observeHomeFeed() = ownProfileState.map { profile ->
+        HomeDto(
+            trendingTitle = "Trending Now",
+            avatar = profile.avatar,
+            featuredBook = HomeFeaturedBookDto(
+                label = "FEATURED",
+                title = "The Midnight Library",
+                author = "Matt Haig",
+                coverImageUrl = "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=1200&q=80"
+            ),
+            rankedBooks = listOf(
+                HomeRankedBookDto(
+                    rankLabel = "01",
+                    title = "Circe",
+                    author = "Madeline Miller",
+                    coverImageUrl = coverUrl("9780316556323")
+                ),
+                HomeRankedBookDto(
+                    rankLabel = "02",
+                    title = "Piranesi",
+                    author = "Susanna Clarke",
+                    coverImageUrl = coverUrl("9781635575637")
+                ),
+                HomeRankedBookDto(
+                    rankLabel = "03",
+                    title = "Project Hail Mary",
+                    author = "Andy Weir",
+                    coverImageUrl = coverUrl("9780593135204")
+                )
+            ),
+            readingRooms = listOf(
+                HomeReadingRoomDto(
+                    hostName = "Eleanor",
+                    hostImageUrl = avatarUrl("eleanor"),
+                    title = "Magical Realism Book Club",
+                    readerCountLabel = "1.2k readers"
+                ),
+                HomeReadingRoomDto(
+                    hostName = "James",
+                    hostImageUrl = avatarUrl("james"),
+                    title = "20th Century Classics",
+                    readerCountLabel = "850 readers"
+                )
+            ),
+            curators = listOf(
+                HomeCuratorDto(
+                    name = "Dr. Aris Thorne",
+                    focus = "Historical Non-Fiction Focus",
+                    imageUrl = avatarUrl("aris-thorne")
+                ),
+                HomeCuratorDto(
+                    name = "Lila Vance",
+                    focus = "Contemporary Lit & Essays",
+                    imageUrl = avatarUrl("lila-vance")
+                )
             )
         )
     }

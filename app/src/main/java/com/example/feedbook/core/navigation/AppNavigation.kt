@@ -19,6 +19,8 @@ import com.example.feedbook.features.books.presentation.list.BookListScreen
 import com.example.feedbook.features.books.presentation.list.BookListViewModel
 import com.example.feedbook.features.books.presentation.detail.BookDetailScreen
 import com.example.feedbook.features.books.presentation.detail.BookDetailViewModel
+import com.example.feedbook.features.home.presentation.HomeScreen
+import com.example.feedbook.features.home.presentation.HomeViewModel
 import com.example.feedbook.features.library.presentation.LibraryScreen
 import com.example.feedbook.features.library.presentation.LibraryViewModel
 import com.example.feedbook.features.notifications.presentation.NotificationsScreen
@@ -34,6 +36,7 @@ import com.example.feedbook.features.stats.presentation.StatsViewModel
 
 object AppRoutes {
     const val LOGIN = "login"
+    const val HOME = "home"
     const val PROFILE = "profile"
     const val EDIT_PROFILE = "editProfile"
     const val PUBLIC_PROFILE = "publicProfile"
@@ -69,7 +72,23 @@ fun AppNavigation(modifier: Modifier = Modifier) {
     ) {
         composable(route = AppRoutes.LOGIN) {
             LoginScreen(
-                onSignInClick = { navController.navigate(AppRoutes.PROFILE) }
+                onSignInClick = { navController.navigate(AppRoutes.HOME) }
+            )
+        }
+
+        composable(route = AppRoutes.HOME) {
+            val viewModel: HomeViewModel = viewModel(
+                factory = HomeViewModel.provideFactory(appContainer.observeHomeFeedUseCase)
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            HomeScreen(
+                state = state,
+                onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) }
             )
         }
 
@@ -81,6 +100,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             ProfileScreen(
                 state = state,
+                onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
@@ -120,6 +140,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             ProfileScreen(
                 state = state,
+                onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
@@ -138,6 +159,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             ProfileScreen(
                 state = state,
+                onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
@@ -154,6 +176,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             LibraryScreen(
                 state = state,
+                onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
@@ -172,6 +195,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             StatsScreen(
                 state = state,
+                onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
@@ -192,6 +216,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             NotificationsScreen(
                 state = state,
+                onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
