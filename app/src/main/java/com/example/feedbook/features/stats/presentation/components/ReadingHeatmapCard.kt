@@ -64,7 +64,7 @@ internal fun ReadingHeatmapCard(
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Info,
-                            contentDescription = "Ver referencia de colores",
+                            contentDescription = "View color legend",
                             tint = ProfileColors.SecondaryText
                         )
                     }
@@ -76,23 +76,23 @@ internal fun ReadingHeatmapCard(
                     ) {
                         HeatmapLegendEntry(
                             color = heatColor(0f),
-                            label = "No leiste"
+                            label = "No reading"
                         )
                         HeatmapLegendEntry(
                             color = heatColor(0.25f),
-                            label = "Mucho menos que el objetivo"
+                            label = "Far below goal"
                         )
                         HeatmapLegendEntry(
                             color = heatColor(0.5f),
-                            label = "Casi llegas al objetivo"
+                            label = "Close to goal"
                         )
                         HeatmapLegendEntry(
                             color = heatColor(0.7f),
-                            label = "Objetivo cumplido"
+                            label = "Goal reached"
                         )
                         HeatmapLegendEntry(
                             color = heatColor(0.92f),
-                            label = "Un poco o mucho mas del objetivo"
+                            label = "Above goal"
                         )
                     }
                 }

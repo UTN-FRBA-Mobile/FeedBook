@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 @Composable
 fun LoadingScreen(
     modifier: Modifier = Modifier,
-    message: String = "Cargando contenido..."
+    message: String = "Loading content..."
 ) {
     Column(
         modifier = modifier.fillMaxSize(),

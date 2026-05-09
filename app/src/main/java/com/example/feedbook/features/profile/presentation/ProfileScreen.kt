@@ -35,6 +35,7 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
     state: ProfileUiState = sampleProfileUiState(),
     onProfileClick: () -> Unit = {},
+    onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
     onEditProfileClick: () -> Unit = {},
@@ -55,6 +56,7 @@ fun ProfileScreen(
             ProfileBottomBar(
                 activeTab = BottomBarTab.FEED,
                 onProfileClick = onProfileClick,
+                onLibraryClick = onLibraryClick,
                 onStatsClick = onStatsClick,
                 onNotificationsClick = onNotificationsClick
             )

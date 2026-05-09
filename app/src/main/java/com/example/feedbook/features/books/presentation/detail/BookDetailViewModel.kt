@@ -30,7 +30,7 @@ class BookDetailViewModel(
                 }
                 .onFailure { throwable ->
                     _state.value = BookDetailState(
-                        error = throwable.message ?: "No se pudo cargar el detalle."
+                        error = throwable.message ?: "Unable to load book details."
                     )
                 }
         }

@@ -32,13 +32,13 @@ fun BookDetailScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = { TopAppBar(title = { Text("Detalle del libro") }) }
+        topBar = { TopAppBar(title = { Text("Book Details") }) }
     ) { innerPadding ->
         when {
             state.isLoading -> {
                 LoadingScreen(
                     modifier = Modifier.padding(innerPadding),
-                    message = "Cargando detalle..."
+                    message = "Loading details..."
                 )
             }
 
@@ -58,7 +58,7 @@ fun BookDetailScreen(
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = "Autor: ${book?.author.orEmpty()}",
+                        text = "Author: ${book?.author.orEmpty()}",
                         style = MaterialTheme.typography.titleLarge,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -68,7 +68,7 @@ fun BookDetailScreen(
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Button(onClick = onBackClick) {
-                        Text("Volver")
+                        Text("Back")
                     }
                 }
             }
@@ -82,11 +82,11 @@ fun BookDetailScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Text(
-                        text = state.error ?: "No hay información disponible.",
+                        text = state.error ?: "No information available.",
                         style = MaterialTheme.typography.bodyLarge
                     )
                     Button(onClick = onBackClick) {
-                        Text("Regresar")
+                        Text("Back")
                     }
                 }
             }

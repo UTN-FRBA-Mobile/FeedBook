@@ -36,7 +36,7 @@ fun BookCard(
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = "Autor: ${book.author}",
+                text = "Author: ${book.author}",
                 style = MaterialTheme.typography.bodyLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

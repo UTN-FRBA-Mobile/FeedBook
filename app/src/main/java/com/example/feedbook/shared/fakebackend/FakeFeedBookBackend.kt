@@ -3,6 +3,8 @@ package com.example.feedbook.shared.fakebackend
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationBookPreviewDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationEntryDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationsDto
+import com.example.feedbook.features.library.data.remote.dto.LibraryDto
+import com.example.feedbook.features.library.data.remote.dto.ReadBookDto
 import com.example.feedbook.features.profile.data.remote.dto.AvatarDto
 import com.example.feedbook.features.profile.data.remote.dto.CurrentBookDto
 import com.example.feedbook.features.profile.data.remote.dto.FeaturedReviewDto
@@ -63,7 +65,7 @@ class FakeFeedBookBackend {
             ),
             publicLibrary = listOf(
                 LibraryBookDto("The Secret History", 0xFF6E918B),
-                LibraryBookDto("Ficciones", 0xFF8C6B5A),
+                LibraryBookDto("Fictions", 0xFF8C6B5A),
                 LibraryBookDto("Never Let Me Go", 0xFF536E8A),
                 LibraryBookDto("Beloved", 0xFF82645A),
                 LibraryBookDto("Pale Fire", 0xFF627A92),
@@ -123,7 +125,7 @@ class FakeFeedBookBackend {
         publicLibrary = listOf(
             LibraryBookDto("One Hundred Years of Solitude", 0xFF9A7B5A),
             LibraryBookDto("The Shadow of the Wind", 0xFF5C6D8A),
-            LibraryBookDto("Ficciones", 0xFF6A8474),
+                LibraryBookDto("Fictions", 0xFF6A8474),
             LibraryBookDto("Invisible Cities", 0xFF967E66),
             LibraryBookDto("Austerlitz", 0xFF7A8798),
             LibraryBookDto("If on a winter's night a traveler", 0xFF8A6B58),
@@ -198,16 +200,16 @@ class FakeFeedBookBackend {
     private val notifications = NotificationsDto(
         title = "Activity and Notifications",
         items = listOf(
-            NotificationEntryDto("A Juan le gustó tu reseña.\n\"Una exploración fascinante sobre alimentación y memoria. La prosa fluye\"", "HOY · 10:24", 0xFF35566F, 0xFFC8A988, "♥", null),
-            NotificationEntryDto("Sofía comenzó a seguirte.", "HOY · 07:12", 0xFFB9CBE3, 0xFFE7EEF7, null, null),
-            NotificationEntryDto("Elena compartió un nuevo libro.", "AYER · 14:30", 0xFF534D61, 0xFFD9B89C, "⇪", NotificationBookPreviewDto("El Laberinto de los Espíritus", "CARLOS RUIZ ZAFÓN", 0xFFD6E1EB)),
-            NotificationEntryDto("Martina comentó tu estado de lectura.\n\"Ese final me dejó pensando días.\"", "AYER · 09:18", 0xFF6D7FA2, 0xFFDAB596, "✦", null),
-            NotificationEntryDto("Tomás empezó a seguirte.", "LUNES · 21:04", 0xFF4E697F, 0xFFE6C7AA, null, null),
-            NotificationEntryDto("Lucía guardó uno de tus libros en su lista de lectura.", "LUNES · 17:42", 0xFF7A8B6A, 0xFFDCC6A7, "⌁", null),
-            NotificationEntryDto("A Bruno le gustó tu reseña de \"Beloved\".", "DOMINGO · 19:26", 0xFF5A556A, 0xFFCDA58B, "♥", null),
-            NotificationEntryDto("Camila compartió un nuevo libro.", "DOMINGO · 11:03", 0xFF7D6B8D, 0xFFE2C39F, "⇪", NotificationBookPreviewDto("Piranesi", "SUSANNA CLARKE", 0xFFC7D6DD)),
-            NotificationEntryDto("Nicolás comenzó a seguirte.", "SÁBADO · 16:58", 0xFF4D6B73, 0xFFD3B08C, null, null),
-            NotificationEntryDto("A Irene le gustó tu cita destacada de \"The Waves\".", "SÁBADO · 08:41", 0xFF607D8B, 0xFFE5CDB4, "♥", null)
+            NotificationEntryDto("Juan liked your review.\n\"A fascinating exploration of nourishment and memory. The prose moves effortlessly.\"", "TODAY · 10:24", 0xFF35566F, 0xFFC8A988, "♥", null),
+            NotificationEntryDto("Sofia started following you.", "TODAY · 07:12", 0xFFB9CBE3, 0xFFE7EEF7, null, null),
+            NotificationEntryDto("Elena shared a new book.", "YESTERDAY · 14:30", 0xFF534D61, 0xFFD9B89C, "⇪", NotificationBookPreviewDto("The Labyrinth of Spirits", "CARLOS RUIZ ZAFON", 0xFFD6E1EB)),
+            NotificationEntryDto("Martina commented on your reading status.\n\"That ending stayed with me for days.\"", "YESTERDAY · 09:18", 0xFF6D7FA2, 0xFFDAB596, "✦", null),
+            NotificationEntryDto("Tomas started following you.", "MONDAY · 21:04", 0xFF4E697F, 0xFFE6C7AA, null, null),
+            NotificationEntryDto("Lucia saved one of your books to her reading list.", "MONDAY · 17:42", 0xFF7A8B6A, 0xFFDCC6A7, "⌁", null),
+            NotificationEntryDto("Bruno liked your review of \"Beloved\".", "SUNDAY · 19:26", 0xFF5A556A, 0xFFCDA58B, "♥", null),
+            NotificationEntryDto("Camila shared a new book.", "SUNDAY · 11:03", 0xFF7D6B8D, 0xFFE2C39F, "⇪", NotificationBookPreviewDto("Piranesi", "SUSANNA CLARKE", 0xFFC7D6DD)),
+            NotificationEntryDto("Nicolas started following you.", "SATURDAY · 16:58", 0xFF4D6B73, 0xFFD3B08C, null, null),
+            NotificationEntryDto("Irene liked your highlighted quote from \"The Waves\".", "SATURDAY · 08:41", 0xFF607D8B, 0xFFE5CDB4, "♥", null)
         )
     )
 
@@ -221,6 +223,30 @@ class FakeFeedBookBackend {
                     "Daily goal",
                     profile.readingGoal?.targetPagesPerDay?.let { "$it pgs" } ?: "None"
                 )
+            )
+        )
+    }
+
+    fun observeOwnLibrary() = ownProfileState.map { profile ->
+        LibraryDto(
+            title = "My Library",
+            subtitle = "Your personal collection, current read, and completed shelf.",
+            avatar = profile.avatar,
+            currentBook = profile.currentBook,
+            readingBooks = listOf(
+                LibraryBookDto(profile.currentBook.title, profile.currentBook.coverAccentHex),
+                LibraryBookDto("Foucault's Pendulum", 0xFF7A8F89),
+                LibraryBookDto("If on a winter's night a traveler", 0xFF8F745E)
+            ),
+            shelfBooks = profile.publicLibrary,
+            completedBooks = profile.completedBooks,
+            readHistory = listOf(
+                ReadBookDto("Beloved", "Toni Morrison", "Jan 12, 2026", "Jan 29, 2026", 5, 0xFF82645A),
+                ReadBookDto("Pale Fire", "Vladimir Nabokov", "Feb 02, 2026", "Feb 18, 2026", 4, 0xFF627A92),
+                ReadBookDto("The Waves", "Virginia Woolf", "Mar 03, 2026", "Mar 21, 2026", 5, 0xFF6C8A80),
+                ReadBookDto("Never Let Me Go", "Kazuo Ishiguro", "Apr 01, 2026", "Apr 14, 2026", 4, 0xFF536E8A),
+                ReadBookDto("Fictions", "Jorge Luis Borges", "Apr 20, 2026", "May 03, 2026", 5, 0xFF8C6B5A),
+                ReadBookDto("The Secret History", "Donna Tartt", "May 08, 2026", "May 28, 2026", 5, 0xFF6E918B)
             )
         )
     }
