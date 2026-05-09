@@ -38,3 +38,7 @@ google-services.json
 
 # Android profiling
 *.hprof
+
+lal/
+AGENTS.md
+
