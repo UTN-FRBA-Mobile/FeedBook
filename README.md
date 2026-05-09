@@ -1,7 +1,7 @@
 # FeedBook
 
 <p align="center">
-  <img src="lal/logo.svg" alt="Logo de FeedBook" width="120" />
+  <img src="app/src/main/res/drawable/feedbook_logo.svg" alt="Logo de FeedBook" width="120" />
 </p>
 
 Proyecto de la facultad para Android sobre lectura, seguimiento de progreso y funciones sociales entre lectores.
