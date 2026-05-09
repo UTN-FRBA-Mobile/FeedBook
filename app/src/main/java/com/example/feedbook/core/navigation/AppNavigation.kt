@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.feedbook.FeedBookApplication
 import com.example.feedbook.features.auth.presentation.LoginScreen
+import com.example.feedbook.features.auth.presentation.LoginViewModel
 import com.example.feedbook.features.books.presentation.list.BookListScreen
 import com.example.feedbook.features.books.presentation.list.BookListViewModel
 import com.example.feedbook.features.books.presentation.detail.BookDetailScreen
@@ -71,8 +72,27 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         modifier = modifier
     ) {
         composable(route = AppRoutes.LOGIN) {
+            val viewModel: LoginViewModel = viewModel(
+                factory = LoginViewModel.provideFactory(
+                    loginUseCase = appContainer.loginUseCase,
+                    sessionManager = appContainer.sessionManager
+                )
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
             LoginScreen(
-                onSignInClick = { navController.navigate(AppRoutes.HOME) }
+                state = state,
+                onUsernameChange = viewModel::updateUsername,
+                onPasswordChange = viewModel::updatePassword,
+                onSignInClick = {
+                    viewModel.submitLogin {
+                        navController.navigate(AppRoutes.HOME) {
+                            popUpTo(AppRoutes.LOGIN) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                }
             )
         }
 

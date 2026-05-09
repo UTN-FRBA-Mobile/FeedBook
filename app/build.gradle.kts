@@ -25,6 +25,7 @@ android {
         release {
             isMinifyEnabled = false
             buildConfigField("String", "BASE_URL", "\"https://example.com/api/\"")
+            buildConfigField("String", "AUTH_BASE_URL", "\"http://localhost:8080/\"")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -33,6 +34,7 @@ android {
 
         debug {
             buildConfigField("String", "BASE_URL", "\"https://example.com/api/\"")
+            buildConfigField("String", "AUTH_BASE_URL", "\"http://localhost:8080/\"")
         }
     }
     compileOptions {
