@@ -38,6 +38,7 @@ import com.example.feedbook.features.profile.presentation.components.UpNextCard
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     state: ProfileUiState,
+    onFeedClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
@@ -77,7 +78,7 @@ fun ProfileScreen(
         bottomBar = {
             ProfileBottomBar(
                 activeTab = BottomBarTab.FEED,
-                onProfileClick = onProfileClick,
+                onFeedClick = onFeedClick,
                 onLibraryClick = onLibraryClick,
                 onStatsClick = onStatsClick,
                 onNotificationsClick = onNotificationsClick
