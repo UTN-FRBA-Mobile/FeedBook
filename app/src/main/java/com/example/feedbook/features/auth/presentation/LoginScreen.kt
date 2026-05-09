@@ -25,18 +25,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Login
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -70,15 +66,15 @@ private object LoginColors {
 
 @Composable
 fun LoginScreen(
+    state: LoginUiState = LoginUiState(),
     modifier: Modifier = Modifier,
+    onUsernameChange: (String) -> Unit = {},
+    onPasswordChange: (String) -> Unit = {},
+    onSecureLoginChange: (Boolean) -> Unit = {},
     onSignInClick: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {},
     onCreateAccountClick: () -> Unit = {}
 ) {
-    var email by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("") }
-    var showCredentialsError by rememberSaveable { mutableStateOf(false) }
-
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -110,10 +106,9 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.weight(if (compactLayout) 0.6f else 1f))
                 Column(modifier = Modifier.fillMaxWidth()) {
                     LoginTextField(
-                        value = email,
+                        value = state.username,
                         onValueChange = {
-                            email = it
-                            showCredentialsError = false
+                            onUsernameChange(it)
                         },
                         label = stringResource(R.string.login_email_address),
                         placeholder = stringResource(R.string.login_email_placeholder),
@@ -121,14 +116,13 @@ fun LoginScreen(
                             keyboardType = KeyboardType.Email,
                             imeAction = ImeAction.Next
                         ),
-                        isError = showCredentialsError
+                        isError = state.errorMessage != null
                     )
                     Spacer(modifier = Modifier.height(if (compactLayout) 16.dp else 28.dp))
                     LoginTextField(
-                        value = password,
+                        value = state.password,
                         onValueChange = {
-                            password = it
-                            showCredentialsError = false
+                            onPasswordChange(it)
                         },
                         label = stringResource(R.string.login_password),
                         placeholder = stringResource(R.string.login_password_placeholder),
@@ -137,14 +131,28 @@ fun LoginScreen(
                             imeAction = ImeAction.Done
                         ),
                         visualTransformation = PasswordVisualTransformation(),
-                        isError = showCredentialsError
+                        isError = state.errorMessage != null
                     )
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = if (compactLayout) 14.dp else 20.dp),
-                        horizontalArrangement = Arrangement.End
+                            .padding(top = if (compactLayout) 10.dp else 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Checkbox(
+                                checked = state.secureLoginEnabled,
+                                onCheckedChange = onSecureLoginChange
+                            )
+                            Text(
+                                text = stringResource(R.string.login_secure_login),
+                                color = LoginColors.Label,
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontSize = if (compactLayout) 14.sp else 16.sp
+                                )
+                            )
+                        }
                         Text(
                             text = stringResource(R.string.login_forgot_password),
                             color = LoginColors.Label,
@@ -154,11 +162,7 @@ fun LoginScreen(
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
-                        text = if (showCredentialsError) {
-                            stringResource(R.string.login_credentials_error)
-                        } else {
-                            " "
-                        },
+                        text = state.errorMessage ?: " ",
                         color = LoginColors.Error,
                         style = MaterialTheme.typography.bodyLarge.copy(fontSize = 13.sp),
                         modifier = Modifier.fillMaxWidth()
@@ -166,11 +170,9 @@ fun LoginScreen(
                     Spacer(modifier = Modifier.height(if (compactLayout) 14.dp else 22.dp))
                     Button(
                         onClick = {
-                            showCredentialsError = email.isNotBlank() && password.isNotBlank() && email != password
-                            if (!showCredentialsError && email.isNotBlank() && password.isNotBlank()) {
-                                onSignInClick()
-                            }
+                            onSignInClick()
                         },
+                        enabled = !state.isLoading && state.username.isNotBlank() && state.password.isNotBlank(),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(if (compactLayout) 60.dp else 76.dp),
@@ -185,19 +187,25 @@ fun LoginScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = stringResource(R.string.login_sign_in),
+                                text = if (state.isLoading) {
+                                    stringResource(R.string.login_signing_in)
+                                } else {
+                                    stringResource(R.string.login_sign_in)
+                                },
                                 style = MaterialTheme.typography.titleLarge.copy(
                                     fontSize = if (compactLayout) 17.sp else 19.sp,
                                     fontWeight = FontWeight.Medium,
                                     letterSpacing = 1.6.sp
                                 )
                             )
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.Login,
-                                contentDescription = null,
-                                modifier = Modifier.size(if (compactLayout) 20.dp else 22.dp)
-                            )
+                            if (!state.isLoading) {
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.Login,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(if (compactLayout) 20.dp else 22.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -232,6 +240,22 @@ fun LoginScreen(
             }
         }
     }
+}
+
+@Composable
+fun LoginBiometricPrompt(
+    trigger: Int,
+    onSuccess: () -> Unit,
+    onError: (String) -> Unit
+) {
+    AuthBiometricPrompt(
+        trigger = trigger,
+        title = "Confirm secure login",
+        subtitle = "Use your fingerprint or device credential",
+        description = "FeedBook will sign in only after local authentication succeeds",
+        onSuccess = onSuccess,
+        onError = onError
+    )
 }
 
 @Composable
