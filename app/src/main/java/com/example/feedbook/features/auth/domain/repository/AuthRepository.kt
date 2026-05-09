@@ -6,6 +6,6 @@ interface AuthRepository {
     suspend fun login(
         username: String,
         password: String,
-        easyLogin: Boolean
+        secureLogin: Boolean
     ): AuthSession
 }

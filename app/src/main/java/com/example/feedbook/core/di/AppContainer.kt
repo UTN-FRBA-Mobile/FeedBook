@@ -1,7 +1,9 @@
 package com.example.feedbook.core.di
 
+import android.content.Context
 import com.example.feedbook.core.network.NetworkModule
 import com.example.feedbook.core.session.SessionManager
+import com.example.feedbook.core.session.SessionStorage
 import com.example.feedbook.features.auth.data.remote.AuthRemoteDataSource
 import com.example.feedbook.features.auth.data.repository.AuthRepositoryImpl
 import com.example.feedbook.features.auth.domain.usecase.LoginUseCase
@@ -29,11 +31,14 @@ import com.example.feedbook.features.stats.data.repository.StatsRepositoryImpl
 import com.example.feedbook.features.stats.domain.usecase.GetStatsUseCase
 import com.example.feedbook.shared.fakebackend.FakeFeedBookBackend
 
-class AppContainer {
+class AppContainer(
+    context: Context
+) {
     private val apiService = NetworkModule.apiService
     private val authApiService = NetworkModule.authApiService
     private val fakeBackend = FakeFeedBookBackend()
-    val sessionManager = SessionManager()
+    private val sessionStorage = SessionStorage(context)
+    val sessionManager = SessionManager(sessionStorage)
 
     private val authRemoteDataSource = AuthRemoteDataSource(authApiService)
     private val bookRemoteDataSource = BookRemoteDataSource(apiService)

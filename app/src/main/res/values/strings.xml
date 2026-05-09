@@ -90,6 +90,7 @@
     <string name="login_email_placeholder">reader@example.com</string>
     <string name="login_password">PASSWORD</string>
     <string name="login_password_placeholder">&#8226; &#8226; &#8226; &#8226; &#8226; &#8226; &#8226; &#8226;</string>
+    <string name="login_secure_login">Secure login</string>
     <string name="login_forgot_password">Forgot Password?</string>
     <string name="login_sign_in">SIGN IN</string>
     <string name="login_signing_in">SIGNING IN...</string>

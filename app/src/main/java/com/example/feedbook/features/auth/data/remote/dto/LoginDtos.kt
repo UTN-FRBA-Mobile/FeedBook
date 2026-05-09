@@ -7,11 +7,13 @@ data class LoginRequestDto(
     val username: String,
     @SerializedName("password")
     val password: String,
-    @SerializedName("easy_login")
-    val easyLogin: Boolean
+    @SerializedName("secure_login")
+    val secureLogin: Boolean
 )
 
 data class LoginResponseDto(
     @SerializedName("token")
-    val token: String
+    val token: String,
+    @SerializedName("exp")
+    val expiresAtEpochSeconds: Long
 )

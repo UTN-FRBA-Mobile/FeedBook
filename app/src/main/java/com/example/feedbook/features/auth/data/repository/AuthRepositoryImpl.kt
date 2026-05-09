@@ -10,18 +10,19 @@ class AuthRepositoryImpl(
     override suspend fun login(
         username: String,
         password: String,
-        easyLogin: Boolean
+        secureLogin: Boolean
     ): AuthSession {
         val response = remoteDataSource.login(
             username = username,
             password = password,
-            easyLogin = easyLogin
+            secureLogin = secureLogin
         )
 
         return AuthSession(
             username = username,
             token = response.token,
-            easyLogin = easyLogin
+            secureLogin = secureLogin,
+            expiresAtEpochSeconds = response.expiresAtEpochSeconds
         )
     }
 }

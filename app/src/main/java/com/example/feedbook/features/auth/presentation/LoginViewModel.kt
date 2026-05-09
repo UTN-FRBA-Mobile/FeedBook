@@ -15,8 +15,10 @@ import java.io.IOException
 data class LoginUiState(
     val username: String = "",
     val password: String = "",
+    val secureLoginEnabled: Boolean = false,
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val biometricPromptTrigger: Int = 0
 )
 
 class LoginViewModel(
@@ -34,7 +36,39 @@ class LoginViewModel(
         _state.value = _state.value.copy(password = password, errorMessage = null)
     }
 
+    fun updateSecureLoginEnabled(enabled: Boolean) {
+        _state.value = _state.value.copy(secureLoginEnabled = enabled, errorMessage = null)
+    }
+
     fun submitLogin(onSuccess: () -> Unit) {
+        val currentState = _state.value
+        if (currentState.username.isBlank() || currentState.password.isBlank() || currentState.isLoading) {
+            return
+        }
+
+        if (currentState.secureLoginEnabled) {
+            _state.value = currentState.copy(
+                errorMessage = null,
+                biometricPromptTrigger = currentState.biometricPromptTrigger + 1
+            )
+            return
+        }
+
+        performLogin(secureLogin = false, onSuccess = onSuccess)
+    }
+
+    fun onSecureLoginAuthenticationSucceeded(onSuccess: () -> Unit) {
+        performLogin(secureLogin = true, onSuccess = onSuccess)
+    }
+
+    fun onSecureLoginAuthenticationError(message: String) {
+        _state.value = _state.value.copy(errorMessage = message)
+    }
+
+    private fun performLogin(
+        secureLogin: Boolean,
+        onSuccess: () -> Unit
+    ) {
         val currentState = _state.value
         if (currentState.username.isBlank() || currentState.password.isBlank() || currentState.isLoading) {
             return
@@ -47,7 +81,7 @@ class LoginViewModel(
                 loginUseCase(
                     username = currentState.username,
                     password = currentState.password,
-                    easyLogin = false
+                    secureLogin = secureLogin
                 )
             }.onSuccess { session ->
                 sessionManager.updateSession(session)

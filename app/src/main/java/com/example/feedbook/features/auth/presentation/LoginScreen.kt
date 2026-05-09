@@ -25,12 +25,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Login
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -70,6 +70,7 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     onUsernameChange: (String) -> Unit = {},
     onPasswordChange: (String) -> Unit = {},
+    onSecureLoginChange: (Boolean) -> Unit = {},
     onSignInClick: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {},
     onCreateAccountClick: () -> Unit = {}
@@ -135,9 +136,23 @@ fun LoginScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = if (compactLayout) 14.dp else 20.dp),
-                        horizontalArrangement = Arrangement.End
+                            .padding(top = if (compactLayout) 10.dp else 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Checkbox(
+                                checked = state.secureLoginEnabled,
+                                onCheckedChange = onSecureLoginChange
+                            )
+                            Text(
+                                text = stringResource(R.string.login_secure_login),
+                                color = LoginColors.Label,
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontSize = if (compactLayout) 14.sp else 16.sp
+                                )
+                            )
+                        }
                         Text(
                             text = stringResource(R.string.login_forgot_password),
                             color = LoginColors.Label,
@@ -225,6 +240,22 @@ fun LoginScreen(
             }
         }
     }
+}
+
+@Composable
+fun LoginBiometricPrompt(
+    trigger: Int,
+    onSuccess: () -> Unit,
+    onError: (String) -> Unit
+) {
+    AuthBiometricPrompt(
+        trigger = trigger,
+        title = "Confirm secure login",
+        subtitle = "Use your fingerprint or device credential",
+        description = "FeedBook will sign in only after local authentication succeeds",
+        onSuccess = onSuccess,
+        onError = onError
+    )
 }
 
 @Composable

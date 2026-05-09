@@ -1,7 +1,12 @@
 package com.example.feedbook.core.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -14,6 +19,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.feedbook.FeedBookApplication
+import com.example.feedbook.features.auth.presentation.AuthBiometricPrompt
+import com.example.feedbook.features.auth.presentation.AuthGateDestination
+import com.example.feedbook.features.auth.presentation.AuthGateUiState
+import com.example.feedbook.features.auth.presentation.AuthGateViewModel
+import com.example.feedbook.features.auth.presentation.LoginBiometricPrompt
 import com.example.feedbook.features.auth.presentation.LoginScreen
 import com.example.feedbook.features.auth.presentation.LoginViewModel
 import com.example.feedbook.features.books.presentation.list.BookListScreen
@@ -36,6 +46,7 @@ import com.example.feedbook.features.stats.presentation.StatsScreen
 import com.example.feedbook.features.stats.presentation.StatsViewModel
 
 object AppRoutes {
+    const val AUTH_GATE = "authGate"
     const val LOGIN = "login"
     const val HOME = "home"
     const val PROFILE = "profile"
@@ -68,9 +79,44 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
     NavHost(
         navController = navController,
-        startDestination = AppRoutes.LOGIN,
+        startDestination = AppRoutes.AUTH_GATE,
         modifier = modifier
     ) {
+        composable(route = AppRoutes.AUTH_GATE) {
+            val viewModel: AuthGateViewModel = viewModel(
+                factory = AuthGateViewModel.provideFactory(appContainer.sessionManager)
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            AuthGateScreen(
+                state = state,
+                onBiometricSuccess = viewModel::onBiometricSuccess,
+                onBiometricError = { viewModel.onBiometricError() }
+            )
+
+            LaunchedEffect(state.destination) {
+                when (state.destination) {
+                    AuthGateDestination.HOME -> {
+                        navController.navigate(AppRoutes.HOME) {
+                            popUpTo(AppRoutes.AUTH_GATE) {
+                                inclusive = true
+                            }
+                        }
+                    }
+
+                    AuthGateDestination.LOGIN -> {
+                        navController.navigate(AppRoutes.LOGIN) {
+                            popUpTo(AppRoutes.AUTH_GATE) {
+                                inclusive = true
+                            }
+                        }
+                    }
+
+                    null -> Unit
+                }
+            }
+        }
+
         composable(route = AppRoutes.LOGIN) {
             val viewModel: LoginViewModel = viewModel(
                 factory = LoginViewModel.provideFactory(
@@ -84,6 +130,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 state = state,
                 onUsernameChange = viewModel::updateUsername,
                 onPasswordChange = viewModel::updatePassword,
+                onSecureLoginChange = viewModel::updateSecureLoginEnabled,
                 onSignInClick = {
                     viewModel.submitLogin {
                         navController.navigate(AppRoutes.HOME) {
@@ -93,6 +140,20 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                         }
                     }
                 }
+            )
+
+            LoginBiometricPrompt(
+                trigger = state.biometricPromptTrigger,
+                onSuccess = {
+                    viewModel.onSecureLoginAuthenticationSucceeded {
+                        navController.navigate(AppRoutes.HOME) {
+                            popUpTo(AppRoutes.LOGIN) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                },
+                onError = viewModel::onSecureLoginAuthenticationError
             )
         }
 
@@ -265,4 +326,29 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             )
         }
     }
+}
+
+@Composable
+private fun AuthGateScreen(
+    state: AuthGateUiState,
+    onBiometricSuccess: () -> Unit,
+    onBiometricError: () -> Unit
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        if (state.isLoading) {
+            Text(text = "Checking session...")
+        }
+    }
+
+    AuthBiometricPrompt(
+        trigger = state.biometricPromptTrigger,
+        title = "Unlock FeedBook",
+        subtitle = "Secure login requires local authentication",
+        description = "Use your fingerprint or device credential to open your saved session",
+        onSuccess = onBiometricSuccess,
+        onError = { onBiometricError() }
+    )
 }

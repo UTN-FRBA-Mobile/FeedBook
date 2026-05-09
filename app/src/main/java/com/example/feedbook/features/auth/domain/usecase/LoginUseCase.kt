@@ -9,10 +9,10 @@ class LoginUseCase(
     suspend operator fun invoke(
         username: String,
         password: String,
-        easyLogin: Boolean
+        secureLogin: Boolean
     ): AuthSession = repository.login(
         username = username,
         password = password,
-        easyLogin = easyLogin
+        secureLogin = secureLogin
     )
 }

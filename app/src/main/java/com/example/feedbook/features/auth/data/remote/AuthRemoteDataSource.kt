@@ -10,12 +10,12 @@ class AuthRemoteDataSource(
     suspend fun login(
         username: String,
         password: String,
-        easyLogin: Boolean
+        secureLogin: Boolean
     ): LoginResponseDto = authApiService.login(
         LoginRequestDto(
             username = username,
             password = password,
-            easyLogin = easyLogin
+            secureLogin = secureLogin
         )
     )
 }
