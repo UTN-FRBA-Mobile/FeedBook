@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.feedbook.FeedBookApplication
+import com.example.feedbook.features.auth.presentation.LoginScreen
 import com.example.feedbook.features.books.presentation.list.BookListScreen
 import com.example.feedbook.features.books.presentation.list.BookListViewModel
 import com.example.feedbook.features.books.presentation.detail.BookDetailScreen
@@ -28,6 +29,7 @@ import com.example.feedbook.features.stats.presentation.StatsScreen
 import com.example.feedbook.features.stats.presentation.StatsViewModel
 
 object AppRoutes {
+    const val LOGIN = "login"
     const val PROFILE = "profile"
     const val EDIT_PROFILE = "editProfile"
     const val PUBLIC_PROFILE = "publicProfile"
@@ -47,9 +49,15 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
     NavHost(
         navController = navController,
-        startDestination = AppRoutes.PROFILE,
+        startDestination = AppRoutes.LOGIN,
         modifier = modifier
     ) {
+        composable(route = AppRoutes.LOGIN) {
+            LoginScreen(
+                onSignInClick = { navController.navigate(AppRoutes.PROFILE) }
+            )
+        }
+
         composable(route = AppRoutes.PROFILE) {
             val viewModel: ProfileViewModel = viewModel(
                 factory = ProfileViewModel.provideFactory(appContainer.observeOwnProfileUseCase)
