@@ -85,4 +85,14 @@
     <string name="notification_reviewed_book">%1$s hizo una reseña sobre un libro.</string>
     <string name="notification_liked_your_review">A %1$s le gustó tu reseña.</string>
     <string name="notification_saved_your_book">%1$s guardó uno de tus libros en su lista.</string>
+    <string name="login_email_address">EMAIL ADDRESS</string>
+    <string name="login_email_placeholder">reader@example.com</string>
+    <string name="login_password">PASSWORD</string>
+    <string name="login_password_placeholder">&#8226; &#8226; &#8226; &#8226; &#8226; &#8226; &#8226; &#8226;</string>
+    <string name="login_forgot_password">Forgot Password?</string>
+    <string name="login_sign_in">SIGN IN</string>
+    <string name="login_credentials_error">Invalid user or password</string>
+    <string name="login_tagline">THE BIBLIOPHILE\'S LEDGER</string>
+    <string name="login_create_prompt">Don\'t have an account?</string>
+    <string name="login_create_account">CREATE ACCOUNT</string>
 </resources>
