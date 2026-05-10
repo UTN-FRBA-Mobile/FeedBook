@@ -16,7 +16,7 @@ object NetworkModule {
     private val authRetrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BuildConfig.AUTH_BASE_URL)
-            .client(ApiClient.createOkHttpClient())
+            .client(ApiClient.createOkHttpClient(useSystemProxy = false))
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
