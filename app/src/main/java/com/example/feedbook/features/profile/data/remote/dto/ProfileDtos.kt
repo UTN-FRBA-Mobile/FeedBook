@@ -5,6 +5,7 @@ data class ProfileDto(
     val handle: String,
     val quote: String,
     val avatar: AvatarDto,
+    val availableAvatarPresets: List<AvatarPresetDto>,
     val readingGoal: ReadingGoalDto?,
     val readingStreak: ReadingStreakDto,
     val currentBook: CurrentBookDto,
@@ -18,7 +19,16 @@ data class ProfileDto(
 data class AvatarDto(
     val topColorHex: Long,
     val bottomColorHex: Long,
+    val avatarPresetId: String?,
+    val presetImageUrl: String?,
     val imageUri: String?
+)
+
+data class AvatarPresetDto(
+    val id: String,
+    val topColorHex: Long,
+    val bottomColorHex: Long,
+    val imageUrl: String?
 )
 
 data class ReadingGoalDto(
@@ -45,12 +55,13 @@ data class CurrentBookDto(
     val page: Int,
     val totalPages: Int,
     val progress: Float,
-    val coverAccentHex: Long
+    val coverImageUrl: String?
 )
 
 data class QueuedBookDto(
     val title: String,
-    val author: String
+    val author: String,
+    val coverImageUrl: String? = null
 )
 
 data class ProfileStatDto(
@@ -60,7 +71,7 @@ data class ProfileStatDto(
 
 data class LibraryBookDto(
     val title: String,
-    val accentHex: Long
+    val coverImageUrl: String?
 )
 
 data class FeaturedReviewDto(
@@ -68,7 +79,7 @@ data class FeaturedReviewDto(
     val rating: Int,
     val timeAgo: String,
     val excerpt: String,
-    val accentHex: Long
+    val coverImageUrl: String?
 )
 
 data class UpdateProfileRequestDto(
@@ -77,6 +88,7 @@ data class UpdateProfileRequestDto(
     val quote: String,
     val avatarTopColorHex: Long,
     val avatarBottomColorHex: Long,
+    val avatarPresetId: String?,
     val avatarImageUri: String?,
     val targetPagesPerDay: Int?
 )

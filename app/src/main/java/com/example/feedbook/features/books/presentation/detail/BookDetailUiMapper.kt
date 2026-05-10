@@ -1,0 +1,46 @@
+package com.example.feedbook.features.books.presentation.detail
+
+import com.example.feedbook.features.books.domain.model.Book
+import com.example.feedbook.features.books.domain.model.ReadingProgress
+import com.example.feedbook.features.books.domain.model.Review
+
+fun Book.toUiModel() = BookUiModel(
+    id = id,
+    title = title,
+    author = author,
+    description = description,
+    coverImageUrl = coverImageUrl,
+    published = published,
+    isbn = isbn,
+    genre = genre,
+    pages = pages,
+    language = language
+)
+
+fun Review.toUiModel() = ReviewUiModel(
+    id = id,
+    reviewerName = reviewerName,
+    reviewerAvatar = reviewerAvatar,
+    rating = rating,
+    ratingText = "%.1f ★".format(rating),
+    text = text,
+    likes = likes,
+    likesText = if (likes == 1) "1 like" else "$likes likes",
+    createdAt = createdAt
+)
+
+fun ReadingProgress.toUiModel() = ReadingProgressUiModel(
+    percentage = if (totalPages > 0) {
+        ((currentPage.toFloat() / totalPages) * 100).toInt()
+    } else {
+        0
+    },
+    progressText = if (totalPages > 0) {
+        "${((currentPage.toFloat() / totalPages) * 100).toInt()}% completado"
+    } else {
+        "0% completado"
+    },
+    currentPage = currentPage,
+    totalPages = totalPages,
+    pagesText = "Página $currentPage de $totalPages"
+)

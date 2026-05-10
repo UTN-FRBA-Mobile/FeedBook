@@ -1,0 +1,49 @@
+package com.example.feedbook.features.books.presentation.detail
+
+import com.example.feedbook.features.profile.presentation.AvatarPreset
+import com.example.feedbook.features.profile.presentation.AvatarStyle
+import com.example.feedbook.features.profile.presentation.defaultAvatarStyle
+
+data class BookDetailUiState(
+    val isLoading: Boolean = false,
+    val error: String? = null,
+    val book: BookUiModel? = null,
+    val reviews: List<ReviewUiModel> = emptyList(),
+    val readingProgress: ReadingProgressUiModel? = null,
+    val avatarStyle: AvatarStyle = defaultAvatarStyle(),
+    val avatarPreset: AvatarPreset? = null,
+    val avatarImageUri: String? = null
+)
+
+data class BookUiModel(
+    val id: String,
+    val pages: Int,
+    val language: String,
+    val published: String,
+    val genre: String,
+    val isbn: String,
+    val title: String,
+    val author: String,
+    val description: String,
+    val coverImageUrl: String?
+)
+
+data class ReviewUiModel(
+    val id: String,
+    val reviewerName: String,
+    val reviewerAvatar: String?,
+    val rating: Float,
+    val ratingText: String,
+    val text: String,
+    val likes: Int,
+    val likesText: String,
+    val createdAt: String
+)
+
+data class ReadingProgressUiModel(
+    val percentage: Int,
+    val progressText: String,
+    val currentPage: Int,
+    val totalPages: Int,
+    val pagesText: String
+)

@@ -11,14 +11,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -39,9 +37,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.feedbook.R
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
 import com.example.feedbook.features.profile.presentation.components.ProfileSurfaceCard
@@ -49,13 +49,6 @@ import com.example.feedbook.features.profile.presentation.components.ProfileTopB
 import com.example.feedbook.features.profile.presentation.components.ProfileTopBarActionIcon
 import com.example.feedbook.features.profile.presentation.components.ProfileTypography
 import com.example.feedbook.features.profile.presentation.components.ProfileAvatarArtwork
-
-private val avatarPresets = listOf(
-    AvatarStyle(Color(0xFF315A73), Color(0xFFF0C6A8)),
-    AvatarStyle(Color(0xFF5C6D8A), Color(0xFFD8C1A0)),
-    AvatarStyle(Color(0xFF6E918B), Color(0xFFE8D7BF)),
-    AvatarStyle(Color(0xFF8A5C52), Color(0xFFF1D4B5))
-)
 
 @Composable
 fun EditProfileScreen(
@@ -71,8 +64,9 @@ fun EditProfileScreen(
     var targetPagesInput by remember(state.readingGoal?.targetPagesPerDay) {
         mutableStateOf(state.readingGoal?.targetPagesPerDay?.toString().orEmpty())
     }
-    var selectedAvatarStyle by remember(state.avatarStyle) { mutableStateOf(state.avatarStyle) }
+    var selectedAvatarPreset by remember(state.avatarPreset) { mutableStateOf(state.avatarPreset) }
     var selectedAvatarImageUri by remember(state.avatarImageUri) { mutableStateOf(state.avatarImageUri) }
+    val selectedAvatarStyle = selectedAvatarPreset?.style ?: state.avatarStyle
     val fieldColors = OutlinedTextFieldDefaults.colors(
         focusedTextColor = ProfileColors.PrimaryText,
         unfocusedTextColor = ProfileColors.PrimaryText,
@@ -108,6 +102,7 @@ fun EditProfileScreen(
             handle = handle.trim().ifEmpty { state.handle },
             quote = quote.trim().ifEmpty { state.quote },
             avatarStyle = selectedAvatarStyle,
+            avatarPreset = selectedAvatarPreset,
             avatarImageUri = selectedAvatarImageUri,
             readingGoal = readingGoal
         )
@@ -120,13 +115,14 @@ fun EditProfileScreen(
             ProfileTopBar(
                 variant = state.variant,
                 avatarStyle = selectedAvatarStyle,
+                avatarPreset = selectedAvatarPreset,
                 avatarImageUri = selectedAvatarImageUri,
-                title = "Edit Profile",
+                title = stringResource(R.string.edit_profile_title),
                 onAvatarClick = onProfileClick,
                 trailingContent = { iconSize ->
                     ProfileTopBarActionIcon(
                         imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = stringResource(R.string.edit_profile_back),
                         iconSize = iconSize,
                         onClick = onBackClick
                     )
@@ -146,7 +142,7 @@ fun EditProfileScreen(
                 ProfileSurfaceCard(modifier = Modifier.fillMaxWidth()) {
                     Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
                         Text(
-                            text = "Basic Details",
+                            text = stringResource(R.string.edit_profile_basic_details),
                             style = ProfileTypography.SectionTitle,
                             color = ProfileColors.PrimaryText
                         )
@@ -154,8 +150,8 @@ fun EditProfileScreen(
                             value = name,
                             onValueChange = { name = it },
                             modifier = Modifier.fillMaxWidth(),
-                            label = { Text("Name") },
-                            placeholder = { Text("Evelyn Vance") },
+                            label = { Text(stringResource(R.string.edit_profile_name_label)) },
+                            placeholder = { Text(stringResource(R.string.edit_profile_name_placeholder)) },
                             colors = fieldColors,
                             singleLine = true
                         )
@@ -168,8 +164,8 @@ fun EditProfileScreen(
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            label = { Text("Handle") },
-                            placeholder = { Text("@evelynv") },
+                            label = { Text(stringResource(R.string.edit_profile_handle_label)) },
+                            placeholder = { Text(stringResource(R.string.edit_profile_handle_placeholder)) },
                             colors = fieldColors,
                             singleLine = true
                         )
@@ -177,8 +173,8 @@ fun EditProfileScreen(
                             value = quote,
                             onValueChange = { quote = it },
                             modifier = Modifier.fillMaxWidth(),
-                            label = { Text("Bio / Quote") },
-                            placeholder = { Text("Write a short line about your reading taste") },
+                            label = { Text(stringResource(R.string.edit_profile_bio_label)) },
+                            placeholder = { Text(stringResource(R.string.edit_profile_bio_placeholder)) },
                             colors = fieldColors,
                             minLines = 4
                         )
@@ -190,47 +186,35 @@ fun EditProfileScreen(
                 ProfileSurfaceCard(modifier = Modifier.fillMaxWidth()) {
                     Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
                         Text(
-                            text = "Avatar Style",
+                            text = stringResource(R.string.edit_profile_avatar_title),
                             style = ProfileTypography.SectionTitle,
                             color = ProfileColors.PrimaryText
                         )
                         Text(
-                            text = "Pick the palette used by your profile mark.",
+                            text = stringResource(R.string.edit_profile_avatar_body),
                             style = ProfileTypography.Body,
                             color = ProfileColors.SecondaryText
                         )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            avatarPresets.forEach { preset ->
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(72.dp)
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .background(
-                                            Brush.verticalGradient(
-                                                listOf(preset.topColor, preset.bottomColor)
-                                            )
-                                        )
-                                        .border(
-                                            width = if (preset == selectedAvatarStyle) 2.dp else 1.dp,
-                                            color = if (preset == selectedAvatarStyle && selectedAvatarImageUri == null) ProfileColors.SurfaceStrong else ProfileColors.Border,
-                                            shape = RoundedCornerShape(12.dp)
-                                        )
-                                        .clickable {
-                                            selectedAvatarStyle = preset
-                                            selectedAvatarImageUri = null
-                                        },
-                                    contentAlignment = Alignment.Center
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            state.availableAvatarPresets.chunked(3).forEach { rowPresets ->
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(26.dp)
-                                            .clip(CircleShape)
-                                            .background(Color.White.copy(alpha = 0.22f))
-                                    )
+                                    rowPresets.forEach { preset ->
+                                        AvatarPresetCard(
+                                            preset = preset,
+                                            selected = preset == selectedAvatarPreset && selectedAvatarImageUri == null,
+                                            onClick = {
+                                                selectedAvatarPreset = preset
+                                                selectedAvatarImageUri = null
+                                            },
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
+                                    repeat(3 - rowPresets.size) {
+                                        Box(modifier = Modifier.weight(1f))
+                                    }
                                 }
                             }
                         }
@@ -264,11 +248,12 @@ fun EditProfileScreen(
                                 ) {
                                     ProfileAvatarArtwork(
                                         avatarStyle = selectedAvatarStyle,
+                                        avatarPreset = selectedAvatarPreset,
                                         avatarImageUri = selectedAvatarImageUri,
                                         modifier = Modifier.fillMaxSize(),
                                         fallbackContent = {
                                             Text(
-                                                text = "EV",
+                                                text = stringResource(R.string.edit_profile_avatar_initials),
                                                 style = ProfileTypography.LabelUppercase,
                                                 color = ProfileColors.Accent
                                             )
@@ -280,15 +265,15 @@ fun EditProfileScreen(
                                     verticalArrangement = Arrangement.spacedBy(4.dp)
                                 ) {
                                     Text(
-                                        text = "Custom photo",
+                                        text = stringResource(R.string.edit_profile_avatar_custom_title),
                                         style = ProfileTypography.Body.copy(fontWeight = FontWeight.SemiBold),
                                         color = ProfileColors.PrimaryText
                                     )
                                     Text(
                                         text = if (selectedAvatarImageUri == null) {
-                                            "Choose an image from your device"
+                                            stringResource(R.string.edit_profile_avatar_custom_empty)
                                         } else {
-                                            "Photo selected. Tap to replace it."
+                                            stringResource(R.string.edit_profile_avatar_custom_selected)
                                         },
                                         style = ProfileTypography.Label,
                                         color = ProfileColors.SecondaryText
@@ -304,12 +289,12 @@ fun EditProfileScreen(
                 ProfileSurfaceCard(modifier = Modifier.fillMaxWidth()) {
                     Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
                         Text(
-                            text = "Reading Goal",
+                            text = stringResource(R.string.edit_profile_goal_title),
                             style = ProfileTypography.SectionTitle,
                             color = ProfileColors.PrimaryText
                         )
                         Text(
-                            text = "Leave target empty if you do not want a daily goal on your profile.",
+                            text = stringResource(R.string.edit_profile_goal_body),
                             style = ProfileTypography.Body,
                             color = ProfileColors.SecondaryText
                         )
@@ -317,17 +302,17 @@ fun EditProfileScreen(
                             value = targetPagesInput,
                             onValueChange = { targetPagesInput = it.filter(Char::isDigit).take(3) },
                             modifier = Modifier.fillMaxWidth(),
-                            label = { Text("Daily target pages") },
-                            placeholder = { Text("40") },
+                            label = { Text(stringResource(R.string.edit_profile_goal_label)) },
+                            placeholder = { Text(stringResource(R.string.edit_profile_goal_placeholder)) },
                             colors = fieldColors,
                             singleLine = true
                         )
                         HorizontalDivider(color = ProfileColors.Divider)
                         Text(
                             text = if (targetPagesInput.isBlank()) {
-                                "No reading goal will be shown."
+                                stringResource(R.string.edit_profile_goal_empty_hint)
                             } else {
-                                "The profile card will compare your current pace against this daily target."
+                                stringResource(R.string.edit_profile_goal_filled_hint)
                             },
                             style = ProfileTypography.Label,
                             color = ProfileColors.SecondaryText
@@ -348,11 +333,57 @@ fun EditProfileScreen(
                         .height(48.dp)
                 ) {
                     Text(
-                        text = "SAVE CHANGES",
+                        text = stringResource(R.string.edit_profile_save),
                         style = ProfileTypography.Button.copy(fontWeight = FontWeight.SemiBold)
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun AvatarPresetCard(
+    preset: AvatarPreset,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .height(96.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .background(
+                Brush.verticalGradient(
+                    listOf(preset.style.topColor, preset.style.bottomColor)
+                )
+            )
+            .border(
+                width = if (selected) 2.dp else 1.dp,
+                color = if (selected) ProfileColors.SurfaceStrong else ProfileColors.Border,
+                shape = RoundedCornerShape(14.dp)
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 8.dp, vertical = 10.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            ProfileAvatarArtwork(
+                avatarStyle = preset.style,
+                avatarPreset = preset,
+                avatarImageUri = null,
+                modifier = Modifier
+                    .size(42.dp)
+                    .clip(RoundedCornerShape(14.dp))
+            )
+            Text(
+                text = stringResource(preset.labelRes),
+                style = ProfileTypography.Label.copy(fontWeight = FontWeight.SemiBold),
+                color = Color.White
+            )
         }
     }
 }
@@ -362,7 +393,7 @@ fun EditProfileScreen(
 private fun EditProfileScreenPreview() {
     FeedBookTheme(dynamicColor = false) {
         EditProfileScreen(
-            state = sampleProfileUiState(),
+            state = previewOwnProfileUiState(),
             onBackClick = {},
             onProfileClick = {},
             onSave = {}

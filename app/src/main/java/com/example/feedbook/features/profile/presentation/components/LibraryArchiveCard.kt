@@ -1,6 +1,7 @@
 package com.example.feedbook.features.profile.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,11 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.feedbook.R
 
 @Composable
 internal fun LibraryArchiveCard(
     completedBooks: Int,
+    onViewCollectionClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     ProfileSurfaceCard(
@@ -37,7 +41,7 @@ internal fun LibraryArchiveCard(
         )
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(
-                text = "LIBRARY ARCHIVE",
+                text = stringResource(R.string.profile_library_archive),
                 style = ProfileTypography.LabelUppercase,
                 color = ProfileColors.ArchiveText
             )
@@ -51,24 +55,26 @@ internal fun LibraryArchiveCard(
                     color = Color.White
                 )
                 Text(
-                    text = "Books completed",
+                    text = stringResource(R.string.profile_library_archive_completed),
                     style = ProfileTypography.Body,
                     color = ProfileColors.ArchiveText
                 )
             }
             HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onViewCollectionClick),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "View Collection",
+                    text = stringResource(R.string.profile_library_archive_view_collection),
                     style = ProfileTypography.Label,
                     color = Color.White
                 )
                 Text(
-                    text = "\u2192",
+                    text = stringResource(R.string.profile_library_archive_arrow),
                     style = ProfileTypography.Body,
                     color = Color.White
                 )

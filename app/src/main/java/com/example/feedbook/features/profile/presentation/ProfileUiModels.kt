@@ -1,15 +1,18 @@
 package com.example.feedbook.features.profile.presentation
 
 import androidx.compose.ui.graphics.Color
+import com.example.feedbook.R
 
 data class ProfileUiState(
     val variant: ProfileVariant,
     val name: String,
     val handle: String,
     val quote: String,
-    val actionLabel: String,
+    val actionLabelRes: Int,
     val avatarStyle: AvatarStyle,
+    val avatarPreset: AvatarPreset?,
     val avatarImageUri: String?,
+    val availableAvatarPresets: List<AvatarPreset>,
     val readingGoal: ReadingGoal?,
     val readingStreak: ReadingStreak,
     val currentBook: CurrentBook,
@@ -17,7 +20,9 @@ data class ProfileUiState(
     val completedBooks: Int,
     val profileStats: List<ProfileStat>,
     val publicLibrary: List<LibraryBook>,
-    val featuredReviews: List<FeaturedReview>
+    val featuredReviews: List<FeaturedReview>,
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null
 )
 
 enum class ProfileVariant {
@@ -44,12 +49,13 @@ data class CurrentBook(
     val page: Int,
     val totalPages: Int,
     val progress: Float,
-    val coverAccent: Color
+    val coverImageUrl: String?
 )
 
 data class QueuedBook(
     val title: String,
-    val author: String
+    val author: String,
+    val coverImageUrl: String?
 )
 
 data class ProfileStat(
@@ -59,7 +65,7 @@ data class ProfileStat(
 
 data class LibraryBook(
     val title: String,
-    val accent: Color
+    val coverImageUrl: String?
 )
 
 data class FeaturedReview(
@@ -67,7 +73,7 @@ data class FeaturedReview(
     val rating: Int,
     val timeAgo: String,
     val excerpt: String,
-    val accent: Color
+    val coverImageUrl: String?
 )
 
 data class ReadingGoal(
@@ -80,149 +86,71 @@ data class AvatarStyle(
     val bottomColor: Color
 )
 
-fun sampleProfileUiState(): ProfileUiState = ProfileUiState(
-    variant = ProfileVariant.OWN,
-    name = "Evelyn Vance",
-    handle = "@evelynv",
-    quote = "\"Reading is a conversation. All books talk. But a good book listens as well.\"",
-    actionLabel = "EDIT PROFILE",
-    avatarStyle = AvatarStyle(
-        topColor = Color(0xFF315A73),
-        bottomColor = Color(0xFFF0C6A8)
-    ),
-    avatarImageUri = null,
-    readingGoal = ReadingGoal(
-        targetPagesPerDay = 40,
-        currentAveragePagesPerDay = 28
-    ),
-    readingStreak = ReadingStreak(
-        days = 5,
-        week = listOf(
-            StreakDay(label = "M", fillFraction = 0.18f),
-            StreakDay(label = "T", fillFraction = 0.72f, completed = true),
-            StreakDay(label = "W", fillFraction = 1f, completed = true),
-            StreakDay(label = "T", fillFraction = 0.48f, completed = true),
-            StreakDay(label = "F", fillFraction = 1f, completed = true),
-            StreakDay(label = "S", fillFraction = 0.88f, completed = true),
-            StreakDay(label = "S", fillFraction = 0f, isToday = true)
-        )
-    ),
-    currentBook = CurrentBook(
-        id = "1",
-        title = "The Secret History",
-        author = "Donna Tartt",
-        page = 248,
-        totalPages = 559,
-        progress = 0.44f,
-        coverAccent = Color(0xFF6E918B)
-    ),
-    upNextBooks = listOf(
-        QueuedBook("Foucault's Pendulum", "Umberto Eco"),
-        QueuedBook("The Shadow of the Wind", "Carlos Ruiz Zafon"),
-        QueuedBook("If on a winter's night a traveler", "Italo Calvino")
-    ),
-    completedBooks = 142,
-    profileStats = listOf(
-        ProfileStat(label = "Books read", value = "142"),
-        ProfileStat(label = "This year", value = "19")
-    ),
-    publicLibrary = listOf(
-        LibraryBook("The Secret History", Color(0xFF6E918B)),
-        LibraryBook("Ficciones", Color(0xFF8C6B5A)),
-        LibraryBook("Never Let Me Go", Color(0xFF536E8A)),
-        LibraryBook("Beloved", Color(0xFF82645A)),
-        LibraryBook("Pale Fire", Color(0xFF627A92)),
-        LibraryBook("The Waves", Color(0xFF6C8A80))
-    ),
-    featuredReviews = listOf(
-        FeaturedReview(
-            bookTitle = "The Secret History",
-            rating = 5,
-            timeAgo = "2d ago",
-            excerpt = "\"A novel built on obsession, elitism and silence. Tartt makes every scene feel both intimate and dangerous.\"",
-            accent = Color(0xFF6E918B)
-        ),
-        FeaturedReview(
-            bookTitle = "Beloved",
-            rating = 5,
-            timeAgo = "1w ago",
-            excerpt = "\"Morrison writes memory like weather. Every return to this novel feels heavier and more precise.\"",
-            accent = Color(0xFF82645A)
-        )
-    )
+data class AvatarPreset(
+    val id: String,
+    val labelRes: Int,
+    val style: AvatarStyle,
+    val imageUrl: String?
 )
 
-fun samplePublicProfileUiState(): ProfileUiState = ProfileUiState(
-    variant = ProfileVariant.PUBLIC,
-    name = "Julian Thorne",
-    handle = "@julianthorne",
-    quote = "\"I collect stories that feel like half-remembered dreams and impossible cities.\"",
-    actionLabel = "FOLLOW",
-    avatarStyle = AvatarStyle(
-        topColor = Color(0xFF48627B),
-        bottomColor = Color(0xFFE1B996)
-    ),
+private val avatarPresetLabels = mapOf(
+    "vampire" to R.string.avatar_preset_vampire,
+    "werewolf" to R.string.avatar_preset_werewolf,
+    "witch" to R.string.avatar_preset_witch,
+    "wizard" to R.string.avatar_preset_wizard,
+    "harry_potter" to R.string.avatar_preset_harry_potter,
+    "astronaut" to R.string.avatar_preset_astronaut,
+    "grim_reaper" to R.string.avatar_preset_grim_reaper,
+    "fairy" to R.string.avatar_preset_fairy,
+    "pirate" to R.string.avatar_preset_pirate,
+    "princess" to R.string.avatar_preset_princess,
+    "king" to R.string.avatar_preset_king,
+    "ghost" to R.string.avatar_preset_ghost
+)
+
+fun avatarPresetFromData(
+    id: String?,
+    style: AvatarStyle,
+    imageUrl: String?
+): AvatarPreset? {
+    val labelRes = id?.let(avatarPresetLabels::get) ?: return null
+    return AvatarPreset(
+        id = id,
+        labelRes = labelRes,
+        style = style,
+        imageUrl = imageUrl
+    )
+}
+
+fun defaultAvatarStyle(): AvatarStyle = AvatarStyle(
+    topColor = Color(0xFF315A73),
+    bottomColor = Color(0xFFF0C6A8)
+)
+
+fun emptyProfileUiState(variant: ProfileVariant): ProfileUiState = ProfileUiState(
+    variant = variant,
+    name = "",
+    handle = "",
+    quote = "",
+    actionLabelRes = if (variant == ProfileVariant.OWN) R.string.profile_action_edit else R.string.profile_action_follow,
+    avatarStyle = defaultAvatarStyle(),
+    avatarPreset = null,
     avatarImageUri = null,
+    availableAvatarPresets = emptyList(),
     readingGoal = null,
-    readingStreak = ReadingStreak(
-        days = 0,
-        week = listOf(
-            StreakDay(label = "M", fillFraction = 0f),
-            StreakDay(label = "T", fillFraction = 0f),
-            StreakDay(label = "W", fillFraction = 0f),
-            StreakDay(label = "T", fillFraction = 0f),
-            StreakDay(label = "F", fillFraction = 0f),
-            StreakDay(label = "S", fillFraction = 0f),
-            StreakDay(label = "S", fillFraction = 0f, isToday = true)
-        )
-    ),
+    readingStreak = ReadingStreak(days = 0, week = emptyList()),
     currentBook = CurrentBook(
-        id = "2",
-        title = "The Name of the Rose",
-        author = "Umberto Eco",
-        page = 312,
-        totalPages = 512,
-        progress = 0.61f,
-        coverAccent = Color(0xFF56728A)
+        id = "",
+        title = "",
+        author = "",
+        page = 0,
+        totalPages = 0,
+        progress = 0f,
+        coverImageUrl = null
     ),
     upNextBooks = emptyList(),
-    completedBooks = 58,
-    profileStats = listOf(
-        ProfileStat(label = "Reviews", value = "128"),
-        ProfileStat(label = "Followers", value = "2.4K")
-    ),
-    publicLibrary = listOf(
-        LibraryBook("One Hundred Years of Solitude", Color(0xFF9A7B5A)),
-        LibraryBook("The Shadow of the Wind", Color(0xFF5C6D8A)),
-        LibraryBook("Ficciones", Color(0xFF6A8474)),
-        LibraryBook("Invisible Cities", Color(0xFF967E66)),
-        LibraryBook("Austerlitz", Color(0xFF7A8798)),
-        LibraryBook("If on a winter's night a traveler", Color(0xFF8A6B58)),
-        LibraryBook("The Left Hand of Darkness", Color(0xFF5D7287)),
-        LibraryBook("Pedro Paramo", Color(0xFF7B6A61)),
-        LibraryBook("The Master and Margarita", Color(0xFF5F7F74))
-    ),
-    featuredReviews = listOf(
-        FeaturedReview(
-            bookTitle = "The Name of the Rose",
-            rating = 5,
-            timeAgo = "4h ago",
-            excerpt = "\"A profound meditation on destiny. The novel keeps its labyrinth open long after the final page.\"",
-            accent = Color(0xFF56728A)
-        ),
-        FeaturedReview(
-            bookTitle = "Invisible Cities",
-            rating = 4,
-            timeAgo = "3d ago",
-            excerpt = "\"Calvino turns urban imagination into something light and exact. Every fragment expands after you finish it.\"",
-            accent = Color(0xFF967E66)
-        ),
-        FeaturedReview(
-            bookTitle = "Austerlitz",
-            rating = 5,
-            timeAgo = "1w ago",
-            excerpt = "\"A quiet, relentless novel. Sebald makes memory feel architectural, fragile and impossible to escape.\"",
-            accent = Color(0xFF7A8798)
-        )
-    )
+    completedBooks = 0,
+    profileStats = emptyList(),
+    publicLibrary = emptyList(),
+    featuredReviews = emptyList()
 )

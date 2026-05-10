@@ -5,6 +5,7 @@ data class ReaderProfile(
     val handle: String,
     val quote: String,
     val avatar: AvatarInfo,
+    val availableAvatarPresets: List<AvatarPresetInfo>,
     val readingGoal: ReadingGoal?,
     val readingStreak: ReadingStreak,
     val currentBook: CurrentBook,
@@ -18,7 +19,16 @@ data class ReaderProfile(
 data class AvatarInfo(
     val topColorHex: Long,
     val bottomColorHex: Long,
+    val avatarPresetId: String?,
+    val presetImageUrl: String?,
     val imageUri: String?
+)
+
+data class AvatarPresetInfo(
+    val id: String,
+    val topColorHex: Long,
+    val bottomColorHex: Long,
+    val imageUrl: String?
 )
 
 data class ReadingGoal(
@@ -45,12 +55,13 @@ data class CurrentBook(
     val page: Int,
     val totalPages: Int,
     val progress: Float,
-    val coverAccentHex: Long
+    val coverImageUrl: String?
 )
 
 data class QueuedBook(
     val title: String,
-    val author: String
+    val author: String,
+    val coverImageUrl: String?
 )
 
 data class ProfileStat(
@@ -60,7 +71,7 @@ data class ProfileStat(
 
 data class LibraryBook(
     val title: String,
-    val accentHex: Long
+    val coverImageUrl: String?
 )
 
 data class FeaturedReview(
@@ -68,7 +79,7 @@ data class FeaturedReview(
     val rating: Int,
     val timeAgo: String,
     val excerpt: String,
-    val accentHex: Long
+    val coverImageUrl: String?
 )
 
 data class UpdateProfileCommand(
@@ -77,6 +88,7 @@ data class UpdateProfileCommand(
     val quote: String,
     val avatarTopColorHex: Long,
     val avatarBottomColorHex: Long,
+    val avatarPresetId: String?,
     val avatarImageUri: String?,
     val targetPagesPerDay: Int?
 )

@@ -28,7 +28,7 @@ fun BookListScreen(
 ) {
     val viewModel: BookListViewModel = viewModel(factory = viewModelFactory)
     val state by viewModel.state.collectAsStateWithLifecycle()
-    
+
     BookListContent(
         state = state,
         onBookClick = onBookClick,
@@ -53,14 +53,14 @@ fun BookListContent(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = { TopAppBar(title = { Text("Biblioteca remota") }) },
+        topBar = { TopAppBar(title = { Text("Remote Library") }) },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
         when {
             state.isLoading -> {
                 LoadingScreen(
                     modifier = Modifier.padding(innerPadding),
-                    message = "Consultando el backend..."
+                    message = "Fetching books from the backend..."
                 )
             }
 
@@ -106,7 +106,7 @@ private fun EmptyBookList(
         contentAlignment = Alignment.Center
     ) {
         Button(onClick = onRetry) {
-            Text("Reintentar carga")
+            Text("Retry")
         }
     }
 }
@@ -115,8 +115,30 @@ private fun EmptyBookList(
 @Composable
 fun BookListContentPreview() {
     val mockBooks = listOf(
-        Book("1", "The Great Gatsby", "F. Scott Fitzgerald", "A story of wealth and love"),
-        Book("2", "1984", "George Orwell", "A dystopian future")
+        Book(
+            "1",
+            "The Great Gatsby",
+            "F. Scott Fitzgerald",
+            "A story of wealth and love",
+            coverImageUrl = null,
+            isbn = "9788445015407",
+            language = "English",
+            genre = "Suspense",
+            pages = 512,
+            published = "March 27, 1921"
+        ),
+        Book(
+            "2",
+            "1984",
+            "George Orwell",
+            "A dystopian future",
+            coverImageUrl = null,
+            isbn = "9788445015207",
+            language = "English",
+            genre = "Suspense",
+            pages = 212,
+            published = "March 27, 1925"
+        )
     )
     BookListContent(
         state = BookListState(books = mockBooks),

@@ -6,16 +6,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.feedbook.FeedBookApplication
+import com.example.feedbook.features.auth.presentation.LoginScreen
 import com.example.feedbook.features.books.presentation.list.BookListScreen
 import com.example.feedbook.features.books.presentation.list.BookListViewModel
 import com.example.feedbook.features.books.presentation.detail.BookDetailScreen
 import com.example.feedbook.features.books.presentation.detail.BookDetailViewModel
+import com.example.feedbook.features.library.presentation.LibraryScreen
+import com.example.feedbook.features.library.presentation.LibraryViewModel
 import com.example.feedbook.features.notifications.presentation.NotificationsScreen
 import com.example.feedbook.features.notifications.presentation.NotificationsViewModel
 import com.example.feedbook.features.profile.presentation.EditProfileScreen
@@ -28,16 +33,28 @@ import com.example.feedbook.features.stats.presentation.StatsScreen
 import com.example.feedbook.features.stats.presentation.StatsViewModel
 
 object AppRoutes {
+    const val LOGIN = "login"
     const val PROFILE = "profile"
     const val EDIT_PROFILE = "editProfile"
     const val PUBLIC_PROFILE = "publicProfile"
     const val PUBLIC_PROFILE_PREVIEW = "publicProfilePreview"
+    const val LIBRARY = "library"
     const val STATS = "stats"
     const val NOTIFICATIONS = "notifications"
     const val BOOKS = "books"
     const val BOOK_DETAIL = "bookDetail/{bookId}"
 
     fun detail(bookId: String): String = "bookDetail/$bookId"
+}
+
+private fun NavHostController.navigateTopLevel(route: String) {
+    navigate(route) {
+        launchSingleTop = true
+        restoreState = true
+        popUpTo(graph.findStartDestination().id) {
+            saveState = true
+        }
+    }
 }
 
 @Composable
@@ -47,9 +64,15 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
     NavHost(
         navController = navController,
-        startDestination = AppRoutes.PROFILE,
+        startDestination = AppRoutes.LOGIN,
         modifier = modifier
     ) {
+        composable(route = AppRoutes.LOGIN) {
+            LoginScreen(
+                onSignInClick = { navController.navigate(AppRoutes.PROFILE) }
+            )
+        }
+
         composable(route = AppRoutes.PROFILE) {
             val viewModel: ProfileViewModel = viewModel(
                 factory = ProfileViewModel.provideFactory(appContainer.observeOwnProfileUseCase)
@@ -58,12 +81,14 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             ProfileScreen(
                 state = state,
-                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
-                onStatsClick = { navController.navigate(AppRoutes.STATS) },
-                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) },
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onEditProfileClick = { navController.navigate(AppRoutes.EDIT_PROFILE) },
                 onPreviewPublicProfileClick = { navController.navigate(AppRoutes.PUBLIC_PROFILE_PREVIEW) },
-                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) }
+                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
+                onRetry = viewModel::retry
             )
         }
 
@@ -79,7 +104,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             EditProfileScreen(
                 state = state,
                 onBackClick = { navController.popBackStack() },
-                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onSave = { updatedState ->
                     viewModel.saveProfile(updatedState) {
                         navController.popBackStack()
@@ -96,10 +121,12 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             ProfileScreen(
                 state = state,
-                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
-                onStatsClick = { navController.navigate(AppRoutes.STATS) },
-                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) },
-                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) }
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
+                onRetry = viewModel::retry
             )
         }
 
@@ -113,10 +140,28 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             ProfileScreen(
                 state = state,
-                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
-                onStatsClick = { navController.navigate(AppRoutes.STATS) },
-                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) },
-                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) }
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
+                onRetry = viewModel::retry
+            )
+        }
+
+        composable(route = AppRoutes.LIBRARY) {
+            val viewModel: LibraryViewModel = viewModel(
+                factory = LibraryViewModel.provideFactory(appContainer.observeOwnLibraryUseCase)
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            LibraryScreen(
+                state = state,
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
             )
         }
 
@@ -131,10 +176,12 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             StatsScreen(
                 state = state,
-                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
-                onStatsClick = { navController.navigate(AppRoutes.STATS) },
-                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) },
-                onModeSelected = viewModel::selectMode
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onModeSelected = viewModel::selectMode,
+                onRetry = viewModel::retry
             )
         }
 
@@ -149,9 +196,11 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             NotificationsScreen(
                 state = state,
-                onProfileClick = { navController.navigate(AppRoutes.PROFILE) },
-                onStatsClick = { navController.navigate(AppRoutes.STATS) },
-                onNotificationsClick = { navController.navigate(AppRoutes.NOTIFICATIONS) }
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onRetry = viewModel::retry
             )
         }
 
@@ -165,14 +214,19 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         composable(
             route = AppRoutes.BOOK_DETAIL,
             arguments = listOf(navArgument("bookId") { type = NavType.StringType })
-        ) {
+        ) { backStackEntry ->
             BookDetailScreen(
                 viewModelFactory = BookDetailViewModel.provideFactory(
-                    bookId = it.arguments?.getString("bookId").orEmpty(),
+                    bookId = backStackEntry.arguments?.getString("bookId").orEmpty(),
                     getBookByIdUseCase = appContainer.getBookByIdUseCase,
                     getReviewsUseCase = appContainer.getReviewsUseCase,
-                    getReadingProgressUseCase = appContainer.getReadingProgress
+                    getReadingProgressUseCase = appContainer.getReadingProgress,
+                    observeOwnProfileUseCase = appContainer.observeOwnProfileUseCase
                 ),
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onBackClick = { navController.popBackStack() }
             )
         }

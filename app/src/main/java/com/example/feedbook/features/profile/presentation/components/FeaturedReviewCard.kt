@@ -19,9 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feedbook.R
+import com.example.feedbook.core.ui.components.RemoteBookCover
 import com.example.feedbook.features.profile.presentation.FeaturedReview
 
 @Composable
@@ -41,12 +44,16 @@ internal fun FeaturedReviewCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "RECENT REVIEWS",
+                    text = stringResource(R.string.profile_recent_reviews),
                     style = ProfileTypography.LabelUppercase,
                     color = ProfileColors.PrimaryText
                 )
                 Text(
-                    text = "${pagerState.currentPage + 1}/${reviews.size}",
+                    text = stringResource(
+                        R.string.profile_review_pager,
+                        pagerState.currentPage + 1,
+                        reviews.size
+                    ),
                     style = ProfileTypography.Label,
                     color = ProfileColors.SecondaryText
                 )
@@ -64,11 +71,12 @@ internal fun FeaturedReviewCard(
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         verticalAlignment = Alignment.Top
                     ) {
-                        Box(
+                        RemoteBookCover(
+                            title = review.bookTitle,
+                            coverImageUrl = review.coverImageUrl,
                             modifier = Modifier
                                 .size(width = 48.dp, height = 72.dp)
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(review.accent)
                         )
                         Column(
                             modifier = Modifier.weight(1f),

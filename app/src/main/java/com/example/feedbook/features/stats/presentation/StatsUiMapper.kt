@@ -1,11 +1,13 @@
 package com.example.feedbook.features.stats.presentation
 
 import androidx.compose.ui.graphics.Color
+import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.stats.domain.model.ReadingStats
 
 fun ReadingStats.toUiState(
     avatarStyle: AvatarStyle,
+    avatarPreset: AvatarPreset?,
     avatarImageUri: String?
 ): StatsUiState = StatsUiState(
     title = title,
@@ -14,6 +16,7 @@ fun ReadingStats.toUiState(
     heatmapMonths = heatmapMonths,
     heatmapRows = heatmapRows,
     heatmapValues = heatmapValues,
+    heatmapScale = defaultHeatmapScale(),
     selectedRadarMode = radarSections.firstOrNull()?.mode.orEmpty(),
     radarSections = radarSections.map { section ->
         RadarSection(
@@ -23,5 +26,6 @@ fun ReadingStats.toUiState(
         )
     },
     avatarStyle = avatarStyle,
+    avatarPreset = avatarPreset,
     avatarImageUri = avatarImageUri
 )

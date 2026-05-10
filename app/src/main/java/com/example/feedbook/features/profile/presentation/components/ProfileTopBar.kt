@@ -26,13 +26,17 @@ import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.feedbook.R
+import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.ProfileVariant
 
@@ -43,30 +47,31 @@ internal fun ProfileTopBar(
         topColor = Color(0xFF315A73),
         bottomColor = Color(0xFFF0C6A8)
     ),
+    avatarPreset: AvatarPreset? = null,
     avatarImageUri: String? = null,
-    title: String = "FeedBook",
+    title: String = stringResource(R.string.profile_topbar_title),
     onAvatarClick: () -> Unit = {},
     trailingContent: @Composable RowScope.(Dp) -> Unit = { iconSize ->
         if (variant == ProfileVariant.OWN) {
             ProfileTopBarActionIcon(
                 imageVector = Icons.Outlined.AccessTime,
-                contentDescription = "Recent activity",
+                contentDescription = stringResource(R.string.profile_topbar_recent_activity),
                 iconSize = iconSize
             )
             ProfileTopBarActionIcon(
                 imageVector = Icons.Outlined.Settings,
-                contentDescription = "Settings",
+                contentDescription = stringResource(R.string.profile_topbar_settings),
                 iconSize = iconSize
             )
         } else {
             ProfileTopBarActionIcon(
                 imageVector = Icons.AutoMirrored.Outlined.Chat,
-                contentDescription = "Direct message",
+                contentDescription = stringResource(R.string.profile_topbar_direct_message),
                 iconSize = iconSize
             )
             ProfileTopBarActionIcon(
                 imageVector = Icons.Outlined.MoreHoriz,
-                contentDescription = "More options",
+                contentDescription = stringResource(R.string.profile_topbar_more_options),
                 iconSize = iconSize
             )
         }
@@ -84,7 +89,7 @@ internal fun ProfileTopBar(
         ) {
             val iconSize = (maxWidth * 0.05f).coerceIn(20.dp, 26.dp)
             val avatarSize = (maxWidth * 0.085f).coerceIn(32.dp, 42.dp)
-            val innerAvatarSize = (avatarSize * 0.68f).coerceIn(22.dp, 28.dp)
+            val innerAvatarSize = (avatarSize * 0.76f).coerceIn(24.dp, 31.dp)
             val horizontalPadding = (maxWidth * 0.041f).coerceIn(16.dp, 20.dp)
 
             Row(
@@ -105,12 +110,13 @@ internal fun ProfileTopBar(
                 ) {
                     ProfileTopBarAvatarFill(
                         avatarStyle = avatarStyle,
+                        avatarPreset = avatarPreset,
                         avatarImageUri = avatarImageUri,
                         modifier = Modifier.size(innerAvatarSize).clip(CircleShape)
                     )
                 }
 
-                androidx.compose.material3.Text(
+                Text(
                     text = title,
                     style = ProfileTypography.AppTitle,
                     color = Color(0xFF0F172A)

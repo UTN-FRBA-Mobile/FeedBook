@@ -1,16 +1,22 @@
 package com.example.feedbook.features.books.presentation.detail
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.automirrored.outlined.TrendingUp
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.outlined.Create
+import androidx.compose.material.icons.outlined.NotificationsNone
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.StarOutline
+import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,390 +24,493 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import com.example.feedbook.R
 import com.example.feedbook.core.ui.theme.FeedBookTheme
-import com.example.feedbook.features.books.domain.model.Book
+import com.example.feedbook.features.profile.presentation.components.BottomBarTab
+import com.example.feedbook.features.profile.presentation.components.ProfileBottomBar
+import com.example.feedbook.features.profile.presentation.components.ProfileColors
+import com.example.feedbook.features.profile.presentation.components.ProfileTopBar
+import com.example.feedbook.features.profile.presentation.components.ProfileTypography
 
-// ─── Paleta propia del diseño (independiente del theme) ───────────────────────
-private val DesignNavy       = Color(0xFF1A2235)
-private val DesignNavyMid    = Color(0xFF243047)
-private val DesignGold       = Color(0xFFC9A84C)
-private val DesignGoldLight  = Color(0xFFE8C76A)
-private val DesignBackground = Color(0xFFF4F1EC)
-private val DesignCard       = Color(0xFFFFFFFF)
-private val DesignTextPrim   = Color(0xFF1A1A1A)
-private val DesignTextSec    = Color(0xFF666666)
-private val DesignTextMuted  = Color(0xFF999999)
-private val DesignOrange     = Color(0xFFE07B39)
-private val DesignDivider    = Color(0xFFE5E0D8)
-
-// ─── Datos hardcodeados de ejemplo ───────────────────────────────────────────
-private data class ReviewUi(
-    val name: String,
-    val initials: String,
-    val avatarColor: Color,
-    val rating: Float,
-    val timeAgo: String,
-    val text: String,
-    val likes: Int,
-    val comments: Int
-)
-
-private val sampleReviews = listOf(
-    ReviewUi(
-        name = "Julian Thorne",
-        initials = "JT",
-        avatarColor = Color(0xFF7B9EA6),
-        rating = 5f,
-        timeAgo = "2 days ago",
-        text = "A hauntingly beautiful examination of the American Dream. The prose is like a finely woven tapestry. This remains one of my favorite re-reads for the sheer atmosphere Fitzgerald creates.",
-        likes = 243,
-        comments = 18
-    ),
-    ReviewUi(
-        name = "Isabella V.",
-        initials = "IV",
-        avatarColor = Color(0xFFB87C6A),
-        rating = 4f,
-        timeAgo = "1 week ago",
-        text = "The tragedy of Gatsby never fails to hit hard. The ending scene by the pool is still one of the most powerful moments in literature. Highly recommend this edition for the supplementary notes.",
-        likes = 89,
-        comments = 4
-    )
-)
-
-// ─── Entry point ──────────────────────────────────────────────────────────────
+// ─── Stateful Wrapper ──────────────────────────────────────────────────────
 @Composable
 fun BookDetailScreen(
-    viewModelFactory: androidx.lifecycle.ViewModelProvider.Factory,
-    onBackClick: () -> Unit
+    modifier: Modifier = Modifier,
+    viewModelFactory: ViewModelProvider.Factory,
+    onBackClick: () -> Unit,
+    onProfileClick: () -> Unit = {},
+    onLibraryClick: () -> Unit = {},
+    onStatsClick: () -> Unit = {},
+    onNotificationsClick: () -> Unit = {},
 ) {
     val viewModel: BookDetailViewModel = viewModel(factory = viewModelFactory)
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    BookDetailContent(
+    BookDetailScreen(
         state = state,
+        onRetry = viewModel::loadBook,
         onBackClick = onBackClick,
-        onRetry = viewModel::loadBook
+        onProfileClick = onProfileClick,
+        onLibraryClick = onLibraryClick,
+        onStatsClick = onStatsClick,
+        onNotificationsClick = onNotificationsClick,
+        modifier = modifier
     )
 }
 
-// ─── Contenido principal ──────────────────────────────────────────────────────
-@Composable
-internal fun BookDetailContent(
-    state: BookDetailState,
-    onBackClick: () -> Unit,
-    onRetry: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(DesignBackground)
-    ) {
-        when {
-            state.isLoading -> LoadingContent()
-            state.error != null -> ErrorContent(message = state.error, onRetry = onRetry)
-            state.book != null -> BookDetailBody(
-                book = state.book,
-                onBackClick = onBackClick
-            )
-        }
-    }
-}
-
-// ─── Loading ──────────────────────────────────────────────────────────────────
-@Composable
-private fun LoadingContent() {
-    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator(color = DesignGold)
-    }
-}
-
-// ─── Error ────────────────────────────────────────────────────────────────────
-@Composable
-private fun ErrorContent(message: String, onRetry: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("Algo salió mal", fontWeight = FontWeight.Bold, color = DesignTextPrim)
-        Spacer(Modifier.height(8.dp))
-        Text(message, color = DesignTextSec, textAlign = TextAlign.Center)
-        Spacer(Modifier.height(24.dp))
-        Button(
-            onClick = onRetry,
-            colors = ButtonDefaults.buttonColors(containerColor = DesignNavy)
-        ) { Text("Reintentar") }
-    }
-}
-
-// ─── Body principal ───────────────────────────────────────────────────────────
+// ─── Screen Entry Point (Stateless) ─────────────────────────────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BookDetailBody(book: Book, onBackClick: () -> Unit) {
-    var showProgressEditor by remember { mutableStateOf(false) }
-    var currentPage by remember { mutableIntStateOf(142) }
-    val totalPages = 218
+fun BookDetailScreen(
+    modifier: Modifier = Modifier,
+    state: BookDetailUiState,
+    onRetry: () -> Unit,
+    onBackClick: () -> Unit,
+    onUpdateProgress: () -> Unit = {},
+    onAddToList: () -> Unit = {},
+    onSaveProgress: (Int) -> Unit = {},
+    onWriteReview: () -> Unit = {},
+    onProfileClick: () -> Unit = {},
+    onLibraryClick: () -> Unit = {},
+    onStatsClick: () -> Unit = {},
+    onNotificationsClick: () -> Unit = {},
+    onModeSelected: (String) -> Unit = {},
+) {
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        // ── Top Bar ──
-        TopAppBar(
-            title = { Text("FeedBook", fontWeight = FontWeight.Bold, color = DesignTextPrim) },
-            navigationIcon = {
-                IconButton(onClick = onBackClick) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Volver", tint = DesignTextPrim)
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        containerColor = ProfileColors.Background,
+        topBar = {
+            ProfileTopBar(
+                variant = com.example.feedbook.features.profile.presentation.ProfileVariant.OWN,
+                avatarStyle = state.avatarStyle,
+                avatarPreset = state.avatarPreset,
+                avatarImageUri = state.avatarImageUri,
+                onAvatarClick = onProfileClick,
+                trailingContent = { iconSize ->
+                    Icon(
+                        imageVector = Icons.Outlined.NotificationsNone,
+                        contentDescription = stringResource(com.example.feedbook.R.string.notifications_icon),
+                        tint = ProfileColors.SecondaryText,
+                        modifier = Modifier.size(iconSize)
+                    )
+                    Icon(
+                        imageVector = Icons.Outlined.Settings,
+                        contentDescription = stringResource(R.string.profile_topbar_settings),
+                        tint = ProfileColors.SecondaryText,
+                        modifier = Modifier.size(iconSize)
+                    )
                 }
-            },
-            actions = {
-                IconButton(onClick = {}) {
-                    Icon(Icons.Default.QrCode2, contentDescription = null, tint = DesignTextPrim)
-                }
-                IconButton(onClick = {}) {
-                    Icon(Icons.Default.Settings, contentDescription = null, tint = DesignTextPrim)
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = DesignBackground)
-        )
-
-        // ── Portada ──
-        Box(
+            )
+        },
+        bottomBar = {
+            ProfileBottomBar(
+                activeTab = BottomBarTab.EXPLORE,
+                onProfileClick = onProfileClick,
+                onLibraryClick = onLibraryClick,
+                onStatsClick = onStatsClick,
+                onNotificationsClick = onNotificationsClick
+            )
+        }
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 48.dp, vertical = 8.dp),
-            contentAlignment = Alignment.Center
+                .fillMaxSize()
+                .background(ProfileColors.Background)
+                .padding(innerPadding)
         ) {
-            Card(
-                modifier = Modifier.fillMaxWidth().height(260.dp),
-                shape = RoundedCornerShape(8.dp),
-                elevation = CardDefaults.cardElevation(12.dp)
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(8.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.verticalGradient(listOf(DesignNavy, DesignNavyMid))
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("THE", color = DesignGold, fontSize = 12.sp, letterSpacing = 4.sp)
-                        Text(
-                            "GREAT\nGATSBY",
-                            color = DesignGoldLight,
-                            fontSize = 34.sp,
-                            fontWeight = FontWeight.Black,
-                            textAlign = TextAlign.Center,
-                            lineHeight = 38.sp,
-                            letterSpacing = 2.sp
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        HorizontalDivider(modifier = Modifier.width(80.dp), color = DesignGold, thickness = 1.dp)
-                    }
+                when {
+                    state.isLoading -> LoadingContent()
+                    state.error != null -> ErrorContent(message = state.error, onRetry = onRetry)
+                    state.book != null -> BookDetailContent(
+                        state = state,
+                        onUpdateProgress = onUpdateProgress,
+                        onAddToList = onAddToList,
+                        onSaveProgress = onSaveProgress,
+                        onWriteReview = onWriteReview
+                    )
                 }
             }
         }
-
-        // ── Info del libro ──
-        Column(modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)) {
-            Text(
-                "CLASSIC FICTION",
-                fontSize = 11.sp,
-                letterSpacing = 2.sp,
-                color = DesignTextMuted,
-                fontWeight = FontWeight.Medium
-            )
-            Spacer(Modifier.height(2.dp))
-            Text(
-                book.title,
-                fontSize = 26.sp,
-                fontWeight = FontWeight.Black,
-                color = DesignTextPrim,
-                lineHeight = 30.sp
-            )
-            Text(
-                "by ${book.author}",
-                fontSize = 14.sp,
-                fontStyle = FontStyle.Italic,
-                color = DesignTextPrim,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(Modifier.height(6.dp))
-            StarRow(rating = 4.8f)
-        }
-
-        Spacer(Modifier.height(12.dp))
-
-        // ── Botones ──
-        Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-            Button(
-                onClick = { showProgressEditor = !showProgressEditor },
-                modifier = Modifier.fillMaxWidth().height(48.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = DesignNavy)
-            ) {
-                Icon(Icons.Default.MenuBook, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(8.dp))
-                Text("Update Progress", fontWeight = FontWeight.SemiBold)
-            }
-            Spacer(Modifier.height(10.dp))
-            OutlinedButton(
-                onClick = {},
-                modifier = Modifier.fillMaxWidth().height(48.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = DesignTextPrim)
-            ) {
-                Icon(Icons.Default.BookmarkBorder, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(8.dp))
-                Text("Add to List", fontWeight = FontWeight.Medium)
-            }
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        // ── Progress card ──
-        if (showProgressEditor) {
-            ProgressCard(
-                currentPage = currentPage,
-                totalPages = totalPages,
-                onPageChange = { currentPage = it },
-                onSave = { showProgressEditor = false }
-            )
-            Spacer(Modifier.height(16.dp))
-        }
-
-        // ── Friends ──
-        FriendsCard()
-
-        Spacer(Modifier.height(16.dp))
-
-        // ── Reviews ──
-        ReviewsSection()
-
-        Spacer(Modifier.height(16.dp))
-
-        // ── Metadata ──
-        MetadataCard()
-
-        Spacer(Modifier.height(32.dp))
     }
 }
 
-// ─── Estrellas ────────────────────────────────────────────────────────────────
+// ─── Main Content ──────────────────────────────────────────────────────────
 @Composable
-private fun StarRow(rating: Float) {
+private fun BookDetailContent(
+    state: BookDetailUiState,
+    onUpdateProgress: () -> Unit,
+    onAddToList: () -> Unit,
+    onSaveProgress: (Int) -> Unit,
+    onWriteReview: () -> Unit
+) {
+    val book = state.book!!
+    var showProgressCard by remember { mutableStateOf(false) }
+    val totalPages = state.readingProgress?.totalPages ?: 218
+    var sliderValue by remember {
+        mutableFloatStateOf(state.readingProgress?.currentPage?.toFloat() ?: 0f)
+    }
+    val averageRating = state.reviews
+        .map { it.rating }
+        .average()
+        .toFloat()
+        .takeIf { state.reviews.isNotEmpty() } ?: 0f
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentPadding = PaddingValues(bottom = 80.dp)
+    ) {
+        item { CoverSection(coverUrl = book.coverImageUrl) }
+        item { BookInfoSection(book = book, rating = averageRating) }
+        item {
+            ActionButtonsSection(
+                onUpdateProgress = {
+                    showProgressCard = !showProgressCard
+                    onUpdateProgress()
+                },
+                onAddToList = onAddToList
+            )
+        }
+        if (showProgressCard) {
+            item {
+                ProgressCard(
+                    currentPage = sliderValue.toInt(),
+                    totalPages = totalPages,
+                    percentage = ((sliderValue / totalPages) * 100).toInt(),
+                    onSliderChange = { sliderValue = it },
+                    onSave = { onSaveProgress(sliderValue.toInt()) }
+                )
+            }
+        }
+        item { FriendsSection() }
+        item { ReviewsHeader(onWriteReview = onWriteReview) }
+        items(state.reviews) { review -> ReviewCard(review = review) }
+        item {
+            BookMetadataSection(
+                book.id,
+                book.pages,
+                book.language,
+                book.published
+            )
+        }
+    }
+}
+
+// ─── Cover Section ─────────────────────────────────────────────────────────
+@Composable
+private fun CoverSection(coverUrl: String?) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        )
+        if (LocalInspectionMode.current || coverUrl.isNullOrBlank()) {
+            Box(
+                modifier = Modifier
+                    .width(160.dp)
+                    .height(240.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No Cover",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+        } else {
+            AsyncImage(
+                model = coverUrl,
+                contentDescription = "Portada del libro",
+                modifier = Modifier
+                    .width(160.dp)
+                    .height(240.dp)
+                    .clip(RoundedCornerShape(8.dp)),
+                contentScale = ContentScale.Crop
+            )
+        }
+    }
+}
+
+// ─── Book Info Section ─────────────────────────────────────────────────────
+@Composable
+private fun BookInfoSection(book: BookUiModel, rating: Float) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 16.dp)
+    ) {
+        Text(
+            text = book.genre,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.secondary
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = book.title,
+            style = MaterialTheme.typography.headlineLarge,
+            color = ProfileColors.PrimaryText
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "by ${book.author}",
+            style = MaterialTheme.typography.titleSmall.copy(fontStyle = FontStyle.Italic),
+            color = ProfileColors.SecondaryText
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        StarRatingRow(rating = rating)
+    }
+}
+
+// ─── Star Rating ───────────────────────────────────────────────────────────
+@Composable
+private fun StarRatingRow(rating: Float) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         repeat(5) { index ->
-            val tint = when {
-                index < rating.toInt() -> DesignGold
-                index < rating         -> DesignGoldLight
-                else                   -> Color(0xFFDDD8CE)
-            }
             Icon(
                 imageVector = if (index < rating.toInt()) Icons.Filled.Star
-                else if (index < rating) Icons.Filled.StarHalf
                 else Icons.Outlined.StarOutline,
                 contentDescription = null,
-                tint = tint,
+                tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f),
                 modifier = Modifier.size(18.dp)
             )
         }
-        Spacer(Modifier.width(6.dp))
-        Text("$rating Rating", fontSize = 13.sp, color = DesignTextSec)
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+            text = "${"%.1f".format(rating)} Rating",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        )
     }
 }
 
-// ─── Progress Card ────────────────────────────────────────────────────────────
+// ─── Action Buttons ────────────────────────────────────────────────────────
+@Composable
+private fun ActionButtonsSection(
+    onUpdateProgress: () -> Unit,
+    onAddToList: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Button(
+            onClick = onUpdateProgress,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White
+            )
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.TrendingUp,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "UPDATE PROGRESS",
+                style = MaterialTheme.typography.labelSmall.copy(
+                    letterSpacing = 1.5.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        }
+        OutlinedButton(
+            onClick = onAddToList,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.primary
+            )
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.BookmarkBorder,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Add to List",
+                style = MaterialTheme.typography.titleLarge.copy(fontSize = 15.sp)
+            )
+        }
+    }
+}
+
+// ─── Progress Card ─────────────────────────────────────────────────────────
 @Composable
 private fun ProgressCard(
     currentPage: Int,
     totalPages: Int,
-    onPageChange: (Int) -> Unit,
+    percentage: Int,
+    onSliderChange: (Float) -> Unit,
     onSave: () -> Unit
 ) {
-    val progress = currentPage.toFloat() / totalPages.toFloat()
+    val cardBg = MaterialTheme.colorScheme.secondary
+    val trackBg = Color.White.copy(alpha = 0.2f)
+    val saveBg = Color.White.copy(alpha = 0.1f)
+    val accentColor = MaterialTheme.colorScheme.onSecondary
 
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = DesignNavy)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = cardBg),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.TrendingUp, contentDescription = null, tint = DesignGold, modifier = Modifier.size(16.dp))
-                Spacer(Modifier.width(6.dp))
-                Text("UPDATE PROGRESS", color = DesignGold, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.5.sp)
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.TrendingUp,
+                    contentDescription = null,
+                    tint = Color.White.copy(alpha = 0.7f),
+                    modifier = Modifier.size(14.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "UPDATE PROGRESS",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        letterSpacing = 1.5.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = Color.White.copy(alpha = 0.7f)
+                )
             }
-            Spacer(Modifier.height(16.dp))
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                Text("$currentPage", color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
-                Text(" of $totalPages pages", color = Color.White.copy(alpha = 0.6f), fontSize = 13.sp)
-                Spacer(Modifier.weight(1f))
-                Text("${(progress * 100).toInt()}%", color = DesignGold, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(Color.White.copy(alpha = 0.1f))
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = "$currentPage",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Color.White
+                    )
+                }
+                Text(
+                    text = "  of $totalPages pages",
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 14.sp),
+                    color = Color.White.copy(alpha = 0.6f)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "$percentage%",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.White
+                )
             }
+            Spacer(modifier = Modifier.height(12.dp))
             Slider(
                 value = currentPage.toFloat(),
-                onValueChange = { onPageChange(it.toInt()) },
+                onValueChange = onSliderChange,
                 valueRange = 0f..totalPages.toFloat(),
+                modifier = Modifier.fillMaxWidth(),
                 colors = SliderDefaults.colors(
-                    thumbColor = DesignGold,
-                    activeTrackColor = DesignGold,
-                    inactiveTrackColor = Color.White.copy(alpha = 0.2f)
+                    thumbColor = accentColor,
+                    activeTrackColor = Color.White,
+                    inactiveTrackColor = trackBg
                 )
             )
-            Spacer(Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = onSave,
-                modifier = Modifier.fillMaxWidth().height(44.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = DesignNavyMid)
-            ) { Text("Save Progress", fontWeight = FontWeight.SemiBold) }
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = saveBg)
+            ) {
+                Text(
+                    text = "Save Progress",
+                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 15.sp),
+                    color = Color.White
+                )
+            }
         }
     }
 }
 
-// ─── Friends Card ─────────────────────────────────────────────────────────────
+// ─── Friends Section ───────────────────────────────────────────────────────
 @Composable
-private fun FriendsCard() {
+private fun FriendsSection() {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = DesignCard),
-        elevation = CardDefaults.cardElevation(2.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("FRIENDS WHO READ THIS", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = DesignTextMuted, letterSpacing = 1.5.sp)
-            Spacer(Modifier.height(10.dp))
+            Text(
+                text = "FRIENDS WHO READ THIS",
+                style = MaterialTheme.typography.labelSmall.copy(
+                    letterSpacing = 1.5.sp,
+                    fontWeight = FontWeight.Bold
+                ),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+            )
+            Spacer(modifier = Modifier.height(12.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(modifier = Modifier.width(76.dp).height(32.dp)) {
-                    listOf(Color(0xFF7B9EA6), Color(0xFFB87C6A), Color(0xFF8A7EB8))
-                        .forEachIndexed { index, color ->
-                            Box(
-                                modifier = Modifier
-                                    .offset(x = (index * 22).dp)
-                                    .size(32.dp)
-                                    .clip(CircleShape)
-                                    .background(color)
-                                    .border(2.dp, DesignCard, CircleShape)
+                repeat(3) { index ->
+                    Box(
+                        modifier = Modifier
+                            .offset(x = (-index * 10).dp)
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(
+                                listOf(
+                                    Color(0xFF7B9EA8),
+                                    Color(0xFFB8956A),
+                                    Color(0xFF8FA882)
+                                )[index]
                             )
-                        }
+                    )
                 }
-                Spacer(Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    "Marcus, Elena, and 12 others\nhave read this volume.",
-                    fontSize = 13.sp,
-                    color = DesignTextSec,
+                    text = "Marcus, Elena, and 12 others\nhave read this volume.",
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 13.sp),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     lineHeight = 18.sp
                 )
             }
@@ -409,173 +518,239 @@ private fun FriendsCard() {
     }
 }
 
-// ─── Reviews Section ──────────────────────────────────────────────────────────
+// ─── Reviews Header ────────────────────────────────────────────────────────
 @Composable
-private fun ReviewsSection() {
-    Column(modifier = Modifier.padding(horizontal = 24.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Community Reviews", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = DesignTextPrim)
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {}) {
-                Text("Write a Review", fontSize = 13.sp, color = DesignOrange)
-                Spacer(Modifier.width(4.dp))
-                Icon(Icons.Default.Edit, contentDescription = null, tint = DesignOrange, modifier = Modifier.size(13.dp))
-            }
-        }
-        Spacer(Modifier.height(12.dp))
-        sampleReviews.forEach { review ->
-            ReviewCard(review)
-            Spacer(Modifier.height(12.dp))
+private fun ReviewsHeader(onWriteReview: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Community Reviews",
+            style = MaterialTheme.typography.titleLarge,
+            color = ProfileColors.PrimaryText
+        )
+        TextButton(onClick = onWriteReview) {
+            Text(
+                text = "Write a review",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Icon(
+                imageVector = Icons.Outlined.Create,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+                tint = MaterialTheme.colorScheme.secondary
+            )
         }
     }
 }
 
+// ─── Review Card ───────────────────────────────────────────────────────────
 @Composable
-private fun ReviewCard(review: ReviewUi) {
+private fun ReviewCard(review: ReviewUiModel) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = DesignCard),
-        elevation = CardDefaults.cardElevation(2.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 6.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Box(
-                    modifier = Modifier.size(40.dp).clip(CircleShape).background(review.avatarColor),
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(review.initials, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    if (LocalInspectionMode.current || review.reviewerAvatar == null) {
+                        Text(
+                            text = review.reviewerName.first().toString(),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    } else {
+                        AsyncImage(
+                            model = review.reviewerAvatar,
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 }
-                Spacer(Modifier.width(10.dp))
+                Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(review.name, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = DesignTextPrim)
-                    StarRow(rating = review.rating)
+                    Text(
+                        text = review.reviewerName,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = ProfileColors.PrimaryText
+                    )
+                    StarRatingRow(rating = review.rating)
                 }
-                Text(review.timeAgo, fontSize = 12.sp, color = DesignTextMuted)
+                Text(
+                    text = review.createdAt,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                )
             }
-            Spacer(Modifier.height(10.dp))
-            Text(review.text, fontSize = 14.sp, color = DesignTextSec, lineHeight = 21.sp)
-            Spacer(Modifier.height(12.dp))
-            HorizontalDivider(color = DesignDivider)
-            Spacer(Modifier.height(10.dp))
-            Row {
-                Icon(Icons.Outlined.ThumbUp, contentDescription = null, tint = DesignTextMuted, modifier = Modifier.size(16.dp))
-                Spacer(Modifier.width(4.dp))
-                Text("${review.likes}", fontSize = 13.sp, color = DesignTextMuted)
-                Spacer(Modifier.width(16.dp))
-                Icon(Icons.Outlined.ChatBubbleOutline, contentDescription = null, tint = DesignTextMuted, modifier = Modifier.size(16.dp))
-                Spacer(Modifier.width(4.dp))
-                Text("${review.comments}", fontSize = 13.sp, color = DesignTextMuted)
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(
+                text = review.text,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
+                thickness = 0.5.dp
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Outlined.ThumbUp,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = review.likes.toString(),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                }
             }
         }
     }
 }
 
-// ─── Metadata Card ────────────────────────────────────────────────────────────
+// ─── Book Metadata Section ─────────────────────────────────────────────────
 @Composable
-private fun MetadataCard() {
+private fun BookMetadataSection(
+    isbn: String,
+    totalPages: Int,
+    language: String,
+    published: String,
+) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = DesignCard),
-        elevation = CardDefaults.cardElevation(2.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("ACCESSION NO.", fontSize = 10.sp, color = DesignTextMuted, letterSpacing = 1.sp)
-                Text("000452-FB", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = DesignTextPrim)
-            }
-            Spacer(Modifier.height(16.dp))
-            HorizontalDivider(color = DesignDivider)
-            Spacer(Modifier.height(16.dp))
-            MetadataRow("PUBLISHED", "April 10, 1925")
-            Spacer(Modifier.height(12.dp))
-            MetadataRow("PAGES", "218 Pages")
-            Spacer(Modifier.height(12.dp))
-            MetadataRow("LANGUAGE", "English (US)")
-            Spacer(Modifier.height(20.dp))
-            HorizontalDivider(color = DesignDivider)
-            Spacer(Modifier.height(16.dp))
-            Text(
-                "\"So we beat on, boats against the current, borne back ceaselessly into the past.\"",
-                fontSize = 13.sp,
-                fontStyle = FontStyle.Italic,
-                color = DesignTextSec,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-                lineHeight = 20.sp
+            MetadataRow(label = "ISBN", value = isbn)
+            Spacer(modifier = Modifier.height(14.dp))
+            MetadataRow(
+                label = "PUBLISHED",
+                value = published,
+                labelColor = MaterialTheme.colorScheme.primary
             )
-            Spacer(Modifier.height(16.dp))
-            Box(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .border(1.5.dp, DesignGold.copy(alpha = 0.6f), RoundedCornerShape(4.dp))
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("EX LIBRIS", fontSize = 9.sp, letterSpacing = 2.sp, color = DesignGold, fontWeight = FontWeight.Bold)
-                    Icon(Icons.Default.MenuBook, contentDescription = null, tint = DesignGold, modifier = Modifier.size(16.dp))
-                    Text("FEEDBOOK", fontSize = 8.sp, letterSpacing = 1.5.sp, color = DesignGold, fontWeight = FontWeight.Bold)
-                    Text("VERIFIED", fontSize = 7.sp, letterSpacing = 1.sp, color = DesignGold.copy(alpha = 0.7f))
-                }
-            }
+            Spacer(modifier = Modifier.height(14.dp))
+            MetadataRow(
+                label = "PAGES",
+                value = totalPages.toString(),
+                labelColor = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(14.dp))
+            MetadataRow(
+                label = "LANGUAGE",
+                value = language,
+                labelColor = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
 
 @Composable
-private fun MetadataRow(label: String, value: String) {
+private fun MetadataRow(
+    label: String,
+    value: String,
+    labelColor: Color = ProfileColors.SecondaryText.copy(alpha = 0.7f)
+) {
     Column {
-        Text(label, fontSize = 10.sp, color = DesignOrange, letterSpacing = 1.sp, fontWeight = FontWeight.Bold)
-        Spacer(Modifier.height(2.dp))
-        Text(value, fontSize = 14.sp, color = DesignTextPrim, fontWeight = FontWeight.Medium)
-    }
-}
-
-// ─── Previews ─────────────────────────────────────────────────────────────────
-@Preview(showBackground = true)
-@Composable
-private fun BookDetailSuccessPreview() {
-    FeedBookTheme(dynamicColor = false) {
-        BookDetailContent(
-            state = BookDetailState(
-                book = Book(
-                    id = "000452-FB",
-                    title = "The Great Gatsby",
-                    author = "F. Scott Fitzgerald",
-                    description = "A story of the mysteriously wealthy Jay Gatsby."
-                )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall.copy(
+                letterSpacing = 1.sp,
+                fontWeight = FontWeight.Bold
             ),
-            onBackClick = {},
-            onRetry = {}
+            color = labelColor
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = value,
+            style = ProfileTypography.SectionTitle.copy(
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium
+            ),
+            color = ProfileColors.PrimaryText
         )
     }
 }
 
-@Preview(showBackground = true)
+// ─── Loading & Error ───────────────────────────────────────────────────────
 @Composable
-private fun BookDetailLoadingPreview() {
-    FeedBookTheme(dynamicColor = false) {
-        BookDetailContent(
-            state = BookDetailState(isLoading = true),
-            onBackClick = {},
-            onRetry = {}
-        )
+private fun LoadingContent() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-private fun BookDetailErrorPreview() {
-    FeedBookTheme(dynamicColor = false) {
-        BookDetailContent(
-            state = BookDetailState(error = "No se pudo cargar el libro."),
-            onBackClick = {},
-            onRetry = {}
+private fun ErrorContent(message: String, onRetry: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.error
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = onRetry,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text("Reintentar")
+            }
+        }
+    }
+}
+
+// ─── Previews ──────────────────────────────────────────────────────────────
+@Preview(showBackground = true, name = "Light", apiLevel = 34, heightDp = 1800)
+@Composable
+private fun BookDetailLightPreview() {
+    FeedBookTheme(darkTheme = false, dynamicColor = false) {
+        BookDetailScreen(
+            state = BookDetailPreviewData.sampleState,
+            onRetry = {},
+            onBackClick = {}
         )
     }
 }

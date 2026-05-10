@@ -5,17 +5,60 @@ data class NotificationsFeed(
     val items: List<NotificationEntry>
 )
 
-data class NotificationEntry(
-    val message: String,
-    val timestamp: String,
+data class NotificationActor(
+    val name: String,
     val avatarTopColorHex: Long,
-    val avatarBottomColorHex: Long,
-    val badge: String?,
-    val bookPreview: BookPreview?
+    val avatarBottomColorHex: Long
 )
 
-data class BookPreview(
+data class NotificationBookSummary(
     val title: String,
     val author: String,
-    val accentHex: Long
+    val coverImageUrl: String?
 )
+
+sealed interface NotificationEntry {
+    val id: String
+    val actor: NotificationActor
+    val timestamp: String
+}
+
+data class FollowedYouNotification(
+    override val id: String,
+    override val actor: NotificationActor,
+    override val timestamp: String
+) : NotificationEntry
+
+data class StartedReadingNotification(
+    override val id: String,
+    override val actor: NotificationActor,
+    override val timestamp: String,
+    val book: NotificationBookSummary
+) : NotificationEntry
+
+data class ReviewedBookNotification(
+    override val id: String,
+    override val actor: NotificationActor,
+    override val timestamp: String,
+    val book: NotificationBookSummary
+) : NotificationEntry
+
+data class LikedYourReviewNotification(
+    override val id: String,
+    override val actor: NotificationActor,
+    override val timestamp: String
+) : NotificationEntry
+
+data class SavedYourBookNotification(
+    override val id: String,
+    override val actor: NotificationActor,
+    override val timestamp: String,
+    val book: NotificationBookSummary
+) : NotificationEntry
+
+data class UnknownNotification(
+    override val id: String,
+    override val actor: NotificationActor,
+    override val timestamp: String,
+    val fallbackText: String
+) : NotificationEntry

@@ -12,13 +12,30 @@ import kotlinx.coroutines.launch
 class PublicProfileViewModel(
     private val getPublicProfileUseCase: GetPublicProfileUseCase
 ) : ViewModel() {
-    private val _state = MutableStateFlow(samplePublicProfileUiState())
+    private val _state = MutableStateFlow(
+        emptyProfileUiState(ProfileVariant.PUBLIC).copy(isLoading = true)
+    )
     val state: StateFlow<ProfileUiState> = _state.asStateFlow()
 
     init {
+        loadProfile()
+    }
+
+    fun retry() {
+        loadProfile()
+    }
+
+    private fun loadProfile() {
+        _state.value = _state.value.copy(isLoading = true, errorMessage = null)
         viewModelScope.launch {
             runCatching { getPublicProfileUseCase() }
                 .onSuccess { _state.value = it.toPublicProfileUiState() }
+                .onFailure { throwable ->
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        errorMessage = throwable.message
+                    )
+                }
         }
     }
 

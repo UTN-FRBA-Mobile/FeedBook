@@ -20,8 +20,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.feedbook.R
+import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.ProfileVariant
 
@@ -31,8 +34,9 @@ internal fun ProfileHeaderSection(
     name: String,
     handle: String,
     quote: String,
-    actionLabel: String,
+    actionLabelRes: Int,
     avatarStyle: AvatarStyle,
+    avatarPreset: AvatarPreset?,
     avatarImageUri: String?,
     onActionClick: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -63,6 +67,7 @@ internal fun ProfileHeaderSection(
             ) {
                 ProfileAvatarArtwork(
                     avatarStyle = avatarStyle,
+                    avatarPreset = avatarPreset,
                     avatarImageUri = avatarImageUri,
                     modifier = Modifier.fillMaxSize(),
                     fallbackContent = {
@@ -107,14 +112,14 @@ internal fun ProfileHeaderSection(
                 .border(1.dp, Color(0xFF74777D), RoundedCornerShape(12.dp))
         ) {
             Text(
-                text = actionLabel,
+                text = stringResource(actionLabelRes),
                 style = ProfileTypography.Button
             )
         }
 
         if (variant == ProfileVariant.PUBLIC) {
             Text(
-                text = "Curated shelves, annotated reviews and an intentionally public reading trail.",
+                text = stringResource(R.string.profile_public_summary),
                 style = ProfileTypography.Label,
                 color = ProfileColors.SecondaryText,
                 textAlign = TextAlign.Center,

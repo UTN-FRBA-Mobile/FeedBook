@@ -25,11 +25,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feedbook.R
+import com.example.feedbook.core.ui.components.ErrorScreen
+import com.example.feedbook.core.ui.components.LoadingScreen
+import com.example.feedbook.core.ui.components.RemoteBookCover
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.components.BottomBarTab
@@ -42,11 +46,29 @@ import com.example.feedbook.features.profile.presentation.components.ProfileTypo
 @Composable
 fun NotificationsScreen(
     modifier: Modifier = Modifier,
-    state: NotificationsUiState = sampleNotificationsUiState(),
+    state: NotificationsUiState,
     onProfileClick: () -> Unit = {},
+    onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
-    onNotificationsClick: () -> Unit = {}
+    onNotificationsClick: () -> Unit = {},
+    onRetry: () -> Unit = {}
 ) {
+    when {
+        state.isLoading -> {
+            LoadingScreen(modifier = modifier)
+            return
+        }
+        state.errorMessage != null -> {
+            ErrorScreen(
+                message = state.errorMessage ?: stringResource(R.string.common_error_generic),
+                modifier = modifier,
+                retryLabel = stringResource(R.string.common_retry),
+                onRetry = onRetry
+            )
+            return
+        }
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = ProfileColors.Background,
@@ -54,18 +76,19 @@ fun NotificationsScreen(
             ProfileTopBar(
                 variant = com.example.feedbook.features.profile.presentation.ProfileVariant.OWN,
                 avatarStyle = state.avatarStyle,
+                avatarPreset = state.avatarPreset,
                 avatarImageUri = state.avatarImageUri,
                 onAvatarClick = onProfileClick,
                 trailingContent = { iconSize ->
                     Icon(
                         imageVector = Icons.Outlined.NotificationsNone,
-                        contentDescription = "Notifications",
+                        contentDescription = stringResource(R.string.notifications_icon),
                         tint = ProfileColors.SecondaryText,
                         modifier = Modifier.size(iconSize)
                     )
                     Icon(
                         imageVector = Icons.Outlined.Settings,
-                        contentDescription = "Settings",
+                        contentDescription = stringResource(R.string.profile_topbar_settings),
                         tint = ProfileColors.SecondaryText,
                         modifier = Modifier.size(iconSize)
                     )
@@ -76,6 +99,7 @@ fun NotificationsScreen(
             ProfileBottomBar(
                 activeTab = BottomBarTab.NOTIFICATIONS,
                 onProfileClick = onProfileClick,
+                onLibraryClick = onLibraryClick,
                 onStatsClick = onStatsClick,
                 onNotificationsClick = onNotificationsClick
             )
@@ -101,7 +125,54 @@ fun NotificationsScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     state.items.forEach { item ->
                         when (item) {
-                            is NotificationItem.FriendActivity -> FriendActivityCard(item)
+                            is NotificationItem.FollowedYou -> NotificationCard(
+                                actor = item.actor,
+                                timestamp = item.timestamp,
+                                message = stringResource(
+                                    R.string.notification_followed_you,
+                                    item.actor.name
+                                )
+                            )
+                            is NotificationItem.StartedReading -> NotificationCard(
+                                actor = item.actor,
+                                timestamp = item.timestamp,
+                                message = stringResource(
+                                    R.string.notification_started_reading,
+                                    item.actor.name
+                                ),
+                                book = item.book
+                            )
+                            is NotificationItem.ReviewedBook -> NotificationCard(
+                                actor = item.actor,
+                                timestamp = item.timestamp,
+                                message = stringResource(
+                                    R.string.notification_reviewed_book,
+                                    item.actor.name
+                                ),
+                                book = item.book
+                            )
+                            is NotificationItem.LikedYourReview -> NotificationCard(
+                                actor = item.actor,
+                                timestamp = item.timestamp,
+                                message = stringResource(
+                                    R.string.notification_liked_your_review,
+                                    item.actor.name
+                                )
+                            )
+                            is NotificationItem.SavedYourBook -> NotificationCard(
+                                actor = item.actor,
+                                timestamp = item.timestamp,
+                                message = stringResource(
+                                    R.string.notification_saved_your_book,
+                                    item.actor.name
+                                ),
+                                book = item.book
+                            )
+                            is NotificationItem.Generic -> NotificationCard(
+                                actor = item.actor,
+                                timestamp = item.timestamp,
+                                message = item.fallbackText
+                            )
                         }
                     }
                 }
@@ -111,7 +182,12 @@ fun NotificationsScreen(
 }
 
 @Composable
-private fun FriendActivityCard(item: NotificationItem.FriendActivity) {
+private fun NotificationCard(
+    actor: NotificationActorUi,
+    timestamp: String,
+    message: String,
+    book: NotificationBookUi? = null
+) {
     ProfileSurfaceCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(
@@ -125,7 +201,7 @@ private fun FriendActivityCard(item: NotificationItem.FriendActivity) {
                         .clip(androidx.compose.foundation.shape.CircleShape)
                         .background(
                             Brush.verticalGradient(
-                                listOf(item.avatarTopColor, item.avatarBottomColor)
+                                listOf(actor.avatarTopColor, actor.avatarBottomColor)
                             )
                         )
                 )
@@ -135,30 +211,22 @@ private fun FriendActivityCard(item: NotificationItem.FriendActivity) {
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(
-                        text = item.message,
+                        text = message,
                         style = ProfileTypography.Body.copy(fontSize = 14.sp, lineHeight = 20.sp),
                         color = ProfileColors.SecondaryText,
-                        maxLines = if (item.bookPreview == null) 4 else 2,
+                        maxLines = if (book == null) 4 else 2,
                         overflow = TextOverflow.Ellipsis
                     )
 
                     Text(
-                        text = item.timestamp,
+                        text = timestamp,
                         style = ProfileTypography.LabelUppercase.copy(fontSize = 9.sp, lineHeight = 10.sp),
                         color = Color(0xFF8B8B8B)
                     )
                 }
-
-                if (item.badge != null) {
-                    Text(
-                        text = item.badge,
-                        style = ProfileTypography.LabelUppercase,
-                        color = ProfileColors.Accent
-                    )
-                }
             }
 
-            if (item.bookPreview != null) {
+            if (book != null) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -168,22 +236,23 @@ private fun FriendActivityCard(item: NotificationItem.FriendActivity) {
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
+                    RemoteBookCover(
+                        title = book.title,
+                        coverImageUrl = book.coverImageUrl,
                         modifier = Modifier
                             .size(width = 34.dp, height = 52.dp)
                             .clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
-                            .background(item.bookPreview.accent)
                     )
                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         Text(
-                            text = item.bookPreview.title,
+                            text = book.title,
                             style = ProfileTypography.Body.copy(fontSize = 13.sp, lineHeight = 18.sp),
                             color = ProfileColors.PrimaryText,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = item.bookPreview.author,
+                            text = book.author,
                             style = ProfileTypography.LabelUppercase.copy(fontSize = 8.sp, lineHeight = 10.sp),
                             color = ProfileColors.SecondaryText
                         )
@@ -198,6 +267,6 @@ private fun FriendActivityCard(item: NotificationItem.FriendActivity) {
 @Composable
 private fun NotificationsScreenPreview() {
     FeedBookTheme(dynamicColor = false) {
-        NotificationsScreen()
+        NotificationsScreen(state = previewNotificationsUiState())
     }
 }
