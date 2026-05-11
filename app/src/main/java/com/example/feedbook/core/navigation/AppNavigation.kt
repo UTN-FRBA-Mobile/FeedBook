@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -20,6 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.feedbook.FeedBookApplication
+import com.example.feedbook.core.ui.components.LocalScannerClickHandler
 import com.example.feedbook.features.auth.presentation.AuthBiometricPrompt
 import com.example.feedbook.features.auth.presentation.AuthGateDestination
 import com.example.feedbook.features.auth.presentation.AuthGateUiState
@@ -31,6 +33,7 @@ import com.example.feedbook.features.authors.presentation.detail.AuthorDetailVie
 import com.example.feedbook.features.auth.presentation.LoginViewModel
 import com.example.feedbook.features.books.presentation.list.BookListScreen
 import com.example.feedbook.features.books.presentation.list.BookListViewModel
+import com.example.feedbook.features.books.presentation.scanner.IsbnScannerScreen
 import com.example.feedbook.features.books.presentation.detail.BookDetailScreen
 import com.example.feedbook.features.books.presentation.detail.BookDetailViewModel
 import com.example.feedbook.features.home.presentation.HomeScreen
@@ -60,6 +63,7 @@ object AppRoutes {
     const val STATS = "stats"
     const val NOTIFICATIONS = "notifications"
     const val BOOKS = "books"
+    const val ISBN_SCANNER = "isbnScanner"
     const val BOOK_DETAIL = "bookDetail/{bookId}"
 
     const val AUTHOR_DETAIL = "authorDetail/{authorId}"
@@ -92,85 +96,90 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         }
     }
 
-    NavHost(
-        navController = navController,
-        startDestination = AppRoutes.AUTH_GATE,
-        modifier = modifier
+    CompositionLocalProvider(
+        LocalScannerClickHandler provides {
+            navController.navigate(AppRoutes.ISBN_SCANNER)
+        }
     ) {
-        composable(route = AppRoutes.AUTH_GATE) {
-            val viewModel: AuthGateViewModel = viewModel(
-                factory = AuthGateViewModel.provideFactory(appContainer.sessionManager)
-            )
-            val state by viewModel.state.collectAsStateWithLifecycle()
+        NavHost(
+            navController = navController,
+            startDestination = AppRoutes.AUTH_GATE,
+            modifier = modifier
+        ) {
+            composable(route = AppRoutes.AUTH_GATE) {
+                val viewModel: AuthGateViewModel = viewModel(
+                    factory = AuthGateViewModel.provideFactory(appContainer.sessionManager)
+                )
+                val state by viewModel.state.collectAsStateWithLifecycle()
 
-            AuthGateScreen(
-                state = state,
-                onBiometricSuccess = viewModel::onBiometricSuccess,
-                onBiometricError = { viewModel.onBiometricError() }
-            )
+                AuthGateScreen(
+                    state = state,
+                    onBiometricSuccess = viewModel::onBiometricSuccess,
+                    onBiometricError = { viewModel.onBiometricError() }
+                )
 
-            LaunchedEffect(state.destination) {
-                when (state.destination) {
-                    AuthGateDestination.HOME -> {
-                        navController.navigate(AppRoutes.HOME) {
-                            popUpTo(AppRoutes.AUTH_GATE) {
-                                inclusive = true
+                LaunchedEffect(state.destination) {
+                    when (state.destination) {
+                        AuthGateDestination.HOME -> {
+                            navController.navigate(AppRoutes.HOME) {
+                                popUpTo(AppRoutes.AUTH_GATE) {
+                                    inclusive = true
+                                }
                             }
                         }
-                    }
 
-                    AuthGateDestination.LOGIN -> {
-                        navController.navigate(AppRoutes.LOGIN) {
-                            popUpTo(AppRoutes.AUTH_GATE) {
-                                inclusive = true
+                        AuthGateDestination.LOGIN -> {
+                            navController.navigate(AppRoutes.LOGIN) {
+                                popUpTo(AppRoutes.AUTH_GATE) {
+                                    inclusive = true
+                                }
                             }
                         }
-                    }
 
-                    null -> Unit
+                        null -> Unit
+                    }
                 }
             }
-        }
 
-        composable(route = AppRoutes.LOGIN) {
-            val viewModel: LoginViewModel = viewModel(
-                factory = LoginViewModel.provideFactory(
-                    loginUseCase = appContainer.loginUseCase,
-                    sessionManager = appContainer.sessionManager
+            composable(route = AppRoutes.LOGIN) {
+                val viewModel: LoginViewModel = viewModel(
+                    factory = LoginViewModel.provideFactory(
+                        loginUseCase = appContainer.loginUseCase,
+                        sessionManager = appContainer.sessionManager
+                    )
                 )
-            )
-            val state by viewModel.state.collectAsStateWithLifecycle()
+                val state by viewModel.state.collectAsStateWithLifecycle()
 
-            LoginScreen(
-                state = state,
-                onUsernameChange = viewModel::updateUsername,
-                onPasswordChange = viewModel::updatePassword,
-                onSecureLoginChange = viewModel::updateSecureLoginEnabled,
-                onSignInClick = {
-                    viewModel.submitLogin {
-                        navController.navigate(AppRoutes.HOME) {
-                            popUpTo(AppRoutes.LOGIN) {
-                                inclusive = true
+                LoginScreen(
+                    state = state,
+                    onUsernameChange = viewModel::updateUsername,
+                    onPasswordChange = viewModel::updatePassword,
+                    onSecureLoginChange = viewModel::updateSecureLoginEnabled,
+                    onSignInClick = {
+                        viewModel.submitLogin {
+                            navController.navigate(AppRoutes.HOME) {
+                                popUpTo(AppRoutes.LOGIN) {
+                                    inclusive = true
+                                }
                             }
                         }
                     }
-                }
-            )
+                )
 
-            LoginBiometricPrompt(
-                trigger = state.biometricPromptTrigger,
-                onSuccess = {
-                    viewModel.onSecureLoginAuthenticationSucceeded {
-                        navController.navigate(AppRoutes.HOME) {
-                            popUpTo(AppRoutes.LOGIN) {
-                                inclusive = true
+                LoginBiometricPrompt(
+                    trigger = state.biometricPromptTrigger,
+                    onSuccess = {
+                        viewModel.onSecureLoginAuthenticationSucceeded {
+                            navController.navigate(AppRoutes.HOME) {
+                                popUpTo(AppRoutes.LOGIN) {
+                                    inclusive = true
+                                }
                             }
                         }
-                    }
-                },
-                onError = viewModel::onSecureLoginAuthenticationError
-            )
-        }
+                    },
+                    onError = viewModel::onSecureLoginAuthenticationError
+                )
+            }
 
         composable(route = AppRoutes.HOME) {
             val viewModel: HomeViewModel = viewModel(
@@ -347,23 +356,36 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             )
         }
 
-        composable(route = AppRoutes.BOOKS) {
-            BookListScreen(
-                viewModelFactory = BookListViewModel.provideFactory(
-                    getBooksUseCase = appContainer.getBooksUseCase,
-                    getAuthorsUseCase = appContainer.getAuthorsUseCase
-                ),
-                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
-                onAuthorClick = { authorId -> navController.navigate(AppRoutes.authorDetail(authorId)) },
-                onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
-                onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
-                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
-                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
-                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
-                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
-                onLogoutClick = onLogout
-            )
-        }
+            composable(route = AppRoutes.BOOKS) {
+                BookListScreen(
+                    viewModelFactory = BookListViewModel.provideFactory(
+                        getBooksUseCase = appContainer.getBooksUseCase,
+                        getAuthorsUseCase = appContainer.getAuthorsUseCase
+                    ),
+                    onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
+                    onAuthorClick = { authorId -> navController.navigate(AppRoutes.authorDetail(authorId)) },
+                    onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
+                    onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
+                    onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                    onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                    onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                    onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                    onLogoutClick = onLogout
+                )
+            }
+
+            composable(route = AppRoutes.ISBN_SCANNER) {
+                IsbnScannerScreen(
+                    onClose = { navController.popBackStack() },
+                    onScanComplete = { bookId ->
+                        navController.navigate(AppRoutes.detail(bookId)) {
+                            popUpTo(AppRoutes.ISBN_SCANNER) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                )
+            }
 
         composable(
             route = AppRoutes.BOOK_DETAIL,
@@ -408,6 +430,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onLogoutClick = onLogout,
                 onBackClick = { navController.popBackStack() }
             )
+        }
         }
     }
 }
