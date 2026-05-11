@@ -39,6 +39,7 @@ fun LibraryScreen(
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {},
     onBookClick: (String) -> Unit = {}
 ) {
     var showReadCollection by rememberSaveable { mutableStateOf(false) }
@@ -54,7 +55,8 @@ fun LibraryScreen(
         onExploreClick = onExploreClick,
         onLibraryClick = onLibraryClick,
         onStatsClick = onStatsClick,
-        onNotificationsClick = onNotificationsClick
+        onNotificationsClick = onNotificationsClick,
+        onLogoutClick = onLogoutClick
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

@@ -40,6 +40,7 @@ fun StatsScreen(
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {},
     onModeSelected: (String) -> Unit = {},
     onRetry: () -> Unit = {}
 ) {
@@ -74,7 +75,8 @@ fun StatsScreen(
         onExploreClick = onExploreClick,
         onLibraryClick = onLibraryClick,
         onStatsClick = onStatsClick,
-        onNotificationsClick = onNotificationsClick
+        onNotificationsClick = onNotificationsClick,
+        onLogoutClick = onLogoutClick
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

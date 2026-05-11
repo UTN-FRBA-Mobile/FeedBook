@@ -47,6 +47,7 @@ fun AuthorDetailScreen(
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {},
 ) {
     val viewModel: AuthorDetailViewModel = viewModel(factory = viewModelFactory)
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -63,6 +64,7 @@ fun AuthorDetailScreen(
         onLibraryClick = onLibraryClick,
         onStatsClick = onStatsClick,
         onNotificationsClick = onNotificationsClick,
+        onLogoutClick = onLogoutClick,
         modifier = modifier
     )
 }
@@ -82,6 +84,7 @@ fun AuthorDetailScreen(
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {},
 ) {
     FeedBookScreenScaffold(
         modifier = modifier.fillMaxSize(),
@@ -95,7 +98,8 @@ fun AuthorDetailScreen(
         onExploreClick = onExploreClick,
         onLibraryClick = onLibraryClick,
         onStatsClick = onStatsClick,
-        onNotificationsClick = onNotificationsClick
+        onNotificationsClick = onNotificationsClick,
+        onLogoutClick = onLogoutClick
     ) { innerPadding ->
         when {
             state.isLoading -> LoadingContent(modifier = Modifier.padding(innerPadding))

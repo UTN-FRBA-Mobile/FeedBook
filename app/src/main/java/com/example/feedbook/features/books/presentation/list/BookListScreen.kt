@@ -86,6 +86,7 @@ fun BookListScreen(
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val viewModel: BookListViewModel = viewModel(factory = viewModelFactory)
@@ -101,6 +102,7 @@ fun BookListScreen(
         onLibraryClick = onLibraryClick,
         onStatsClick = onStatsClick,
         onNotificationsClick = onNotificationsClick,
+        onLogoutClick = onLogoutClick,
         onRetry = viewModel::loadBooks,
         modifier = modifier
     )
@@ -117,6 +119,7 @@ fun BookListContent(
     onLibraryClick: () -> Unit,
     onStatsClick: () -> Unit,
     onNotificationsClick: () -> Unit,
+    onLogoutClick: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -176,6 +179,7 @@ fun BookListContent(
         onLibraryClick = onLibraryClick,
         onStatsClick = onStatsClick,
         onNotificationsClick = onNotificationsClick,
+        onLogoutClick = onLogoutClick,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
         when {
@@ -659,6 +663,7 @@ fun BookListContentPreview() {
             onLibraryClick = {},
             onStatsClick = {},
             onNotificationsClick = {},
+            onLogoutClick = {},
             onRetry = {}
         )
     }

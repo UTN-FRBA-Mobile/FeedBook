@@ -54,7 +54,8 @@ fun HomeScreen(
     onProfileClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
-    onNotificationsClick: () -> Unit = {}
+    onNotificationsClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {}
 ) {
     FeedBookScreenScaffold(
         modifier = modifier.fillMaxSize(),
@@ -67,7 +68,8 @@ fun HomeScreen(
         onExploreClick = onExploreClick,
         onLibraryClick = onLibraryClick,
         onStatsClick = onStatsClick,
-        onNotificationsClick = onNotificationsClick
+        onNotificationsClick = onNotificationsClick,
+        onLogoutClick = onLogoutClick
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

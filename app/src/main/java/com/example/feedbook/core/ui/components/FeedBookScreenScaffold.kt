@@ -24,6 +24,7 @@ internal fun FeedBookScreenScaffold(
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {},
     showBottomBar: Boolean = true,
     snackbarHost: @Composable (() -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit
@@ -38,7 +39,8 @@ internal fun FeedBookScreenScaffold(
                 avatarPreset = avatarPreset,
                 avatarImageUri = avatarImageUri,
                 title = title,
-                onAvatarClick = onAvatarClick
+                onAvatarClick = onAvatarClick,
+                onLogoutClick = onLogoutClick
             )
         },
         bottomBar = {

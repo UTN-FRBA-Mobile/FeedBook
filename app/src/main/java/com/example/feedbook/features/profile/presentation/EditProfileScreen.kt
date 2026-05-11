@@ -57,6 +57,7 @@ fun EditProfileScreen(
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {},
     onSave: (ProfileUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -123,7 +124,8 @@ fun EditProfileScreen(
         onExploreClick = onExploreClick,
         onLibraryClick = onLibraryClick,
         onStatsClick = onStatsClick,
-        onNotificationsClick = onNotificationsClick
+        onNotificationsClick = onNotificationsClick,
+        onLogoutClick = onLogoutClick
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

@@ -82,6 +82,15 @@ private fun NavHostController.navigateTopLevel(route: String) {
 fun AppNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val appContainer = (LocalContext.current.applicationContext as FeedBookApplication).container
+    val onLogout = {
+        appContainer.sessionManager.clearSession()
+        navController.navigate(AppRoutes.AUTH_GATE) {
+            popUpTo(navController.graph.findStartDestination().id) {
+                inclusive = true
+            }
+            launchSingleTop = true
+        }
+    }
 
     NavHost(
         navController = navController,
@@ -176,7 +185,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
-                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) }
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onLogoutClick = onLogout
             )
         }
 
@@ -194,6 +204,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onLogoutClick = onLogout,
                 onEditProfileClick = { navController.navigate(AppRoutes.EDIT_PROFILE) },
                 onPreviewPublicProfileClick = { navController.navigate(AppRoutes.PUBLIC_PROFILE_PREVIEW) },
                 onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
@@ -219,6 +230,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onLogoutClick = onLogout,
                 onSave = { updatedState ->
                     viewModel.saveProfile(updatedState) {
                         navController.popBackStack()
@@ -241,6 +253,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onLogoutClick = onLogout,
                 onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
                 onRetry = viewModel::retry
             )
@@ -262,6 +275,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onLogoutClick = onLogout,
                 onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
                 onRetry = viewModel::retry
             )
@@ -281,6 +295,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onLogoutClick = onLogout,
                 onBookClick = { bookId ->                  
                     navController.navigate(AppRoutes.detail(bookId))
                 },
@@ -304,6 +319,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onLogoutClick = onLogout,
                 onModeSelected = viewModel::selectMode,
                 onRetry = viewModel::retry
             )
@@ -326,6 +342,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onLogoutClick = onLogout,
                 onRetry = viewModel::retry
             )
         }
@@ -343,7 +360,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
-                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) }
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onLogoutClick = onLogout
             )
         }
 
@@ -365,6 +383,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLogoutClick = onLogout,
                 onBackClick = { navController.popBackStack() }
             )
         }
@@ -386,6 +405,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLogoutClick = onLogout,
                 onBackClick = { navController.popBackStack() }
             )
         }

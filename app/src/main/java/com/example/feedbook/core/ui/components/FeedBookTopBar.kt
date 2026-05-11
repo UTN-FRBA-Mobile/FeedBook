@@ -24,10 +24,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,6 +62,7 @@ internal fun FeedBookTopBar(
     avatarImageUri: String? = null,
     title: String = stringResource(R.string.profile_topbar_title),
     onAvatarClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -108,7 +115,10 @@ internal fun FeedBookTopBar(
                     horizontalArrangement = Arrangement.spacedBy((iconSize * 0.55f).coerceIn(10.dp, 16.dp)),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    DefaultTopBarActions(iconSize = iconSize)
+                    DefaultTopBarActions(
+                        iconSize = iconSize,
+                        onLogoutClick = onLogoutClick
+                    )
                 }
             }
         }
@@ -118,19 +128,40 @@ internal fun FeedBookTopBar(
 }
 
 @Composable
-private fun RowScope.DefaultTopBarActions(iconSize: Dp) {
+private fun RowScope.DefaultTopBarActions(
+    iconSize: Dp,
+    onLogoutClick: () -> Unit
+) {
+    var showSettingsMenu by remember { mutableStateOf(false) }
+
     Icon(
         imageVector = Icons.Outlined.QrCodeScanner,
         contentDescription = null,
         tint = ProfileColors.SecondaryText,
         modifier = Modifier.size(iconSize)
     )
-    Icon(
-        imageVector = Icons.Outlined.Settings,
-        contentDescription = null,
-        tint = ProfileColors.SecondaryText,
-        modifier = Modifier.size(iconSize)
-    )
+    Box {
+        Icon(
+            imageVector = Icons.Outlined.Settings,
+            contentDescription = null,
+            tint = ProfileColors.SecondaryText,
+            modifier = Modifier
+                .size(iconSize)
+                .clickable { showSettingsMenu = true }
+        )
+        DropdownMenu(
+            expanded = showSettingsMenu,
+            onDismissRequest = { showSettingsMenu = false }
+        ) {
+            DropdownMenuItem(
+                text = { Text("Logout") },
+                onClick = {
+                    showSettingsMenu = false
+                    onLogoutClick()
+                }
+            )
+        }
+    }
 }
 
 @Composable

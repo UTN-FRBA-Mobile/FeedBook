@@ -50,6 +50,7 @@ fun BookDetailScreen(
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {},
 ) {
     val viewModel: BookDetailViewModel = viewModel(factory = viewModelFactory)
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -64,6 +65,7 @@ fun BookDetailScreen(
         onLibraryClick = onLibraryClick,
         onStatsClick = onStatsClick,
         onNotificationsClick = onNotificationsClick,
+        onLogoutClick = onLogoutClick,
         modifier = modifier
     )
 }
@@ -86,6 +88,7 @@ fun BookDetailScreen(
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {},
     onModeSelected: (String) -> Unit = {},
 ) {
 
@@ -101,7 +104,8 @@ fun BookDetailScreen(
         onExploreClick = onExploreClick,
         onLibraryClick = onLibraryClick,
         onStatsClick = onStatsClick,
-        onNotificationsClick = onNotificationsClick
+        onNotificationsClick = onNotificationsClick,
+        onLogoutClick = onLogoutClick
     ) { innerPadding ->
         Column(
             modifier = Modifier
