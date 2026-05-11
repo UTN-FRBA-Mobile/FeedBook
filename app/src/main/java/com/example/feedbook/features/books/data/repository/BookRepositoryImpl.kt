@@ -2,7 +2,6 @@ package com.example.feedbook.features.books.data.repository
 
 import com.example.feedbook.features.books.data.mapper.toDomain
 import com.example.feedbook.features.books.data.remote.BookRemoteDataSource
-import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
 import com.example.feedbook.features.books.domain.model.Book
 import com.example.feedbook.features.books.domain.model.ReadingProgress
 import com.example.feedbook.features.books.domain.model.Review

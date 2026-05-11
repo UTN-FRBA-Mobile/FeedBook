@@ -15,6 +15,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.feedbook.FeedBookApplication
 import com.example.feedbook.features.auth.presentation.LoginScreen
+import com.example.feedbook.features.authors.presentation.detail.AuthorDetailScreen
+import com.example.feedbook.features.authors.presentation.detail.AuthorDetailViewModel
 import com.example.feedbook.features.books.presentation.list.BookListScreen
 import com.example.feedbook.features.books.presentation.list.BookListViewModel
 import com.example.feedbook.features.books.presentation.detail.BookDetailScreen
@@ -43,6 +45,8 @@ object AppRoutes {
     const val NOTIFICATIONS = "notifications"
     const val BOOKS = "books"
     const val BOOK_DETAIL = "bookDetail/{bookId}"
+
+    const val AUTHOR_DETAIL = "authorDetail/{authorId}"
 
     fun detail(bookId: String): String = "bookDetail/$bookId"
 }
@@ -221,6 +225,25 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     getBookByIdUseCase = appContainer.getBookByIdUseCase,
                     getReviewsUseCase = appContainer.getReviewsUseCase,
                     getReadingProgressUseCase = appContainer.getReadingProgress,
+                    observeOwnProfileUseCase = appContainer.observeOwnProfileUseCase
+                ),
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = AppRoutes.AUTHOR_DETAIL,
+            arguments = listOf(navArgument("authorId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            AuthorDetailScreen(
+                viewModelFactory = AuthorDetailViewModel.provideFactory(
+                    authorId = backStackEntry.arguments?.getString("authorId").orEmpty(),
+                    getAuthorByIdUseCase = appContainer.getAuthorByIdUseCase,
+                    toggleFollowUseCase = appContainer.toggleAuthorFollowUseCase,
                     observeOwnProfileUseCase = appContainer.observeOwnProfileUseCase
                 ),
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },

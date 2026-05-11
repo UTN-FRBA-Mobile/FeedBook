@@ -1,6 +1,11 @@
 package com.example.feedbook.core.di
 
 import com.example.feedbook.core.network.NetworkModule
+import com.example.feedbook.features.authors.data.remote.AuthorRemoteDataSource
+import com.example.feedbook.features.authors.data.repository.AuthorRepositoryImpl
+import com.example.feedbook.features.authors.domain.usecase.GetAuthorsUseCase
+import com.example.feedbook.features.authors.domain.usecase.GetAuthorByIdUseCase
+import com.example.feedbook.features.authors.domain.usecase.ToggleAuthorFollowUseCase
 import com.example.feedbook.features.books.data.repository.BookRepositoryImpl
 import com.example.feedbook.features.books.data.remote.BookRemoteDataSource
 import com.example.feedbook.features.books.domain.usecase.GetBookByIdUseCase
@@ -29,12 +34,16 @@ class AppContainer {
     private val fakeBackend = FakeFeedBookBackend()
 
     private val bookRemoteDataSource = BookRemoteDataSource(apiService)
+
+    private val authorRemoteDataSource = AuthorRemoteDataSource(apiService)
     private val profileRemoteDataSource = ProfileRemoteDataSource(fakeBackend)
     private val libraryRemoteDataSource = LibraryRemoteDataSource(fakeBackend)
     private val statsRemoteDataSource = StatsRemoteDataSource(fakeBackend)
     private val notificationsRemoteDataSource = NotificationsRemoteDataSource(fakeBackend)
 
     private val bookRepository = BookRepositoryImpl(bookRemoteDataSource)
+
+    private val authorRepository = AuthorRepositoryImpl(authorRemoteDataSource)
     private val profileRepository = ProfileRepositoryImpl(profileRemoteDataSource)
     private val libraryRepository = LibraryRepositoryImpl(libraryRemoteDataSource)
     private val statsRepository = StatsRepositoryImpl(statsRemoteDataSource)
@@ -42,6 +51,12 @@ class AppContainer {
 
     val getBooksUseCase = GetBooksUseCase(bookRepository)
     val getBookByIdUseCase = GetBookByIdUseCase(bookRepository)
+
+    val getAuthorsUseCase = GetAuthorsUseCase(authorRepository)
+
+    val toggleAuthorFollowUseCase = ToggleAuthorFollowUseCase(authorRepository)
+
+    val getAuthorByIdUseCase = GetAuthorByIdUseCase(authorRepository)
 
     val getReadingProgress = GetReadingProgressUseCase(bookRepository)
 

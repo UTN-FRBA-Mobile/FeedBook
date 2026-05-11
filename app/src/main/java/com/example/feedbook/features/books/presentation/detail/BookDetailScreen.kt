@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.NotificationsNone
@@ -22,14 +21,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,7 +40,6 @@ import com.example.feedbook.features.profile.presentation.components.BottomBarTa
 import com.example.feedbook.features.profile.presentation.components.ProfileBottomBar
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
 import com.example.feedbook.features.profile.presentation.components.ProfileTopBar
-import com.example.feedbook.features.profile.presentation.components.ProfileTypography
 
 // ─── Stateful Wrapper ──────────────────────────────────────────────────────
 @Composable
@@ -206,7 +202,7 @@ private fun BookDetailContent(
         items(state.reviews) { review -> ReviewCard(review = review) }
         item {
             BookMetadataSection(
-                book.id,
+                book.isbn,
                 book.pages,
                 book.language,
                 book.published
@@ -274,13 +270,11 @@ private fun BookInfoSection(book: BookUiModel, rating: Float) {
         Text(
             text = book.title,
             style = MaterialTheme.typography.headlineLarge,
-            color = ProfileColors.PrimaryText
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "by ${book.author}",
             style = MaterialTheme.typography.titleSmall.copy(fontStyle = FontStyle.Italic),
-            color = ProfileColors.SecondaryText
         )
         Spacer(modifier = Modifier.height(10.dp))
         StarRatingRow(rating = rating)
@@ -531,7 +525,6 @@ private fun ReviewsHeader(onWriteReview: () -> Unit) {
         Text(
             text = "Community Reviews",
             style = MaterialTheme.typography.titleLarge,
-            color = ProfileColors.PrimaryText
         )
         TextButton(onClick = onWriteReview) {
             Text(
@@ -592,7 +585,6 @@ private fun ReviewCard(review: ReviewUiModel) {
                     Text(
                         text = review.reviewerName,
                         style = MaterialTheme.typography.titleMedium,
-                        color = ProfileColors.PrimaryText
                     )
                     StarRatingRow(rating = review.rating)
                 }
@@ -656,19 +648,16 @@ private fun BookMetadataSection(
             MetadataRow(
                 label = "PUBLISHED",
                 value = published,
-                labelColor = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(14.dp))
             MetadataRow(
                 label = "PAGES",
                 value = totalPages.toString(),
-                labelColor = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(14.dp))
             MetadataRow(
                 label = "LANGUAGE",
                 value = language,
-                labelColor = MaterialTheme.colorScheme.primary
             )
         }
     }
@@ -678,25 +667,18 @@ private fun BookMetadataSection(
 private fun MetadataRow(
     label: String,
     value: String,
-    labelColor: Color = ProfileColors.SecondaryText.copy(alpha = 0.7f)
 ) {
     Column {
         Text(
             text = label,
-            style = MaterialTheme.typography.labelSmall.copy(
-                letterSpacing = 1.sp,
-                fontWeight = FontWeight.Bold
-            ),
-            color = labelColor
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.secondary
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = value,
-            style = ProfileTypography.SectionTitle.copy(
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Medium
-            ),
-            color = ProfileColors.PrimaryText
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }
