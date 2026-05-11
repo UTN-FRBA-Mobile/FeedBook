@@ -115,7 +115,6 @@ fun BookDetailScreen(
         bottomBar = {
             ProfileBottomBar(
                 activeTab = BottomBarTab.EXPLORE,
-                onProfileClick = onProfileClick,
                 onLibraryClick = onLibraryClick,
                 onStatsClick = onStatsClick,
                 onNotificationsClick = onNotificationsClick
