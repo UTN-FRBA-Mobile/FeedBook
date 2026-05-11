@@ -10,11 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.BarChart
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,14 +18,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.feedbook.R
+import com.example.feedbook.core.ui.components.BottomBarTab
+import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
 import com.example.feedbook.core.ui.components.ErrorScreen
 import com.example.feedbook.core.ui.components.LoadingScreen
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 import com.example.feedbook.features.profile.presentation.ProfileVariant
-import com.example.feedbook.features.profile.presentation.components.BottomBarTab
-import com.example.feedbook.features.profile.presentation.components.ProfileBottomBar
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
-import com.example.feedbook.features.profile.presentation.components.ProfileTopBar
 import com.example.feedbook.features.profile.presentation.components.ProfileTypography
 import com.example.feedbook.features.stats.presentation.components.GenreRadarCard
 import com.example.feedbook.features.stats.presentation.components.ReadingHeatmapCard
@@ -41,6 +35,7 @@ fun StatsScreen(
     modifier: Modifier = Modifier,
     state: StatsUiState,
     onFeedClick: () -> Unit = {},
+    onExploreClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
@@ -67,41 +62,19 @@ fun StatsScreen(
         }
     }
 
-    Scaffold(
+    FeedBookScreenScaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = ProfileColors.Background,
-        topBar = {
-            ProfileTopBar(
-                variant = ProfileVariant.OWN,
-                avatarStyle = state.avatarStyle,
-                avatarPreset = state.avatarPreset,
-                avatarImageUri = state.avatarImageUri,
-                onAvatarClick = onProfileClick,
-                trailingContent = { iconSize ->
-                    Icon(
-                        imageVector = Icons.Outlined.BarChart,
-                        contentDescription = stringResource(R.string.stats_icon),
-                        tint = ProfileColors.SecondaryText,
-                        modifier = Modifier.size(iconSize)
-                    )
-                    Icon(
-                        imageVector = Icons.Outlined.Settings,
-                        contentDescription = stringResource(R.string.profile_topbar_settings),
-                        tint = ProfileColors.SecondaryText,
-                        modifier = Modifier.size(iconSize)
-                    )
-                }
-            )
-        },
-        bottomBar = {
-            ProfileBottomBar(
-                activeTab = BottomBarTab.STATS,
-                onFeedClick = onFeedClick,
-                onLibraryClick = onLibraryClick,
-                onStatsClick = onStatsClick,
-                onNotificationsClick = onNotificationsClick
-            )
-        }
+        variant = ProfileVariant.OWN,
+        activeTab = BottomBarTab.STATS,
+        avatarStyle = state.avatarStyle,
+        avatarPreset = state.avatarPreset,
+        avatarImageUri = state.avatarImageUri,
+        onAvatarClick = onProfileClick,
+        onFeedClick = onFeedClick,
+        onExploreClick = onExploreClick,
+        onLibraryClick = onLibraryClick,
+        onStatsClick = onStatsClick,
+        onNotificationsClick = onNotificationsClick
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

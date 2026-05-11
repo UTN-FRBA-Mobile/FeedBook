@@ -12,8 +12,6 @@ import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Create
-import androidx.compose.material.icons.outlined.NotificationsNone
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.*
@@ -35,11 +33,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.feedbook.R
+import com.example.feedbook.core.ui.components.BottomBarTab
+import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
 import com.example.feedbook.core.ui.theme.FeedBookTheme
-import com.example.feedbook.features.profile.presentation.components.BottomBarTab
-import com.example.feedbook.features.profile.presentation.components.ProfileBottomBar
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
-import com.example.feedbook.features.profile.presentation.components.ProfileTopBar
 
 // ─── Stateful Wrapper ──────────────────────────────────────────────────────
 @Composable
@@ -47,6 +44,8 @@ fun BookDetailScreen(
     modifier: Modifier = Modifier,
     viewModelFactory: ViewModelProvider.Factory,
     onBackClick: () -> Unit,
+    onFeedClick: () -> Unit = {},
+    onExploreClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
@@ -59,6 +58,8 @@ fun BookDetailScreen(
         state = state,
         onRetry = viewModel::loadBook,
         onBackClick = onBackClick,
+        onFeedClick = onFeedClick,
+        onExploreClick = onExploreClick,
         onProfileClick = onProfileClick,
         onLibraryClick = onLibraryClick,
         onStatsClick = onStatsClick,
@@ -79,6 +80,8 @@ fun BookDetailScreen(
     onAddToList: () -> Unit = {},
     onSaveProgress: (Int) -> Unit = {},
     onWriteReview: () -> Unit = {},
+    onFeedClick: () -> Unit = {},
+    onExploreClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
@@ -86,40 +89,19 @@ fun BookDetailScreen(
     onModeSelected: (String) -> Unit = {},
 ) {
 
-    Scaffold(
+    FeedBookScreenScaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = ProfileColors.Background,
-        topBar = {
-            ProfileTopBar(
-                variant = com.example.feedbook.features.profile.presentation.ProfileVariant.OWN,
-                avatarStyle = state.avatarStyle,
-                avatarPreset = state.avatarPreset,
-                avatarImageUri = state.avatarImageUri,
-                onAvatarClick = onProfileClick,
-                trailingContent = { iconSize ->
-                    Icon(
-                        imageVector = Icons.Outlined.NotificationsNone,
-                        contentDescription = stringResource(com.example.feedbook.R.string.notifications_icon),
-                        tint = ProfileColors.SecondaryText,
-                        modifier = Modifier.size(iconSize)
-                    )
-                    Icon(
-                        imageVector = Icons.Outlined.Settings,
-                        contentDescription = stringResource(R.string.profile_topbar_settings),
-                        tint = ProfileColors.SecondaryText,
-                        modifier = Modifier.size(iconSize)
-                    )
-                }
-            )
-        },
-        bottomBar = {
-            ProfileBottomBar(
-                activeTab = BottomBarTab.EXPLORE,
-                onLibraryClick = onLibraryClick,
-                onStatsClick = onStatsClick,
-                onNotificationsClick = onNotificationsClick
-            )
-        }
+        variant = com.example.feedbook.features.profile.presentation.ProfileVariant.OWN,
+        activeTab = BottomBarTab.EXPLORE,
+        avatarStyle = state.avatarStyle,
+        avatarPreset = state.avatarPreset,
+        avatarImageUri = state.avatarImageUri,
+        onAvatarClick = onProfileClick,
+        onFeedClick = onFeedClick,
+        onExploreClick = onExploreClick,
+        onLibraryClick = onLibraryClick,
+        onStatsClick = onStatsClick,
+        onNotificationsClick = onNotificationsClick
     ) { innerPadding ->
         Column(
             modifier = Modifier

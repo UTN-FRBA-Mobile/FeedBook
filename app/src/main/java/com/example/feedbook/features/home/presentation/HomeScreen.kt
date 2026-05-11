@@ -21,12 +21,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.LocalFireDepartment
-import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material.icons.outlined.PeopleOutline
-import androidx.compose.material.icons.outlined.QrCodeScanner
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -40,14 +36,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.feedbook.core.ui.components.BottomBarTab
+import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
 import com.example.feedbook.core.ui.components.RemoteBookCover
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 import com.example.feedbook.features.profile.presentation.ProfileVariant
-import com.example.feedbook.features.profile.presentation.components.BottomBarTab
-import com.example.feedbook.features.profile.presentation.components.ProfileBottomBar
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
 import com.example.feedbook.features.profile.presentation.components.ProfileSurfaceCard
-import com.example.feedbook.features.profile.presentation.components.ProfileTopBar
 import com.example.feedbook.features.profile.presentation.components.ProfileTypography
 
 @Composable
@@ -55,45 +50,24 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     state: HomeUiState = sampleHomeUiState(),
     onFeedClick: () -> Unit = {},
+    onExploreClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {}
 ) {
-    Scaffold(
+    FeedBookScreenScaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = ProfileColors.Background,
-        topBar = {
-            ProfileTopBar(
-                variant = ProfileVariant.OWN,
-                avatarStyle = state.avatarStyle,
-                avatarImageUri = state.avatarImageUri,
-                onAvatarClick = onProfileClick,
-                trailingContent = { iconSize ->
-                    Icon(
-                        imageVector = Icons.Outlined.QrCodeScanner,
-                        contentDescription = null,
-                        tint = Color(0xFF334155),
-                        modifier = Modifier.size(iconSize)
-                    )
-                    Icon(
-                        imageVector = Icons.Outlined.Settings,
-                        contentDescription = null,
-                        tint = Color(0xFF334155),
-                        modifier = Modifier.size(iconSize)
-                    )
-                }
-            )
-        },
-        bottomBar = {
-            ProfileBottomBar(
-                activeTab = BottomBarTab.FEED,
-                onFeedClick = onFeedClick,
-                onLibraryClick = onLibraryClick,
-                onStatsClick = onStatsClick,
-                onNotificationsClick = onNotificationsClick
-            )
-        }
+        variant = ProfileVariant.OWN,
+        activeTab = BottomBarTab.FEED,
+        avatarStyle = state.avatarStyle,
+        avatarImageUri = state.avatarImageUri,
+        onAvatarClick = onProfileClick,
+        onFeedClick = onFeedClick,
+        onExploreClick = onExploreClick,
+        onLibraryClick = onLibraryClick,
+        onStatsClick = onStatsClick,
+        onNotificationsClick = onNotificationsClick
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

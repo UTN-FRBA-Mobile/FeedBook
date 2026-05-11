@@ -1,4 +1,4 @@
-package com.example.feedbook.features.profile.presentation.components
+package com.example.feedbook.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -7,17 +7,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.automirrored.rounded.MenuBook
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.MenuBook
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material.icons.outlined.Search
@@ -30,8 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.feedbook.R
 
@@ -44,9 +44,10 @@ internal enum class BottomBarTab {
 }
 
 @Composable
-internal fun ProfileBottomBar(
+internal fun FeedBookBottomBar(
     activeTab: BottomBarTab = BottomBarTab.FEED,
     onFeedClick: () -> Unit = {},
+    onExploreClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
@@ -90,6 +91,7 @@ internal fun ProfileBottomBar(
                     icon = Icons.Outlined.Search,
                     contentDescription = stringResource(R.string.profile_bottom_nav_explore),
                     active = activeTab == BottomBarTab.EXPLORE,
+                    onClick = onExploreClick,
                     iconSize = iconSize,
                     indicatorWidth = indicatorWidth,
                     indicatorHeight = indicatorHeight,

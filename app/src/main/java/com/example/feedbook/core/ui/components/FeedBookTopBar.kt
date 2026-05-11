@@ -1,16 +1,18 @@
-package com.example.feedbook.features.profile.presentation.components
+package com.example.feedbook.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -20,9 +22,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Chat
-import androidx.compose.material.icons.outlined.AccessTime
-import androidx.compose.material.icons.outlined.MoreHoriz
+import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -31,17 +31,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.feedbook.R
 import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.ProfileVariant
+import com.example.feedbook.features.profile.presentation.components.ProfileColors
+import com.example.feedbook.features.profile.presentation.components.ProfileTypography
 
 @Composable
-internal fun ProfileTopBar(
+internal fun FeedBookTopBar(
     variant: ProfileVariant,
     avatarStyle: AvatarStyle = AvatarStyle(
         topColor = Color(0xFF315A73),
@@ -51,31 +56,6 @@ internal fun ProfileTopBar(
     avatarImageUri: String? = null,
     title: String = stringResource(R.string.profile_topbar_title),
     onAvatarClick: () -> Unit = {},
-    trailingContent: @Composable RowScope.(Dp) -> Unit = { iconSize ->
-        if (variant == ProfileVariant.OWN) {
-            ProfileTopBarActionIcon(
-                imageVector = Icons.Outlined.AccessTime,
-                contentDescription = stringResource(R.string.profile_topbar_recent_activity),
-                iconSize = iconSize
-            )
-            ProfileTopBarActionIcon(
-                imageVector = Icons.Outlined.Settings,
-                contentDescription = stringResource(R.string.profile_topbar_settings),
-                iconSize = iconSize
-            )
-        } else {
-            ProfileTopBarActionIcon(
-                imageVector = Icons.AutoMirrored.Outlined.Chat,
-                contentDescription = stringResource(R.string.profile_topbar_direct_message),
-                iconSize = iconSize
-            )
-            ProfileTopBarActionIcon(
-                imageVector = Icons.Outlined.MoreHoriz,
-                contentDescription = stringResource(R.string.profile_topbar_more_options),
-                iconSize = iconSize
-            )
-        }
-    },
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -108,11 +88,13 @@ internal fun ProfileTopBar(
                         .clickable(onClick = onAvatarClick),
                     contentAlignment = Alignment.Center
                 ) {
-                    ProfileTopBarAvatarFill(
+                    TopBarAvatarFill(
                         avatarStyle = avatarStyle,
                         avatarPreset = avatarPreset,
                         avatarImageUri = avatarImageUri,
-                        modifier = Modifier.size(innerAvatarSize).clip(CircleShape)
+                        modifier = Modifier
+                            .size(innerAvatarSize)
+                            .clip(CircleShape)
                     )
                 }
 
@@ -126,7 +108,7 @@ internal fun ProfileTopBar(
                     horizontalArrangement = Arrangement.spacedBy((iconSize * 0.55f).coerceIn(10.dp, 16.dp)),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    trailingContent(iconSize)
+                    DefaultTopBarActions(iconSize = iconSize)
                 }
             }
         }
@@ -136,21 +118,72 @@ internal fun ProfileTopBar(
 }
 
 @Composable
-internal fun ProfileTopBarActionIcon(
-    imageVector: androidx.compose.ui.graphics.vector.ImageVector,
-    contentDescription: String,
-    iconSize: Dp,
-    onClick: (() -> Unit)? = null,
-    tint: Color = ProfileColors.SecondaryText
-) {
+private fun RowScope.DefaultTopBarActions(iconSize: Dp) {
     Icon(
-        imageVector = imageVector,
-        contentDescription = contentDescription,
-        modifier = Modifier
-            .size(iconSize)
-            .then(
-                if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
-            ),
-        tint = tint
+        imageVector = Icons.Outlined.QrCodeScanner,
+        contentDescription = null,
+        tint = ProfileColors.SecondaryText,
+        modifier = Modifier.size(iconSize)
     )
+    Icon(
+        imageVector = Icons.Outlined.Settings,
+        contentDescription = null,
+        tint = ProfileColors.SecondaryText,
+        modifier = Modifier.size(iconSize)
+    )
+}
+
+@Composable
+private fun TopBarAvatarFill(
+    avatarStyle: AvatarStyle,
+    avatarPreset: AvatarPreset?,
+    avatarImageUri: String?,
+    modifier: Modifier = Modifier
+) {
+    AvatarArtwork(
+        avatarStyle = avatarStyle,
+        avatarPreset = avatarPreset,
+        avatarImageUri = avatarImageUri,
+        modifier = modifier,
+        imageShape = CircleShape
+    )
+}
+
+@Composable
+private fun AvatarArtwork(
+    avatarStyle: AvatarStyle,
+    avatarPreset: AvatarPreset?,
+    avatarImageUri: String?,
+    modifier: Modifier = Modifier,
+    imageShape: androidx.compose.ui.graphics.Shape = RoundedCornerShape(10.dp),
+    fallbackContent: @Composable BoxScope.() -> Unit = {}
+) {
+    val imageModel = avatarImageUri ?: avatarPreset?.imageUrl
+
+    Box(
+        modifier = modifier
+            .clip(imageShape)
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        avatarStyle.topColor.copy(alpha = 0.18f),
+                        avatarStyle.bottomColor.copy(alpha = 0.34f)
+                    )
+                )
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        if (imageModel != null) {
+            AsyncImage(
+                model = imageModel,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(imageShape),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            fallbackContent()
+        }
+    }
 }

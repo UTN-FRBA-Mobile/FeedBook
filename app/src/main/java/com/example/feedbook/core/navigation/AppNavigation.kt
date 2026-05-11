@@ -65,6 +65,7 @@ object AppRoutes {
     const val AUTHOR_DETAIL = "authorDetail/{authorId}"
 
     fun detail(bookId: String): String = "bookDetail/$bookId"
+    fun authorDetail(authorId: String): String = "authorDetail/$authorId"
 }
 
 private fun NavHostController.navigateTopLevel(route: String) {
@@ -171,6 +172,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             HomeScreen(
                 state = state,
                 onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
+                onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
@@ -187,6 +189,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             ProfileScreen(
                 state = state,
                 onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
+                onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
@@ -210,7 +213,12 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             EditProfileScreen(
                 state = state,
                 onBackClick = { navController.popBackStack() },
+                onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
+                onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onSave = { updatedState ->
                     viewModel.saveProfile(updatedState) {
                         navController.popBackStack()
@@ -228,6 +236,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             ProfileScreen(
                 state = state,
                 onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
+                onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
@@ -248,6 +257,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             ProfileScreen(
                 state = state,
                 onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
+                onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
@@ -266,6 +276,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             LibraryScreen(
                 state = state,
                 onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
+                onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
@@ -288,6 +299,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             StatsScreen(
                 state = state,
                 onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
+                onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
@@ -309,6 +321,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             NotificationsScreen(
                 state = state,
                 onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
+                onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
@@ -319,8 +332,18 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
         composable(route = AppRoutes.BOOKS) {
             BookListScreen(
-                viewModelFactory = BookListViewModel.provideFactory(appContainer.getBooksUseCase),
-                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) }
+                viewModelFactory = BookListViewModel.provideFactory(
+                    getBooksUseCase = appContainer.getBooksUseCase,
+                    getAuthorsUseCase = appContainer.getAuthorsUseCase
+                ),
+                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
+                onAuthorClick = { authorId -> navController.navigate(AppRoutes.authorDetail(authorId)) },
+                onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
+                onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) }
             )
         }
 
@@ -336,6 +359,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     getReadingProgressUseCase = appContainer.getReadingProgress,
                     observeOwnProfileUseCase = appContainer.observeOwnProfileUseCase
                 ),
+                onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
+                onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
@@ -355,6 +380,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     toggleFollowUseCase = appContainer.toggleAuthorFollowUseCase,
                     observeOwnProfileUseCase = appContainer.observeOwnProfileUseCase
                 ),
+                onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
+                onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },

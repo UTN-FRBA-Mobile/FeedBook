@@ -1,24 +1,24 @@
 package com.example.feedbook.features.profile.presentation.components
 
-import androidx.compose.ui.graphics.Color
+import com.example.feedbook.core.ui.theme.FeedBookColors
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 internal object ProfileColors {
-    val Background = Color(0xFFFBF9F8)
-    val Surface = Color(0xFFFBF9F8)
-    val SurfaceStrong = Color(0xFF03192E)
-    val Border = Color(0x4DC4C6CD)
-    val BorderDashed = Color(0x80C4C6CD)
-    val Divider = Color(0xFFE3E2E2)
-    val PrimaryText = Color(0xFF1B1C1C)
-    val SecondaryText = Color(0xFF43474D)
-    val Accent = Color(0xFF7C5730)
-    val AccentSoft = Color(0xFFE6E2DB)
-    val ArchiveText = Color(0xFFB4C8E4)
-    val TodayOutline = Color(0x80C4C6CD)
+    val Background = FeedBookColors.Background
+    val Surface = FeedBookColors.Surface
+    val SurfaceStrong = FeedBookColors.SurfaceStrong
+    val Border = FeedBookColors.Border
+    val BorderDashed = FeedBookColors.BorderDashed
+    val Divider = FeedBookColors.Divider
+    val PrimaryText = FeedBookColors.PrimaryText
+    val SecondaryText = FeedBookColors.SecondaryText
+    val Accent = FeedBookColors.Accent
+    val AccentSoft = FeedBookColors.AccentSoft
+    val ArchiveText = FeedBookColors.ArchiveText
+    val TodayOutline = FeedBookColors.TodayOutline
 }
 
 internal object ProfileTypography {

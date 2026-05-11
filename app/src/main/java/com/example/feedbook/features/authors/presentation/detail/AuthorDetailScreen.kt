@@ -28,11 +28,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.feedbook.core.ui.components.BottomBarTab
+import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
 import com.example.feedbook.core.ui.theme.FeedBookTheme
-import com.example.feedbook.features.profile.presentation.components.BottomBarTab
-import com.example.feedbook.features.profile.presentation.components.ProfileBottomBar
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
-import com.example.feedbook.features.profile.presentation.components.ProfileTopBar
 import androidx.compose.animation.animateContentSize
 
 // ─── Stateful Wrapper ──────────────────────────────────────────────────────
@@ -42,6 +41,8 @@ fun AuthorDetailScreen(
     viewModelFactory: ViewModelProvider.Factory,
     onBackClick: () -> Unit,
     onBookClick: (String) -> Unit = {},
+    onFeedClick: () -> Unit = {},
+    onExploreClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
@@ -56,6 +57,8 @@ fun AuthorDetailScreen(
         onBackClick = onBackClick,
         onBookClick = onBookClick,
         onFollowClick = viewModel::toggleFollow,
+        onFeedClick = onFeedClick,
+        onExploreClick = onExploreClick,
         onProfileClick = onProfileClick,
         onLibraryClick = onLibraryClick,
         onStatsClick = onStatsClick,
@@ -73,31 +76,26 @@ fun AuthorDetailScreen(
     onBackClick: () -> Unit,
     onBookClick: (String) -> Unit = {},
     onFollowClick: () -> Unit = {},
+    onFeedClick: () -> Unit = {},
+    onExploreClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
 ) {
-    Scaffold(
+    FeedBookScreenScaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = ProfileColors.Background,
-        topBar = {
-            ProfileTopBar(
-                variant = com.example.feedbook.features.profile.presentation.ProfileVariant.OWN,
-                avatarStyle = state.avatarStyle,
-                avatarPreset = state.avatarPreset,
-                avatarImageUri = state.avatarImageUri,
-                onAvatarClick = onProfileClick,
-            )
-        },
-        bottomBar = {
-            ProfileBottomBar(
-                activeTab = BottomBarTab.EXPLORE,
-                onLibraryClick = onLibraryClick,
-                onStatsClick = onStatsClick,
-                onNotificationsClick = onNotificationsClick
-            )
-        }
+        variant = com.example.feedbook.features.profile.presentation.ProfileVariant.OWN,
+        activeTab = BottomBarTab.EXPLORE,
+        avatarStyle = state.avatarStyle,
+        avatarPreset = state.avatarPreset,
+        avatarImageUri = state.avatarImageUri,
+        onAvatarClick = onProfileClick,
+        onFeedClick = onFeedClick,
+        onExploreClick = onExploreClick,
+        onLibraryClick = onLibraryClick,
+        onStatsClick = onStatsClick,
+        onNotificationsClick = onNotificationsClick
     ) { innerPadding ->
         when {
             state.isLoading -> LoadingContent(modifier = Modifier.padding(innerPadding))

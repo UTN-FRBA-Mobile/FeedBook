@@ -18,14 +18,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,11 +39,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.feedbook.R
+import com.example.feedbook.core.ui.components.BottomBarTab
+import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
 import com.example.feedbook.features.profile.presentation.components.ProfileSurfaceCard
-import com.example.feedbook.features.profile.presentation.components.ProfileTopBar
-import com.example.feedbook.features.profile.presentation.components.ProfileTopBarActionIcon
 import com.example.feedbook.features.profile.presentation.components.ProfileTypography
 import com.example.feedbook.features.profile.presentation.components.ProfileAvatarArtwork
 
@@ -54,7 +51,12 @@ import com.example.feedbook.features.profile.presentation.components.ProfileAvat
 fun EditProfileScreen(
     state: ProfileUiState,
     onBackClick: () -> Unit,
+    onFeedClick: () -> Unit = {},
+    onExploreClick: () -> Unit = {},
     onProfileClick: () -> Unit,
+    onLibraryClick: () -> Unit = {},
+    onStatsClick: () -> Unit = {},
+    onNotificationsClick: () -> Unit = {},
     onSave: (ProfileUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -108,27 +110,20 @@ fun EditProfileScreen(
         )
     }
 
-    Scaffold(
+    FeedBookScreenScaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = ProfileColors.Background,
-        topBar = {
-            ProfileTopBar(
-                variant = state.variant,
-                avatarStyle = selectedAvatarStyle,
-                avatarPreset = selectedAvatarPreset,
-                avatarImageUri = selectedAvatarImageUri,
-                title = stringResource(R.string.edit_profile_title),
-                onAvatarClick = onProfileClick,
-                trailingContent = { iconSize ->
-                    ProfileTopBarActionIcon(
-                        imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                        contentDescription = stringResource(R.string.edit_profile_back),
-                        iconSize = iconSize,
-                        onClick = onBackClick
-                    )
-                }
-            )
-        }
+        variant = state.variant,
+        activeTab = BottomBarTab.FEED,
+        avatarStyle = selectedAvatarStyle,
+        avatarPreset = selectedAvatarPreset,
+        avatarImageUri = selectedAvatarImageUri,
+        title = stringResource(R.string.edit_profile_title),
+        onAvatarClick = onProfileClick,
+        onFeedClick = onFeedClick,
+        onExploreClick = onExploreClick,
+        onLibraryClick = onLibraryClick,
+        onStatsClick = onStatsClick,
+        onNotificationsClick = onNotificationsClick
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

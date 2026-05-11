@@ -51,17 +51,18 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.example.feedbook.R
+import com.example.feedbook.core.ui.theme.FeedBookColors
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 
 private object LoginColors {
-    val Background = Color(0xFFFBF9F8)
-    val Title = Color(0xFF0C2439)
-    val Subtitle = Color(0xFF5D6067)
-    val Label = Color(0xFF4E535A)
-    val Placeholder = Color(0xFFB9BDC3)
-    val Divider = Color(0xFFC8CDD5)
-    val PrimaryButton = Color(0xFF0C2439)
-    val Error = Color(0xFFB45A52)
+    val Background = FeedBookColors.Background
+    val Title = FeedBookColors.LoginTitle
+    val Subtitle = FeedBookColors.LoginSubtitle
+    val Label = FeedBookColors.LoginLabel
+    val Placeholder = FeedBookColors.LoginPlaceholder
+    val Divider = FeedBookColors.LoginDivider
+    val PrimaryButton = FeedBookColors.LoginPrimaryButton
+    val Error = FeedBookColors.LoginError
 }
 
 @Composable
@@ -82,7 +83,7 @@ fun LoginScreen(
                 brush = Brush.verticalGradient(
                     colors = listOf(
                         LoginColors.Background,
-                        Color(0xFFF7F4F1),
+                        FeedBookColors.LoginGradientMid,
                         LoginColors.Background
                     )
                 )

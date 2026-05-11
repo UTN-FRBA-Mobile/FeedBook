@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,17 +16,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.feedbook.R
+import com.example.feedbook.core.ui.components.BottomBarTab
+import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
 import com.example.feedbook.core.ui.components.ErrorScreen
 import com.example.feedbook.core.ui.components.LoadingScreen
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 import com.example.feedbook.features.profile.presentation.components.CurrentlyReadingCard
 import com.example.feedbook.features.profile.presentation.components.FeaturedReviewCard
 import com.example.feedbook.features.profile.presentation.components.LibraryArchiveCard
-import com.example.feedbook.features.profile.presentation.components.BottomBarTab
-import com.example.feedbook.features.profile.presentation.components.ProfileBottomBar
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
 import com.example.feedbook.features.profile.presentation.components.ProfileHeaderSection
-import com.example.feedbook.features.profile.presentation.components.ProfileTopBar
 import com.example.feedbook.features.profile.presentation.components.PublicLibraryCard
 import com.example.feedbook.features.profile.presentation.components.PublicProfileStatsCard
 import com.example.feedbook.features.profile.presentation.components.ReadingGoalCard
@@ -39,6 +37,7 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
     state: ProfileUiState,
     onFeedClick: () -> Unit = {},
+    onExploreClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
@@ -64,27 +63,19 @@ fun ProfileScreen(
         }
     }
 
-    Scaffold(
+    FeedBookScreenScaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = ProfileColors.Background,
-        topBar = {
-            ProfileTopBar(
-                variant = state.variant,
-                avatarStyle = state.avatarStyle,
-                avatarPreset = state.avatarPreset,
-                avatarImageUri = state.avatarImageUri,
-                onAvatarClick = onProfileClick
-            )
-        },
-        bottomBar = {
-            ProfileBottomBar(
-                activeTab = BottomBarTab.FEED,
-                onFeedClick = onFeedClick,
-                onLibraryClick = onLibraryClick,
-                onStatsClick = onStatsClick,
-                onNotificationsClick = onNotificationsClick
-            )
-        }
+        variant = state.variant,
+        activeTab = BottomBarTab.FEED,
+        avatarStyle = state.avatarStyle,
+        avatarPreset = state.avatarPreset,
+        avatarImageUri = state.avatarImageUri,
+        onAvatarClick = onProfileClick,
+        onFeedClick = onFeedClick,
+        onExploreClick = onExploreClick,
+        onLibraryClick = onLibraryClick,
+        onStatsClick = onStatsClick,
+        onNotificationsClick = onNotificationsClick
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
