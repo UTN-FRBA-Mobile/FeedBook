@@ -39,7 +39,8 @@ fun LibraryScreen(
     onProfileClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
-    onNotificationsClick: () -> Unit = {}
+    onNotificationsClick: () -> Unit = {},
+    onBookClick: (String) -> Unit = {}
 ) {
     var showReadCollection by rememberSaveable { mutableStateOf(false) }
 
@@ -101,7 +102,8 @@ fun LibraryScreen(
                     CurrentlyReadingCard(
                         currentBook = state.currentBook,
                         emphasized = true,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        onBookClick = { bookId -> onBookClick(bookId)}
                     )
                 }
                 item {

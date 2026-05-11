@@ -8,24 +8,30 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-    primary = FeedSky,
-    secondary = FeedBlue,
-    surface = FeedSurfaceDark,
-    onPrimary = FeedSurfaceDark,
-    onSurface = FeedTextDark,
-    error = FeedError
+private val LightColorScheme = lightColorScheme(
+    primary      = FeedNavy,
+    secondary    = FeedBrown,
+    tertiary     = FeedCream,
+    surface      = FeedSurface,
+    onPrimary    = Color.White,
+    onSecondary  = Color.White,
+    onSurface    = FeedNeutral,
+    inverseSurface = FeedNavy,
+    error        = FeedError
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = FeedBlue,
-    secondary = FeedSky,
-    surface = FeedSurface,
-    onPrimary = FeedSurface,
-    onSurface = FeedText,
-    error = FeedError
+private val DarkColorScheme = darkColorScheme(
+    primary      = FeedCream,
+    secondary    = FeedBrown,
+    tertiary     = FeedNavy,
+    surface      = FeedNeutral,
+    onPrimary    = FeedNeutral,
+    onSurface    = FeedCream,
+    inverseSurface = FeedNeutral,
+    error        = FeedError
 )
 
 @Composable

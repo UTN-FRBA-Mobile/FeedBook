@@ -18,6 +18,7 @@ data class LibraryAvatar(
 )
 
 data class LibraryCurrentBook(
+    val id: String,
     val title: String,
     val author: String,
     val page: Int,

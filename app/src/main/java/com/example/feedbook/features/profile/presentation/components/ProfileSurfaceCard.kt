@@ -1,6 +1,7 @@
 package com.example.feedbook.features.profile.presentation.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.padding
@@ -17,10 +18,16 @@ internal fun ProfileSurfaceCard(
     modifier: Modifier = Modifier,
     containerColor: Color = ProfileColors.Surface,
     borderColor: Color = ProfileColors.Border,
+    onClick: (() -> Unit)? = null,
     content: @Composable BoxScope.() -> Unit
 ) {
     Card(
-        modifier = modifier,
+        modifier = if (onClick != null) {
+            modifier.clickable(onClick = onClick)
+        } else {
+            modifier
+        },
+        onClick = onClick ?: {},
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = containerColor),
         border = BorderStroke(1.dp, borderColor),

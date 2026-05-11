@@ -15,6 +15,7 @@ fun ReaderLibrary.toUiState(): LibraryUiState = LibraryUiState(
     ),
     avatarImageUri = avatar.imageUri,
     currentBook = CurrentBook(
+        id = currentBook.id,
         title = currentBook.title,
         author = currentBook.author,
         page = currentBook.page,

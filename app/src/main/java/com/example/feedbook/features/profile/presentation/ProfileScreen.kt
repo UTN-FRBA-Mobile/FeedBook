@@ -45,6 +45,7 @@ fun ProfileScreen(
     onNotificationsClick: () -> Unit = {},
     onEditProfileClick: () -> Unit = {},
     onPreviewPublicProfileClick: () -> Unit = {},
+    onBookClick: (String) -> Unit = {},
     onRetry: () -> Unit = {}
 ) {
     when {
@@ -141,6 +142,7 @@ fun ProfileScreen(
                     item {
                         CurrentlyReadingCard(
                             currentBook = state.currentBook,
+                            onBookClick = { onBookClick(state.currentBook.id) },
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
                     }
@@ -170,6 +172,7 @@ fun ProfileScreen(
                     item {
                         CurrentlyReadingCard(
                             currentBook = state.currentBook,
+                            onBookClick = onBookClick,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
                     }
@@ -191,7 +194,7 @@ fun ProfileScreen(
     }
 }
 
-@Preview(showBackground = true, heightDp = 1500, widthDp = 390)
+@Preview(showBackground = true, heightDp = 1500, widthDp = 390, apiLevel = 36)
 @Composable
 private fun ProfileScreenPreview() {
     FeedBookTheme(dynamicColor = false) {

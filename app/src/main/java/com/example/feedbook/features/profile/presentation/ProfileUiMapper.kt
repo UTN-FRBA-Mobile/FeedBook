@@ -56,6 +56,7 @@ private fun ReaderProfile.toUiState(
         }
     ),
     currentBook = CurrentBook(
+        id = currentBook.id,
         title = currentBook.title,
         author = currentBook.author,
         page = currentBook.page,

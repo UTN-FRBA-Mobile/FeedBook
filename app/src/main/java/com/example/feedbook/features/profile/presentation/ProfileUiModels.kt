@@ -43,6 +43,7 @@ data class StreakDay(
 )
 
 data class CurrentBook(
+    val id: String,
     val title: String,
     val author: String,
     val page: Int,
@@ -139,6 +140,7 @@ fun emptyProfileUiState(variant: ProfileVariant): ProfileUiState = ProfileUiStat
     readingGoal = null,
     readingStreak = ReadingStreak(days = 0, week = emptyList()),
     currentBook = CurrentBook(
+        id = "",
         title = "",
         author = "",
         page = 0,

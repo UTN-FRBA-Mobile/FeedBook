@@ -1,5 +1,6 @@
 package com.example.feedbook.core.navigation
 
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
@@ -25,6 +26,8 @@ import com.example.feedbook.features.auth.presentation.AuthGateUiState
 import com.example.feedbook.features.auth.presentation.AuthGateViewModel
 import com.example.feedbook.features.auth.presentation.LoginBiometricPrompt
 import com.example.feedbook.features.auth.presentation.LoginScreen
+import com.example.feedbook.features.authors.presentation.detail.AuthorDetailScreen
+import com.example.feedbook.features.authors.presentation.detail.AuthorDetailViewModel
 import com.example.feedbook.features.auth.presentation.LoginViewModel
 import com.example.feedbook.features.books.presentation.list.BookListScreen
 import com.example.feedbook.features.books.presentation.list.BookListViewModel
@@ -58,6 +61,8 @@ object AppRoutes {
     const val NOTIFICATIONS = "notifications"
     const val BOOKS = "books"
     const val BOOK_DETAIL = "bookDetail/{bookId}"
+
+    const val AUTHOR_DETAIL = "authorDetail/{authorId}"
 
     fun detail(bookId: String): String = "bookDetail/$bookId"
 }
@@ -188,6 +193,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onEditProfileClick = { navController.navigate(AppRoutes.EDIT_PROFILE) },
                 onPreviewPublicProfileClick = { navController.navigate(AppRoutes.PUBLIC_PROFILE_PREVIEW) },
+                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
                 onRetry = viewModel::retry
             )
         }
@@ -226,6 +232,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
                 onRetry = viewModel::retry
             )
         }
@@ -245,6 +252,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
                 onRetry = viewModel::retry
             )
         }
@@ -261,7 +269,10 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
-                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) }
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onBookClick = { bookId ->                  
+                    navController.navigate(AppRoutes.detail(bookId))
+                },
             )
         }
 
@@ -316,12 +327,38 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         composable(
             route = AppRoutes.BOOK_DETAIL,
             arguments = listOf(navArgument("bookId") { type = NavType.StringType })
-        ) {
+        ) { backStackEntry ->
             BookDetailScreen(
                 viewModelFactory = BookDetailViewModel.provideFactory(
-                    bookId = it.arguments?.getString("bookId").orEmpty(),
-                    getBookByIdUseCase = appContainer.getBookByIdUseCase
+                    bookId = backStackEntry.arguments?.getString("bookId").orEmpty(),
+                    getBookByIdUseCase = appContainer.getBookByIdUseCase,
+                    getReviewsUseCase = appContainer.getReviewsUseCase,
+                    getReadingProgressUseCase = appContainer.getReadingProgress,
+                    observeOwnProfileUseCase = appContainer.observeOwnProfileUseCase
                 ),
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = AppRoutes.AUTHOR_DETAIL,
+            arguments = listOf(navArgument("authorId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            AuthorDetailScreen(
+                viewModelFactory = AuthorDetailViewModel.provideFactory(
+                    authorId = backStackEntry.arguments?.getString("authorId").orEmpty(),
+                    getAuthorByIdUseCase = appContainer.getAuthorByIdUseCase,
+                    toggleFollowUseCase = appContainer.toggleAuthorFollowUseCase,
+                    observeOwnProfileUseCase = appContainer.observeOwnProfileUseCase
+                ),
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onBackClick = { navController.popBackStack() }
             )
         }

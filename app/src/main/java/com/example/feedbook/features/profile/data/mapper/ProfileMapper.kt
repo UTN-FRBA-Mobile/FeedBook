@@ -35,8 +35,10 @@ private fun AvatarPresetDto.toDomain(): AvatarPresetInfo = AvatarPresetInfo(id, 
 private fun ReadingGoalDto.toDomain(): ReadingGoal = ReadingGoal(targetPagesPerDay, currentAveragePagesPerDay)
 private fun ReadingStreakDto.toDomain(): ReadingStreak = ReadingStreak(days, week.map(StreakDayDto::toDomain))
 private fun StreakDayDto.toDomain(): StreakDay = StreakDay(label, fillFraction, isToday, completed)
-private fun CurrentBookDto.toDomain(): CurrentBook = CurrentBook(title, author, page, totalPages, progress, coverImageUrl)
+
+private fun CurrentBookDto.toDomain(): CurrentBook = CurrentBook(id, title, author, page, totalPages, progress, coverImageUrl)
 private fun QueuedBookDto.toDomain(): QueuedBook = QueuedBook(title, author, coverImageUrl)
+
 private fun ProfileStatDto.toDomain(): ProfileStat = ProfileStat(label, value)
 private fun LibraryBookDto.toDomain(): LibraryBook = LibraryBook(title, coverImageUrl)
 private fun FeaturedReviewDto.toDomain(): FeaturedReview = FeaturedReview(bookTitle, rating, timeAgo, excerpt, coverImageUrl)

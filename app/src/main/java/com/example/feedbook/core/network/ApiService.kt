@@ -1,6 +1,9 @@
 package com.example.feedbook.core.network
 
+import com.example.feedbook.features.authors.data.remote.dto.AuthorDto
 import com.example.feedbook.features.books.data.remote.dto.BookDto
+import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
+import com.example.feedbook.features.books.data.remote.dto.ReviewDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationsDto
 import com.example.feedbook.features.profile.data.remote.dto.ProfileDto
 import com.example.feedbook.features.stats.data.remote.dto.StatsDto
@@ -16,6 +19,25 @@ interface ApiService {
 
     @GET("books/{id}")
     suspend fun getBookById(@Path("id") id: String): BookDto
+
+    @GET("books/{bookId}/progress")
+    suspend fun getReadingProgress(
+        @Path("bookId") bookId: String
+    ): ReadingProgressDto?
+
+    @GET("books/{bookId}/reviews")
+    suspend fun getReviews(
+        @Path("bookId") bookId: String
+    ): List<ReviewDto>
+
+    @GET("authors")
+    suspend fun getAuthors(): List<AuthorDto>
+
+    @GET("authors/{id}")
+    suspend fun getAuthorById(@Path("id") id: String): AuthorDto
+
+    @GET("authors/{id}/follow")
+    suspend fun toggleFollow(@Path("id") id: String): Void
 
     @GET("profile/me")
     suspend fun getOwnProfile(): ProfileDto

@@ -9,6 +9,11 @@ fun BookDto.toDomain(): Book {
         title = title,
         author = author,
         description = description,
-        coverImageUrl = coverImageUrl
+        coverImageUrl = coverImageUrl,
+        pages = pages,
+        genre = genre,
+        language = language,
+        published = published,
+        isbn = isbn
     )
 }

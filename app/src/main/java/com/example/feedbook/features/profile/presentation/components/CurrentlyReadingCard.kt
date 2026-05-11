@@ -1,5 +1,6 @@
 package com.example.feedbook.features.profile.presentation.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,11 +33,18 @@ import com.example.feedbook.features.profile.presentation.CurrentBook
 
 @Composable
 internal fun CurrentlyReadingCard(
+    modifier: Modifier = Modifier,
     currentBook: CurrentBook,
-    emphasized: Boolean = false,
-    modifier: Modifier = Modifier
+    onBookClick: (String) -> Unit = {},
+    emphasized: Boolean = false
 ) {
-    ProfileSurfaceCard(modifier = modifier.fillMaxWidth()) {
+    ProfileSurfaceCard(
+        modifier = modifier.fillMaxWidth(),
+        onClick = {
+            Log.d("Nav", "Book id: ${currentBook.id}")
+            onBookClick(currentBook.id)
+        }
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -146,10 +154,10 @@ internal fun CurrentlyReadingCard(
 
 @Composable
 private fun BookCover(
+    modifier: Modifier = Modifier,
     title: String,
     coverImageUrl: String?,
-    emphasized: Boolean = false,
-    modifier: Modifier = Modifier
+    emphasized: Boolean = false
 ) {
     val coverWidth = if (emphasized) 122.dp else 96.dp
     val coverHeight = if (emphasized) 184.dp else 144.dp

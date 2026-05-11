@@ -26,7 +26,7 @@ private fun AvatarDto.toDomain(): LibraryAvatar =
     LibraryAvatar(topColorHex, bottomColorHex, imageUri)
 
 private fun CurrentBookDto.toDomain(): LibraryCurrentBook =
-    LibraryCurrentBook(title, author, page, totalPages, progress, coverImageUrl)
+    LibraryCurrentBook(id, title, author, page, totalPages, progress, coverImageUrl)
 
 private fun LibraryBookDto.toDomain(): LibraryShelfBook = LibraryShelfBook(title, coverImageUrl)
 

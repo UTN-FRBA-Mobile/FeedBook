@@ -60,6 +60,7 @@ fun previewOwnProfileUiState(): ProfileUiState = emptyProfileUiState(ProfileVari
         )
     ),
     currentBook = CurrentBook(
+        id = "3",
         title = "The Secret History",
         author = "Donna Tartt",
         page = 248,
@@ -126,6 +127,7 @@ fun previewPublicProfileUiState(): ProfileUiState = emptyProfileUiState(ProfileV
         )
     ),
     currentBook = CurrentBook(
+        id = "3",
         title = "The Name of the Rose",
         author = "Umberto Eco",
         page = 312,

@@ -2,6 +2,11 @@ package com.example.feedbook.core.di
 
 import android.content.Context
 import com.example.feedbook.core.network.NetworkModule
+import com.example.feedbook.features.authors.data.remote.AuthorRemoteDataSource
+import com.example.feedbook.features.authors.data.repository.AuthorRepositoryImpl
+import com.example.feedbook.features.authors.domain.usecase.GetAuthorsUseCase
+import com.example.feedbook.features.authors.domain.usecase.GetAuthorByIdUseCase
+import com.example.feedbook.features.authors.domain.usecase.ToggleAuthorFollowUseCase
 import com.example.feedbook.core.session.SessionManager
 import com.example.feedbook.core.session.SessionStorage
 import com.example.feedbook.features.auth.data.remote.AuthRemoteDataSource
@@ -11,6 +16,8 @@ import com.example.feedbook.features.books.data.repository.BookRepositoryImpl
 import com.example.feedbook.features.books.data.remote.BookRemoteDataSource
 import com.example.feedbook.features.books.domain.usecase.GetBookByIdUseCase
 import com.example.feedbook.features.books.domain.usecase.GetBooksUseCase
+import com.example.feedbook.features.books.domain.usecase.GetReadingProgressUseCase
+import com.example.feedbook.features.books.domain.usecase.GetReviewsUseCase
 import com.example.feedbook.features.home.data.remote.HomeRemoteDataSource
 import com.example.feedbook.features.home.data.repository.HomeRepositoryImpl
 import com.example.feedbook.features.home.domain.usecase.ObserveHomeFeedUseCase
@@ -40,8 +47,10 @@ class AppContainer(
     private val sessionStorage = SessionStorage(context)
     val sessionManager = SessionManager(sessionStorage)
 
+    private val bookRemoteDataSource = BookRemoteDataSource(fakeBackend)
+
+    private val authorRemoteDataSource = AuthorRemoteDataSource(fakeBackend)
     private val authRemoteDataSource = AuthRemoteDataSource(authApiService)
-    private val bookRemoteDataSource = BookRemoteDataSource(apiService)
     private val homeRemoteDataSource = HomeRemoteDataSource(fakeBackend)
     private val profileRemoteDataSource = ProfileRemoteDataSource(fakeBackend)
     private val libraryRemoteDataSource = LibraryRemoteDataSource(fakeBackend)
@@ -50,6 +59,8 @@ class AppContainer(
 
     private val authRepository = AuthRepositoryImpl(authRemoteDataSource)
     private val bookRepository = BookRepositoryImpl(bookRemoteDataSource)
+
+    private val authorRepository = AuthorRepositoryImpl(authorRemoteDataSource)
     private val homeRepository = HomeRepositoryImpl(homeRemoteDataSource)
     private val profileRepository = ProfileRepositoryImpl(profileRemoteDataSource)
     private val libraryRepository = LibraryRepositoryImpl(libraryRemoteDataSource)
@@ -59,6 +70,17 @@ class AppContainer(
     val loginUseCase = LoginUseCase(authRepository)
     val getBooksUseCase = GetBooksUseCase(bookRepository)
     val getBookByIdUseCase = GetBookByIdUseCase(bookRepository)
+
+    val getAuthorsUseCase = GetAuthorsUseCase(authorRepository)
+
+    val toggleAuthorFollowUseCase = ToggleAuthorFollowUseCase(authorRepository)
+
+    val getAuthorByIdUseCase = GetAuthorByIdUseCase(authorRepository)
+
+    val getReadingProgress = GetReadingProgressUseCase(bookRepository)
+
+    val getReviewsUseCase = GetReviewsUseCase(bookRepository)
+
     val observeHomeFeedUseCase = ObserveHomeFeedUseCase(homeRepository)
     val observeOwnProfileUseCase = ObserveOwnProfileUseCase(profileRepository)
     val observeOwnPublicProfilePreviewUseCase =

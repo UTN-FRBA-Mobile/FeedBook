@@ -38,6 +38,7 @@ fun sampleLibraryUiState(): LibraryUiState = LibraryUiState(
     ),
     avatarImageUri = null,
     currentBook = CurrentBook(
+        id = "2",
         title = "The Secret History",
         author = "Donna Tartt",
         page = 248,
