@@ -27,6 +27,7 @@ internal fun ProfileSurfaceCard(
         } else {
             modifier
         },
+        onClick = onClick ?: {},
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = containerColor),
         border = BorderStroke(1.dp, borderColor),

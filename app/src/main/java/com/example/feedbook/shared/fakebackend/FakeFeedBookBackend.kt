@@ -1,5 +1,9 @@
 package com.example.feedbook.shared.fakebackend
 
+import com.example.feedbook.features.authors.data.remote.dto.AuthorDto
+import com.example.feedbook.features.books.data.remote.dto.BookDto
+import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
+import com.example.feedbook.features.books.data.remote.dto.ReviewDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationActorDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationEntryDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationBookSummaryDto
@@ -394,4 +398,159 @@ class FakeFeedBookBackend {
     suspend fun getStats(): StatsDto = stats
 
     suspend fun getNotifications(): NotificationsDto = notifications
+
+    private val books = listOf(
+        BookDto(
+            id = "1",
+            title = "The Secret History",
+            author = "Donna Tartt",
+            coverImageUrl = coverUrl("9781400031702"),
+            genre = "Fiction",
+            description = "A group of classics students at a small Vermont college become entangled in a murder.",
+            pages = 559,
+            language = "English",
+            published = "27/05/1987",
+            isbn = "987698762"
+        ),
+        BookDto(
+            id = "2",
+            title = "The Name of the Rose",
+            author = "Umberto Eco",
+            coverImageUrl = coverUrl("9780156001311"),
+            genre = "Mystery",
+            description = "A medieval monk investigates a series of mysterious deaths in an Italian abbey.",
+            pages = 242,
+            language = "English",
+            published = "27/05/1927",
+            isbn = "987618762"
+        ),
+        BookDto(
+            id = "3",
+            title = "Beloved",
+            author = "Toni Morrison",
+            coverImageUrl = coverUrl("9781400033416"),
+            genre = "Fiction",
+            description = "A former enslaved woman is haunted by the ghost of her daughter.",
+            pages = 559,
+            language = "English",
+            published = "27/05/1986",
+            isbn = "987618762"
+        )
+    )
+
+    private val readingProgress = mapOf(
+        "1" to ReadingProgressDto(bookId = "1", currentPage = 248, totalPages = 559, updatedAt = "11/05/2026"),
+        "2" to ReadingProgressDto(bookId = "2", currentPage = 312, totalPages = 512, updatedAt = "11/05/2026")
+    )
+
+    private val reviews = mapOf(
+        "1" to listOf(
+            ReviewDto(
+                id = "r1",
+                reviewerName = "Evelyn Vance",
+                reviewerAvatar = avatarUrl("witch"),
+                rating = 5f,
+                text = "A novel built on obsession, elitism and silence. Tartt makes every scene feel both intimate and dangerous.",
+                likes = 42,
+                createdAt = "2d ago"
+            ),
+            ReviewDto(
+                id = "r2",
+                reviewerName = "Julian Thorne",
+                reviewerAvatar = avatarUrl("pirate"),
+                rating = 4f,
+                text = "Dense and rewarding. Every page pulls you deeper into its dark academia world.",
+                likes = 18,
+                createdAt = "1w ago"
+            )
+        ),
+        "2" to listOf(
+            ReviewDto(
+                id = "r3",
+                reviewerName = "Julian Thorne",
+                reviewerAvatar = avatarUrl("pirate"),
+                rating = 5f,
+                text = "A profound meditation on destiny. The novel keeps its labyrinth open long after the final page.",
+                likes = 31,
+                createdAt = "4h ago"
+            )
+        ),
+        "3" to listOf(
+            ReviewDto(
+                id = "r4",
+                reviewerName = "Evelyn Vance",
+                reviewerAvatar = avatarUrl("witch"),
+                rating = 5f,
+                text = "Morrison writes memory like weather. Every return to this novel feels heavier and more precise.",
+                likes = 67,
+                createdAt = "1w ago"
+            )
+        )
+    )
+
+    suspend fun getBooks(): List<BookDto> = books
+
+    suspend fun getBookById(bookId: String): BookDto =
+        books.find { it.id == bookId }
+            ?: throw Exception("Book not found: $bookId")
+
+    suspend fun getReadingProgress(bookId: String): ReadingProgressDto? =
+        readingProgress[bookId]
+
+    suspend fun getReviews(bookId: String): List<ReviewDto> =
+        reviews[bookId] ?: emptyList()
+    private val followedAuthors = mutableSetOf<String>()
+
+    private val authors = listOf(
+        AuthorDto(
+            id = "a1",
+            name = "Donna Tartt",
+            birthYear = 1963,
+            deathYear = null,
+            nationality = "American",
+            description = "Pulitzer Prize-winning author known for her intricate literary fiction.",
+            biography = "Donna Tartt was born in Greenwood, Mississippi in 1963. She studied at the University of Mississippi and Bennington College, where she began writing her debut novel. Her first book, The Secret History, was published in 1992 to widespread acclaim. Known for her meticulous prose and infrequent output, she spent a decade on each of her novels. Her third novel, The Goldfinch, won the Pulitzer Prize for Fiction in 2014.",
+            imageUrl = null,
+            books = books.filter { it.id == "1" },
+            followers = 14200
+        ),
+        AuthorDto(
+            id = "a2",
+            name = "Umberto Eco",
+            birthYear = 1932,
+            deathYear = 2016,
+            nationality = "Italian",
+            description = "Philosopher, semiotician and novelist renowned for his erudite fiction.",
+            biography = "Umberto Eco was born in Alessandria, Italy in 1932. A professor of semiotics at the University of Bologna, he became one of Italy's most celebrated intellectuals. His debut novel, The Name of the Rose, published in 1980, became an international bestseller and established him as a major literary figure. His works blend medieval history, philosophy, and literary theory into dense, rewarding narratives.",
+            imageUrl = null,
+            books = books.filter { it.id == "2" },
+            followers = 21500
+        ),
+        AuthorDto(
+            id = "a3",
+            name = "Toni Morrison",
+            birthYear = 1931,
+            deathYear = 2019,
+            nationality = "American",
+            description = "Nobel Prize-winning author whose work explores the African American experience.",
+            biography = "Toni Morrison was born Chloe Ardelia Wofford in Lorain, Ohio in 1931. She studied at Howard University and Cornell, and worked as an editor at Random House before becoming a celebrated novelist. Her novel Beloved, published in 1987, won the Pulitzer Prize and later the Nobel Prize in Literature in 1993. Her prose, lyrical and unflinching, redefined American literature.",
+            imageUrl = null,
+            books = books.filter { it.id == "3" },
+            followers = 38900
+        )
+    )
+
+    suspend fun getAuthors(): List<AuthorDto> = authors
+
+    suspend fun getAuthorById(authorId: String): AuthorDto =
+        authors.find { it.id == authorId }
+            ?: throw Exception("Author not found: $authorId")
+
+    suspend fun toggleFollow(authorId: String) {
+        if (authorId in followedAuthors) {
+            followedAuthors.remove(authorId)
+        } else {
+            followedAuthors.add(authorId)
+        }
+    }
 }

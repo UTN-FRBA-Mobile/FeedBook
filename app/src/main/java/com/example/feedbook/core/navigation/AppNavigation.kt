@@ -1,5 +1,6 @@
 package com.example.feedbook.core.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
@@ -165,7 +166,10 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
-                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
+                onBookClick = { bookId ->
+                    Log.d("Nav", "Navigating to book: $bookId")
+                    navController.navigate(AppRoutes.detail(bookId))
+                },
             )
         }
 

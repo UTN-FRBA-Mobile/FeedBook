@@ -1,5 +1,6 @@
 package com.example.feedbook.features.profile.presentation.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,7 +40,10 @@ internal fun CurrentlyReadingCard(
 ) {
     ProfileSurfaceCard(
         modifier = modifier.fillMaxWidth(),
-        onClick = { onBookClick(currentBook.id) }
+        onClick = {
+            Log.d("Nav", "Book id: ${currentBook.id}")
+            onBookClick(currentBook.id)
+        }
     ) {
         Box(
             modifier = Modifier

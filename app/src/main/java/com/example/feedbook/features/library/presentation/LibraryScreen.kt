@@ -101,7 +101,8 @@ fun LibraryScreen(
                     CurrentlyReadingCard(
                         currentBook = state.currentBook,
                         emphasized = true,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        onBookClick = { bookId -> onBookClick(bookId)}
                     )
                 }
                 item {

@@ -33,9 +33,9 @@ class AppContainer {
     private val apiService = NetworkModule.apiService
     private val fakeBackend = FakeFeedBookBackend()
 
-    private val bookRemoteDataSource = BookRemoteDataSource(apiService)
+    private val bookRemoteDataSource = BookRemoteDataSource(fakeBackend)
 
-    private val authorRemoteDataSource = AuthorRemoteDataSource(apiService)
+    private val authorRemoteDataSource = AuthorRemoteDataSource(fakeBackend)
     private val profileRemoteDataSource = ProfileRemoteDataSource(fakeBackend)
     private val libraryRemoteDataSource = LibraryRemoteDataSource(fakeBackend)
     private val statsRemoteDataSource = StatsRemoteDataSource(fakeBackend)
