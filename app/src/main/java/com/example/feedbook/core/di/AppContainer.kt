@@ -1,17 +1,26 @@
 package com.example.feedbook.core.di
 
+import android.content.Context
 import com.example.feedbook.core.network.NetworkModule
 import com.example.feedbook.features.authors.data.remote.AuthorRemoteDataSource
 import com.example.feedbook.features.authors.data.repository.AuthorRepositoryImpl
 import com.example.feedbook.features.authors.domain.usecase.GetAuthorsUseCase
 import com.example.feedbook.features.authors.domain.usecase.GetAuthorByIdUseCase
 import com.example.feedbook.features.authors.domain.usecase.ToggleAuthorFollowUseCase
+import com.example.feedbook.core.session.SessionManager
+import com.example.feedbook.core.session.SessionStorage
+import com.example.feedbook.features.auth.data.remote.AuthRemoteDataSource
+import com.example.feedbook.features.auth.data.repository.AuthRepositoryImpl
+import com.example.feedbook.features.auth.domain.usecase.LoginUseCase
 import com.example.feedbook.features.books.data.repository.BookRepositoryImpl
 import com.example.feedbook.features.books.data.remote.BookRemoteDataSource
 import com.example.feedbook.features.books.domain.usecase.GetBookByIdUseCase
 import com.example.feedbook.features.books.domain.usecase.GetBooksUseCase
 import com.example.feedbook.features.books.domain.usecase.GetReadingProgressUseCase
 import com.example.feedbook.features.books.domain.usecase.GetReviewsUseCase
+import com.example.feedbook.features.home.data.remote.HomeRemoteDataSource
+import com.example.feedbook.features.home.data.repository.HomeRepositoryImpl
+import com.example.feedbook.features.home.domain.usecase.ObserveHomeFeedUseCase
 import com.example.feedbook.features.library.data.remote.LibraryRemoteDataSource
 import com.example.feedbook.features.library.data.repository.LibraryRepositoryImpl
 import com.example.feedbook.features.library.domain.usecase.ObserveOwnLibraryUseCase
@@ -29,26 +38,36 @@ import com.example.feedbook.features.stats.data.repository.StatsRepositoryImpl
 import com.example.feedbook.features.stats.domain.usecase.GetStatsUseCase
 import com.example.feedbook.shared.fakebackend.FakeFeedBookBackend
 
-class AppContainer {
+class AppContainer(
+    context: Context
+) {
     private val apiService = NetworkModule.apiService
+    private val authApiService = NetworkModule.authApiService
     private val fakeBackend = FakeFeedBookBackend()
+    private val sessionStorage = SessionStorage(context)
+    val sessionManager = SessionManager(sessionStorage)
 
     private val bookRemoteDataSource = BookRemoteDataSource(fakeBackend)
 
     private val authorRemoteDataSource = AuthorRemoteDataSource(fakeBackend)
+    private val authRemoteDataSource = AuthRemoteDataSource(authApiService)
+    private val homeRemoteDataSource = HomeRemoteDataSource(fakeBackend)
     private val profileRemoteDataSource = ProfileRemoteDataSource(fakeBackend)
     private val libraryRemoteDataSource = LibraryRemoteDataSource(fakeBackend)
     private val statsRemoteDataSource = StatsRemoteDataSource(fakeBackend)
     private val notificationsRemoteDataSource = NotificationsRemoteDataSource(fakeBackend)
 
+    private val authRepository = AuthRepositoryImpl(authRemoteDataSource)
     private val bookRepository = BookRepositoryImpl(bookRemoteDataSource)
 
     private val authorRepository = AuthorRepositoryImpl(authorRemoteDataSource)
+    private val homeRepository = HomeRepositoryImpl(homeRemoteDataSource)
     private val profileRepository = ProfileRepositoryImpl(profileRemoteDataSource)
     private val libraryRepository = LibraryRepositoryImpl(libraryRemoteDataSource)
     private val statsRepository = StatsRepositoryImpl(statsRemoteDataSource)
     private val notificationsRepository = NotificationsRepositoryImpl(notificationsRemoteDataSource)
 
+    val loginUseCase = LoginUseCase(authRepository)
     val getBooksUseCase = GetBooksUseCase(bookRepository)
     val getBookByIdUseCase = GetBookByIdUseCase(bookRepository)
 
@@ -62,6 +81,7 @@ class AppContainer {
 
     val getReviewsUseCase = GetReviewsUseCase(bookRepository)
 
+    val observeHomeFeedUseCase = ObserveHomeFeedUseCase(homeRepository)
     val observeOwnProfileUseCase = ObserveOwnProfileUseCase(profileRepository)
     val observeOwnPublicProfilePreviewUseCase =
         ObserveOwnPublicProfilePreviewUseCase(profileRepository)

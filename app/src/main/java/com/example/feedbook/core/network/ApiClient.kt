@@ -2,19 +2,25 @@ package com.example.feedbook.core.network
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import java.net.Proxy
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
-    fun createOkHttpClient(): OkHttpClient {
+    fun createOkHttpClient(useSystemProxy: Boolean = true): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
 
-        return OkHttpClient.Builder()
+        val builder = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
             .writeTimeout(15, TimeUnit.SECONDS)
-            .build()
+
+        if (!useSystemProxy) {
+            builder.proxy(Proxy.NO_PROXY)
+        }
+
+        return builder.build()
     }
 }

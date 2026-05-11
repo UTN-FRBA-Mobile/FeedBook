@@ -46,7 +46,7 @@ internal enum class BottomBarTab {
 @Composable
 internal fun ProfileBottomBar(
     activeTab: BottomBarTab = BottomBarTab.FEED,
-    onProfileClick: () -> Unit = {},
+    onFeedClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
@@ -80,7 +80,7 @@ internal fun ProfileBottomBar(
                     icon = Icons.Rounded.Home,
                     contentDescription = stringResource(R.string.profile_bottom_nav_feed),
                     active = activeTab == BottomBarTab.FEED,
-                    onClick = onProfileClick,
+                    onClick = onFeedClick,
                     iconSize = iconSize,
                     indicatorWidth = indicatorWidth,
                     indicatorHeight = indicatorHeight,

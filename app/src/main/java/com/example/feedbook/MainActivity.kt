@@ -1,20 +1,26 @@
 package com.example.feedbook
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.view.WindowCompat
+import androidx.fragment.app.FragmentActivity
 import com.example.feedbook.core.navigation.AppNavigation
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            FeedBookTheme {
-                AppNavigation()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        setContentView(
+            ComposeView(this).apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    FeedBookTheme {
+                        AppNavigation()
+                    }
+                }
             }
-        }
+        )
     }
 }

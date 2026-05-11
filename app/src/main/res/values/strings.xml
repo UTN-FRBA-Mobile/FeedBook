@@ -40,6 +40,7 @@
     <string name="profile_library_archive_completed">Books completed</string>
     <string name="profile_library_archive_view_collection">View Collection</string>
     <string name="profile_library_archive_arrow">&#8594;</string>
+    <string name="home_title">Home</string>
 
     <string name="edit_profile_title">Edit Profile</string>
     <string name="edit_profile_back">Back</string>
@@ -89,8 +90,10 @@
     <string name="login_email_placeholder">reader@example.com</string>
     <string name="login_password">PASSWORD</string>
     <string name="login_password_placeholder">&#8226; &#8226; &#8226; &#8226; &#8226; &#8226; &#8226; &#8226;</string>
+    <string name="login_secure_login">Secure login</string>
     <string name="login_forgot_password">Forgot Password?</string>
     <string name="login_sign_in">SIGN IN</string>
+    <string name="login_signing_in">SIGNING IN...</string>
     <string name="login_credentials_error">Invalid user or password</string>
     <string name="login_tagline">THE BIBLIOPHILE\'S LEDGER</string>
     <string name="login_create_prompt">Don\'t have an account?</string>

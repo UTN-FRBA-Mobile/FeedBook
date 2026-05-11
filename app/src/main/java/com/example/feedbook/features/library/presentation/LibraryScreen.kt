@@ -35,6 +35,7 @@ import com.example.feedbook.features.profile.presentation.components.ProfileTypo
 fun LibraryScreen(
     modifier: Modifier = Modifier,
     state: LibraryUiState = sampleLibraryUiState(),
+    onFeedClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
@@ -57,7 +58,7 @@ fun LibraryScreen(
         bottomBar = {
             ProfileBottomBar(
                 activeTab = BottomBarTab.LIBRARY,
-                onProfileClick = onProfileClick,
+                onFeedClick = onFeedClick,
                 onLibraryClick = onLibraryClick,
                 onStatsClick = onStatsClick,
                 onNotificationsClick = onNotificationsClick

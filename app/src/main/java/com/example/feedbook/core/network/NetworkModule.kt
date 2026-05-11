@@ -13,7 +13,19 @@ object NetworkModule {
             .build()
     }
 
+    private val authRetrofit: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl(BuildConfig.AUTH_BASE_URL)
+            .client(ApiClient.createOkHttpClient(useSystemProxy = false))
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
     val apiService: ApiService by lazy {
         retrofit.create(ApiService::class.java)
+    }
+
+    val authApiService: AuthApiService by lazy {
+        authRetrofit.create(AuthApiService::class.java)
     }
 }

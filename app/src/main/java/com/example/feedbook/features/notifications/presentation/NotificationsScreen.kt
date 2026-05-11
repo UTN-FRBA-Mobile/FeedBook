@@ -47,6 +47,7 @@ import com.example.feedbook.features.profile.presentation.components.ProfileTypo
 fun NotificationsScreen(
     modifier: Modifier = Modifier,
     state: NotificationsUiState,
+    onFeedClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
@@ -98,7 +99,7 @@ fun NotificationsScreen(
         bottomBar = {
             ProfileBottomBar(
                 activeTab = BottomBarTab.NOTIFICATIONS,
-                onProfileClick = onProfileClick,
+                onFeedClick = onFeedClick,
                 onLibraryClick = onLibraryClick,
                 onStatsClick = onStatsClick,
                 onNotificationsClick = onNotificationsClick
