@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.feedbook.features.authors.domain.usecase.GetAuthorsUseCase
 import com.example.feedbook.features.books.domain.usecase.GetBooksUseCase
+import com.example.feedbook.features.books.domain.usecase.GetExploreUsersUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +13,8 @@ import kotlinx.coroutines.launch
 
 class BookListViewModel(
     private val getBooksUseCase: GetBooksUseCase,
-    private val getAuthorsUseCase: GetAuthorsUseCase
+    private val getAuthorsUseCase: GetAuthorsUseCase,
+    private val getExploreUsersUseCase: GetExploreUsersUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(BookListState(isLoading = true))
     val state: StateFlow<BookListState> = _state.asStateFlow()
@@ -28,7 +30,8 @@ class BookListViewModel(
             runCatching {
                 val books = getBooksUseCase()
                 val authors = getAuthorsUseCase()
-                BookListState(books = books, authors = authors)
+                val users = getExploreUsersUseCase()
+                BookListState(books = books, authors = authors, users = users)
             }
                 .onSuccess { state ->
                     _state.value = state
@@ -44,11 +47,12 @@ class BookListViewModel(
     companion object {
         fun provideFactory(
             getBooksUseCase: GetBooksUseCase,
-            getAuthorsUseCase: GetAuthorsUseCase
+            getAuthorsUseCase: GetAuthorsUseCase,
+            getExploreUsersUseCase: GetExploreUsersUseCase
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return BookListViewModel(getBooksUseCase, getAuthorsUseCase) as T
+                return BookListViewModel(getBooksUseCase, getAuthorsUseCase, getExploreUsersUseCase) as T
             }
         }
     }

@@ -10,7 +10,9 @@ data class HomeUiState(
     val featuredBook: HomeFeaturedBookUi,
     val rankedBooks: List<HomeRankedBookUi>,
     val readingRooms: List<HomeReadingRoomUi>,
-    val curators: List<HomeCuratorUi>
+    val curators: List<HomeCuratorUi>,
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null
 )
 
 data class HomeFeaturedBookUi(
@@ -83,5 +85,22 @@ fun sampleHomeUiState(): HomeUiState = HomeUiState(
             focus = "Contemporary Lit & Essays",
             imageUrl = "https://api.dicebear.com/9.x/adventurer/png?seed=lila-vance&size=128"
         )
-    )
+    ),
+    isLoading = false,
+    errorMessage = null
+)
+
+fun emptyHomeUiState(): HomeUiState = HomeUiState(
+    trendingTitle = "",
+    avatarStyle = AvatarStyle(
+        topColor = Color(0xFF315A73),
+        bottomColor = Color(0xFFF0C6A8)
+    ),
+    avatarImageUri = null,
+    featuredBook = HomeFeaturedBookUi("", "", "", null),
+    rankedBooks = emptyList(),
+    readingRooms = emptyList(),
+    curators = emptyList(),
+    isLoading = false,
+    errorMessage = null
 )

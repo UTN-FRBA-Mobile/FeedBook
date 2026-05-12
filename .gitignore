@@ -18,6 +18,11 @@ local.properties
 
 # Log/OS files
 *.log
+Thumbs.db
+*.tmp
+*.swp
+.env*
+.vscode/
 
 # Android build artifacts
 *.aab
@@ -41,4 +46,3 @@ google-services.json
 
 tmp/
 AGENTS.md
-

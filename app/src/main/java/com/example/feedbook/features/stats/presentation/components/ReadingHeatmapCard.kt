@@ -1,6 +1,8 @@
 package com.example.feedbook.features.stats.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +27,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,7 +40,11 @@ import com.example.feedbook.R
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
 import com.example.feedbook.features.profile.presentation.components.ProfileSurfaceCard
 import com.example.feedbook.features.profile.presentation.components.ProfileTypography
+import com.example.feedbook.features.stats.presentation.HeatmapMeaning
 import com.example.feedbook.features.stats.presentation.HeatmapScale
+import com.example.feedbook.features.stats.presentation.HeatmapScaleLevel
+import kotlin.math.ceil
+import kotlin.math.min
 
 @Composable
 internal fun ReadingHeatmapCard(
@@ -47,6 +55,7 @@ internal fun ReadingHeatmapCard(
     modifier: Modifier = Modifier
 ) {
     var showLegend by remember { mutableStateOf(false) }
+    var selectedCell by remember(months, rows, values) { mutableStateOf<HeatmapCellDescriptor?>(null) }
 
     ProfileSurfaceCard(modifier = modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
@@ -92,7 +101,7 @@ internal fun ReadingHeatmapCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFFF9F8F6))
+                    .background(ProfileColors.Background)
                     .padding(horizontal = 10.dp, vertical = 12.dp)
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -135,18 +144,36 @@ internal fun ReadingHeatmapCard(
                             modifier = Modifier.weight(1f),
                             verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
-                            values.forEach { week ->
+                            values.forEachIndexed { rowIndex, week ->
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                                 ) {
-                                    week.forEach { intensity ->
+                                    week.forEachIndexed { columnIndex, intensity ->
+                                        val cell = rememberHeatmapCellDescriptor(
+                                            rowIndex = rowIndex,
+                                            columnIndex = columnIndex,
+                                            rows = rows,
+                                            months = months,
+                                            totalColumns = week.size,
+                                            intensity = intensity,
+                                            scale = scale
+                                        )
                                         Box(
                                             modifier = Modifier
                                                 .weight(1f)
                                                 .height(12.dp)
                                                 .clip(RoundedCornerShape(2.dp))
-                                                .background(scale.colorFor(intensity))
+                                                .background(cell.level.color)
+                                                .border(
+                                                    width = if (selectedCell == cell) 1.dp else 0.dp,
+                                                    color = if (selectedCell == cell) ProfileColors.SurfaceStrong else Color.Transparent,
+                                                    shape = RoundedCornerShape(2.dp)
+                                                )
+                                                .semantics {
+                                                    contentDescription = cell.accessibilityLabel
+                                                }
+                                                .clickable { selectedCell = cell }
                                         )
                                     }
                                 }
@@ -154,6 +181,16 @@ internal fun ReadingHeatmapCard(
                         }
                     }
                 }
+            }
+
+            selectedCell?.let { cell ->
+                SelectedHeatmapDaySummary(cell = cell)
+            } ?: run {
+                Text(
+                    text = "Tap a square to inspect the day cadence.",
+                    style = ProfileTypography.Label.copy(fontSize = 11.sp, lineHeight = 14.sp),
+                    color = ProfileColors.SecondaryText
+                )
             }
         }
     }
@@ -182,5 +219,67 @@ private fun HeatmapLegendEntry(
             }
         },
         onClick = {}
+    )
+}
+
+@Composable
+private fun SelectedHeatmapDaySummary(cell: HeatmapCellDescriptor) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(12.dp)
+                .clip(CircleShape)
+                .background(cell.level.color)
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(
+                text = "${cell.monthLabel} · ${cell.dayLabel} · Week ${cell.weekOfMonth}",
+                style = ProfileTypography.LabelUppercase.copy(fontSize = 9.sp, lineHeight = 11.sp),
+                color = ProfileColors.SecondaryText
+            )
+            Text(
+                text = cell.level.label,
+                style = ProfileTypography.Body.copy(fontSize = 13.sp, lineHeight = 18.sp),
+                color = ProfileColors.PrimaryText
+            )
+        }
+    }
+}
+
+private data class HeatmapCellDescriptor(
+    val dayLabel: String,
+    val monthLabel: String,
+    val weekOfMonth: Int,
+    val intensity: Float,
+    val level: HeatmapScaleLevel
+) {
+    val accessibilityLabel: String
+        get() = "$dayLabel, $monthLabel, week $weekOfMonth, ${level.label}"
+}
+
+private fun rememberHeatmapCellDescriptor(
+    rowIndex: Int,
+    columnIndex: Int,
+    rows: List<String>,
+    months: List<String>,
+    totalColumns: Int,
+    intensity: Float,
+    scale: HeatmapScale
+): HeatmapCellDescriptor {
+    val dayLabel = rows.getOrElse(rowIndex) { "?" }
+    val monthSlotSize = ceil(totalColumns / months.size.toFloat()).toInt().coerceAtLeast(1)
+    val monthIndex = min(columnIndex / monthSlotSize, months.lastIndex)
+    val monthLabel = months.getOrElse(monthIndex) { "" }
+    val weekOfMonth = (columnIndex - (monthIndex * monthSlotSize)) + 1
+
+    return HeatmapCellDescriptor(
+        dayLabel = dayLabel,
+        monthLabel = monthLabel,
+        weekOfMonth = weekOfMonth,
+        intensity = intensity,
+        level = scale.levelFor(intensity)
     )
 }

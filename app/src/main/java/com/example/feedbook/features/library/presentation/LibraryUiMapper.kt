@@ -35,5 +35,7 @@ fun ReaderLibrary.toUiState(): LibraryUiState = LibraryUiState(
             personalRating = it.personalRating,
             coverAccent = Color(it.coverAccentHex)
         )
-    }
+    },
+    isLoading = false,
+    errorMessage = null
 )

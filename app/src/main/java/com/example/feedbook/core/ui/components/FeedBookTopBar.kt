@@ -68,7 +68,7 @@ internal fun FeedBookTopBar(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color(0xFFF9F8F6))
+            .background(ProfileColors.Background)
             .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
     ) {
         BoxWithConstraints(
@@ -90,8 +90,8 @@ internal fun FeedBookTopBar(
                     modifier = Modifier
                         .size(avatarSize)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFFE3E2E2))
-                        .border(1.dp, Color(0x4DC4C6CD), RoundedCornerShape(12.dp))
+                        .background(ProfileColors.AccentSoft)
+                        .border(1.dp, ProfileColors.Border, RoundedCornerShape(12.dp))
                         .clickable(onClick = onAvatarClick),
                     contentAlignment = Alignment.Center
                 ) {
@@ -108,7 +108,7 @@ internal fun FeedBookTopBar(
                 Text(
                     text = title,
                     style = ProfileTypography.AppTitle,
-                    color = Color(0xFF0F172A)
+                    color = ProfileColors.PrimaryText
                 )
 
                 Row(

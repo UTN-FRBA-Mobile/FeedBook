@@ -5,15 +5,15 @@ data class ProfileDto(
     val handle: String,
     val quote: String,
     val avatar: AvatarDto,
-    val availableAvatarPresets: List<AvatarPresetDto>,
+    val availableAvatarPresets: List<AvatarPresetDto>?,
     val readingGoal: ReadingGoalDto?,
     val readingStreak: ReadingStreakDto,
     val currentBook: CurrentBookDto,
-    val upNextBooks: List<QueuedBookDto>,
+    val upNextBooks: List<QueuedBookDto>?,
     val completedBooks: Int,
-    val profileStats: List<ProfileStatDto>,
-    val publicLibrary: List<LibraryBookDto>,
-    val featuredReviews: List<FeaturedReviewDto>
+    val profileStats: List<ProfileStatDto>?,
+    val publicLibrary: List<LibraryBookDto>?,
+    val featuredReviews: List<FeaturedReviewDto>?
 )
 
 data class AvatarDto(
@@ -38,7 +38,7 @@ data class ReadingGoalDto(
 
 data class ReadingStreakDto(
     val days: Int,
-    val week: List<StreakDayDto>
+    val week: List<StreakDayDto>?
 )
 
 data class StreakDayDto(

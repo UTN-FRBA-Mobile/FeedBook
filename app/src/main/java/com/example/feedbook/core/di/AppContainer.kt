@@ -16,6 +16,7 @@ import com.example.feedbook.features.books.data.repository.BookRepositoryImpl
 import com.example.feedbook.features.books.data.remote.BookRemoteDataSource
 import com.example.feedbook.features.books.domain.usecase.GetBookByIdUseCase
 import com.example.feedbook.features.books.domain.usecase.GetBooksUseCase
+import com.example.feedbook.features.books.domain.usecase.GetExploreUsersUseCase
 import com.example.feedbook.features.books.domain.usecase.GetReadingProgressUseCase
 import com.example.feedbook.features.books.domain.usecase.GetReviewsUseCase
 import com.example.feedbook.features.home.data.remote.HomeRemoteDataSource
@@ -36,26 +37,24 @@ import com.example.feedbook.features.profile.domain.usecase.UpdateProfileUseCase
 import com.example.feedbook.features.stats.data.remote.StatsRemoteDataSource
 import com.example.feedbook.features.stats.data.repository.StatsRepositoryImpl
 import com.example.feedbook.features.stats.domain.usecase.GetStatsUseCase
-import com.example.feedbook.shared.fakebackend.FakeFeedBookBackend
 
 class AppContainer(
     context: Context
 ) {
     private val apiService = NetworkModule.apiService
     private val authApiService = NetworkModule.authApiService
-    private val fakeBackend = FakeFeedBookBackend()
     private val sessionStorage = SessionStorage(context)
     val sessionManager = SessionManager(sessionStorage)
 
-    private val bookRemoteDataSource = BookRemoteDataSource(fakeBackend)
+    private val bookRemoteDataSource = BookRemoteDataSource(apiService)
 
-    private val authorRemoteDataSource = AuthorRemoteDataSource(fakeBackend)
+    private val authorRemoteDataSource = AuthorRemoteDataSource(apiService)
     private val authRemoteDataSource = AuthRemoteDataSource(authApiService)
-    private val homeRemoteDataSource = HomeRemoteDataSource(fakeBackend)
-    private val profileRemoteDataSource = ProfileRemoteDataSource(fakeBackend)
-    private val libraryRemoteDataSource = LibraryRemoteDataSource(fakeBackend)
-    private val statsRemoteDataSource = StatsRemoteDataSource(fakeBackend)
-    private val notificationsRemoteDataSource = NotificationsRemoteDataSource(fakeBackend)
+    private val homeRemoteDataSource = HomeRemoteDataSource(apiService)
+    private val profileRemoteDataSource = ProfileRemoteDataSource(apiService)
+    private val libraryRemoteDataSource = LibraryRemoteDataSource(apiService)
+    private val statsRemoteDataSource = StatsRemoteDataSource(apiService)
+    private val notificationsRemoteDataSource = NotificationsRemoteDataSource(apiService)
 
     private val authRepository = AuthRepositoryImpl(authRemoteDataSource)
     private val bookRepository = BookRepositoryImpl(bookRemoteDataSource)
@@ -69,6 +68,7 @@ class AppContainer(
 
     val loginUseCase = LoginUseCase(authRepository)
     val getBooksUseCase = GetBooksUseCase(bookRepository)
+    val getExploreUsersUseCase = GetExploreUsersUseCase(bookRepository)
     val getBookByIdUseCase = GetBookByIdUseCase(bookRepository)
 
     val getAuthorsUseCase = GetAuthorsUseCase(authorRepository)

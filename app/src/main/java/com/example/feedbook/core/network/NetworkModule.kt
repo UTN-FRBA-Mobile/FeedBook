@@ -5,9 +5,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object NetworkModule {
+    private val backendOrigin = BackendUrls.origin(BuildConfig.BACKEND_ORIGIN)
+
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl(BackendUrls.apiBaseUrl(backendOrigin))
             .client(ApiClient.createOkHttpClient())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -15,7 +17,7 @@ object NetworkModule {
 
     private val authRetrofit: Retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl(BuildConfig.AUTH_BASE_URL)
+            .baseUrl(backendOrigin)
             .client(ApiClient.createOkHttpClient(useSystemProxy = false))
             .addConverterFactory(GsonConverterFactory.create())
             .build()

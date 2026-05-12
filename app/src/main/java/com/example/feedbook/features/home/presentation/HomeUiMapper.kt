@@ -39,5 +39,7 @@ fun HomeFeed.toUiState(): HomeUiState = HomeUiState(
             focus = it.focus,
             imageUrl = it.imageUrl
         )
-    }
+    },
+    isLoading = false,
+    errorMessage = null
 )

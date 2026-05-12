@@ -1,9 +1,14 @@
 package com.example.feedbook.features.home.data.remote
 
-import com.example.feedbook.shared.fakebackend.FakeFeedBookBackend
+import com.example.feedbook.core.network.ApiService
+import com.example.feedbook.features.home.data.remote.dto.HomeDto
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class HomeRemoteDataSource(
-    private val fakeBackend: FakeFeedBookBackend
+    private val apiService: ApiService
 ) {
-    fun observeHomeFeed() = fakeBackend.observeHomeFeed()
+    fun observeHomeFeed(): Flow<HomeDto> = flow {
+        emit(apiService.getHomeFeed())
+    }
 }

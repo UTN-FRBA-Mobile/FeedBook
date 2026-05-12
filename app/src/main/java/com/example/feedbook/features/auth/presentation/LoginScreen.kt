@@ -213,7 +213,7 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.weight(if (compactLayout) 0.75f else 1.1f))
                 HorizontalDivider(
                     modifier = Modifier.fillMaxWidth(),
-                    color = Color(0xFFE8E4E0),
+                    color = LoginColors.Divider,
                     thickness = 1.dp
                 )
                 Spacer(modifier = Modifier.height(if (compactLayout) 20.dp else 40.dp))

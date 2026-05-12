@@ -8,15 +8,15 @@ fun ProfileDto.toDomain(): ReaderProfile = ReaderProfile(
     handle = handle,
     quote = quote,
     avatar = avatar.toDomain(),
-    availableAvatarPresets = availableAvatarPresets.map(AvatarPresetDto::toDomain),
+    availableAvatarPresets = availableAvatarPresets.orEmpty().map(AvatarPresetDto::toDomain),
     readingGoal = readingGoal?.toDomain(),
     readingStreak = readingStreak.toDomain(),
     currentBook = currentBook.toDomain(),
-    upNextBooks = upNextBooks.map(QueuedBookDto::toDomain),
+    upNextBooks = upNextBooks.orEmpty().map(QueuedBookDto::toDomain),
     completedBooks = completedBooks,
-    profileStats = profileStats.map(ProfileStatDto::toDomain),
-    publicLibrary = publicLibrary.map(LibraryBookDto::toDomain),
-    featuredReviews = featuredReviews.map(FeaturedReviewDto::toDomain)
+    profileStats = profileStats.orEmpty().map(ProfileStatDto::toDomain),
+    publicLibrary = publicLibrary.orEmpty().map(LibraryBookDto::toDomain),
+    featuredReviews = featuredReviews.orEmpty().map(FeaturedReviewDto::toDomain)
 )
 
 fun UpdateProfileCommand.toDto(): UpdateProfileRequestDto = UpdateProfileRequestDto(
@@ -33,7 +33,7 @@ fun UpdateProfileCommand.toDto(): UpdateProfileRequestDto = UpdateProfileRequest
 private fun AvatarDto.toDomain(): AvatarInfo = AvatarInfo(topColorHex, bottomColorHex, avatarPresetId, presetImageUrl, imageUri)
 private fun AvatarPresetDto.toDomain(): AvatarPresetInfo = AvatarPresetInfo(id, topColorHex, bottomColorHex, imageUrl)
 private fun ReadingGoalDto.toDomain(): ReadingGoal = ReadingGoal(targetPagesPerDay, currentAveragePagesPerDay)
-private fun ReadingStreakDto.toDomain(): ReadingStreak = ReadingStreak(days, week.map(StreakDayDto::toDomain))
+private fun ReadingStreakDto.toDomain(): ReadingStreak = ReadingStreak(days, week.orEmpty().map(StreakDayDto::toDomain))
 private fun StreakDayDto.toDomain(): StreakDay = StreakDay(label, fillFraction, isToday, completed)
 
 private fun CurrentBookDto.toDomain(): CurrentBook = CurrentBook(id, title, author, page, totalPages, progress, coverImageUrl)

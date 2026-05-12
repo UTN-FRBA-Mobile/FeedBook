@@ -71,43 +71,66 @@ fun HomeScreen(
         onNotificationsClick = onNotificationsClick,
         onLogoutClick = onLogoutClick
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(ProfileColors.Background)
-                .padding(innerPadding),
-            contentPadding = PaddingValues(top = 36.dp, bottom = 40.dp),
-            verticalArrangement = Arrangement.spacedBy(34.dp)
-        ) {
-            item {
-                TrendingHeader(
-                    title = state.trendingTitle,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
+        if (state.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(ProfileColors.Background)
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Loading home feed...", color = ProfileColors.PrimaryText)
             }
-            item {
-                FeaturedBookCard(
-                    book = state.featuredBook,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
+        } else if (state.errorMessage != null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(ProfileColors.Background)
+                    .padding(innerPadding)
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = state.errorMessage, color = ProfileColors.PrimaryText)
             }
-            item {
-                RankedBooksSection(
-                    books = state.rankedBooks,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
-            item {
-                ReadingRoomsSection(
-                    rooms = state.readingRooms,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            item {
-                CuratorsSection(
-                    curators = state.curators,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(ProfileColors.Background)
+                    .padding(innerPadding),
+                contentPadding = PaddingValues(top = 36.dp, bottom = 40.dp),
+                verticalArrangement = Arrangement.spacedBy(34.dp)
+            ) {
+                item {
+                    TrendingHeader(
+                        title = state.trendingTitle,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+                item {
+                    FeaturedBookCard(
+                        book = state.featuredBook,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+                item {
+                    RankedBooksSection(
+                        books = state.rankedBooks,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+                item {
+                    ReadingRoomsSection(
+                        rooms = state.readingRooms,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                item {
+                    CuratorsSection(
+                        curators = state.curators,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
             }
         }
     }
@@ -175,7 +198,7 @@ private fun FeaturedBookCard(
                 Text(
                     text = book.author,
                     style = ProfileTypography.Body.copy(fontSize = 18.sp, lineHeight = 28.sp),
-                    color = Color(0xFF535862)
+                    color = ProfileColors.SecondaryText
                 )
             }
         }
@@ -202,7 +225,7 @@ private fun RankedBooksSection(
                         lineHeight = 32.sp,
                         fontWeight = FontWeight.Normal
                     ),
-                    color = Color(0xFF7B818C),
+                    color = ProfileColors.SecondaryText,
                     modifier = Modifier.width(64.dp)
                 )
                 Spacer(modifier = Modifier.width(14.dp))
@@ -212,7 +235,7 @@ private fun RankedBooksSection(
                     modifier = Modifier
                         .size(width = 96.dp, height = 128.dp)
                         .clip(RoundedCornerShape(4.dp)),
-                    fallbackBackground = Color(0xFFE8E3DE)
+                    fallbackBackground = ProfileColors.AccentSoft
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(
@@ -233,7 +256,7 @@ private fun RankedBooksSection(
                     Text(
                         text = book.author,
                         style = ProfileTypography.Body.copy(fontSize = 18.sp, lineHeight = 28.sp),
-                        color = Color(0xFF535862)
+                        color = ProfileColors.SecondaryText
                     )
                 }
             }
@@ -272,7 +295,7 @@ private fun ReadingRoomsSection(
             Text(
                 text = "See all",
                 style = ProfileTypography.Body.copy(fontSize = 16.sp, lineHeight = 20.sp),
-                color = Color(0xFF535862)
+                color = ProfileColors.SecondaryText
             )
         }
         LazyRow(
@@ -290,7 +313,7 @@ private fun ReadingRoomsSection(
 private fun ReadingRoomCard(room: HomeReadingRoomUi) {
     ProfileSurfaceCard(
         modifier = Modifier.width(400.dp),
-        containerColor = Color(0xFFFDFCFB)
+        containerColor = ProfileColors.Surface
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(28.dp)) {
             Row(
@@ -307,7 +330,7 @@ private fun ReadingRoomCard(room: HomeReadingRoomUi) {
                 Text(
                     text = "Hosted by ${room.hostName}",
                     style = ProfileTypography.Body.copy(fontSize = 16.sp, lineHeight = 22.sp),
-                    color = Color(0xFF535862)
+                    color = ProfileColors.SecondaryText
                 )
             }
             Text(
@@ -326,13 +349,13 @@ private fun ReadingRoomCard(room: HomeReadingRoomUi) {
                 Icon(
                     imageVector = Icons.Outlined.PeopleOutline,
                     contentDescription = null,
-                    tint = Color(0xFF535862),
+                    tint = ProfileColors.SecondaryText,
                     modifier = Modifier.size(28.dp)
                 )
                 Text(
                     text = room.readerCountLabel,
                     style = ProfileTypography.Body.copy(fontSize = 16.sp, lineHeight = 20.sp),
-                    color = Color(0xFF535862)
+                    color = ProfileColors.SecondaryText
                 )
             }
         }
@@ -386,13 +409,13 @@ private fun CuratorsSection(
                     Text(
                         text = curator.focus,
                         style = ProfileTypography.Body.copy(fontSize = 18.sp, lineHeight = 28.sp),
-                        color = Color(0xFF535862)
+                        color = ProfileColors.SecondaryText
                     )
                 }
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(24.dp))
-                        .border(2.dp, Color(0xFFC9CDD5), RoundedCornerShape(24.dp))
+                        .border(2.dp, ProfileColors.Border, RoundedCornerShape(24.dp))
                         .padding(horizontal = 22.dp, vertical = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {

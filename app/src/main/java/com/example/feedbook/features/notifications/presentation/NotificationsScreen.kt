@@ -197,7 +197,7 @@ private fun NotificationCard(
                     Text(
                         text = timestamp,
                         style = ProfileTypography.LabelUppercase.copy(fontSize = 9.sp, lineHeight = 10.sp),
-                        color = Color(0xFF8B8B8B)
+                        color = ProfileColors.SecondaryText
                     )
                 }
             }
@@ -207,7 +207,7 @@ private fun NotificationCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(androidx.compose.foundation.shape.RoundedCornerShape(2.dp))
-                        .border(1.dp, Color(0xFFE8E3DE), androidx.compose.foundation.shape.RoundedCornerShape(2.dp))
+                        .border(1.dp, ProfileColors.Border, androidx.compose.foundation.shape.RoundedCornerShape(2.dp))
                         .padding(10.dp),
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -217,7 +217,8 @@ private fun NotificationCard(
                         coverImageUrl = book.coverImageUrl,
                         modifier = Modifier
                             .size(width = 34.dp, height = 52.dp)
-                            .clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
+                            .clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp)),
+                        fallbackBackground = ProfileColors.AccentSoft
                     )
                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         Text(
