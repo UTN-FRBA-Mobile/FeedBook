@@ -60,7 +60,7 @@ internal fun GenreRadarCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(10.dp))
-                    .background(Color(0xFFF4F2F0))
+                    .background(ProfileColors.AccentSoft)
                     .padding(4.dp),
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
@@ -70,7 +70,7 @@ internal fun GenreRadarCard(
                         modifier = Modifier
                             .weight(1f)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(if (selected) Color(0xFF41576E) else Color.Transparent)
+                            .background(if (selected) ProfileColors.SurfaceStrong else Color.Transparent)
                             .clickable { onModeSelected(mode) }
                             .padding(vertical = 8.dp),
                         contentAlignment = Alignment.Center
@@ -116,7 +116,7 @@ internal fun GenreRadarCard(
                         path.close()
                         drawPath(
                             path = path,
-                            color = Color(0xFFD7D9DC),
+                            color = ProfileColors.Divider,
                             style = Stroke(width = 1f)
                         )
                     }
@@ -128,7 +128,7 @@ internal fun GenreRadarCard(
                             y = center.y + sin(angle) * radius
                         )
                         drawLine(
-                            color = Color(0xFFD7D9DC),
+                            color = ProfileColors.Divider,
                             start = center,
                             end = outer,
                             strokeWidth = 1f,
@@ -149,11 +149,11 @@ internal fun GenreRadarCard(
 
                     drawPath(
                         path = areaPath,
-                        color = Color(0xFF2F455C).copy(alpha = 0.28f)
+                        color = ProfileColors.SurfaceStrong.copy(alpha = 0.28f)
                     )
                     drawPath(
                         path = areaPath,
-                        color = Color(0xFF20364D),
+                        color = ProfileColors.SurfaceStrong,
                         style = Stroke(width = 3f)
                     )
                 }

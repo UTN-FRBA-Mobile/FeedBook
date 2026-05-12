@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.AssistChip
@@ -317,11 +316,6 @@ private fun ExploreSearchField(
         trailingIcon = {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Icon(
-                    imageVector = Icons.Outlined.QrCodeScanner,
-                    contentDescription = null,
-                    tint = ProfileColors.SecondaryText
-                )
-                Icon(
                     imageVector = Icons.Outlined.Tune,
                     contentDescription = null,
                     tint = ProfileColors.SecondaryText
@@ -329,8 +323,8 @@ private fun ExploreSearchField(
             }
         },
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color(0xFFF2F0F0),
-            unfocusedContainerColor = Color(0xFFF2F0F0),
+            focusedContainerColor = ProfileColors.AccentSoft,
+            unfocusedContainerColor = ProfileColors.AccentSoft,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             cursorColor = ProfileColors.SurfaceStrong
@@ -363,7 +357,7 @@ private fun ExploreFilterRow(
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = ProfileColors.SurfaceStrong,
                     selectedLabelColor = Color.White,
-                    containerColor = Color.White,
+                    containerColor = ProfileColors.Surface,
                     labelColor = ProfileColors.SecondaryText
                 )
             )
@@ -390,7 +384,7 @@ private fun RecentTagsSection(tags: List<String>) {
                         )
                     },
                     colors = AssistChipDefaults.assistChipColors(
-                        containerColor = Color.White,
+                        containerColor = ProfileColors.Surface,
                         labelColor = ProfileColors.SecondaryText
                     ),
                     border = BorderStroke(1.dp, ProfileColors.Border)
@@ -536,7 +530,7 @@ private fun ExploreAuthorCard(
                     modifier = Modifier
                         .size(56.dp)
                         .clip(RoundedCornerShape(10.dp))
-                        .background(Color(0xFFDDE6F5)),
+                        .background(ProfileColors.AccentSoft),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -564,7 +558,8 @@ private fun ExploreAuthorCard(
             )
             OutlinedButton(
                 onClick = onClick,
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(16.dp),
+                border = BorderStroke(1.dp, ProfileColors.Border)
             ) {
                 Text(
                     text = "Seguir",

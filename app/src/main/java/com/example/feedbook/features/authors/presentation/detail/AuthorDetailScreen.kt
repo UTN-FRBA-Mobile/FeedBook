@@ -131,7 +131,8 @@ private fun AuthorDetailContent(
 
     LazyColumn(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(ProfileColors.Background),
         contentPadding = PaddingValues(bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
@@ -179,14 +180,14 @@ private fun AuthorHeaderSection(
                 .width(160.dp)
                 .height(240.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
+                .background(ProfileColors.AccentSoft),
             contentAlignment = Alignment.Center
         ) {
             if (LocalInspectionMode.current || author.imageUrl.isNullOrBlank()) {
                 Text(
                     text = author.name.first().toString(),
                     style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = ProfileColors.PrimaryText
                 )
             } else {
                 AsyncImage(
@@ -217,7 +218,7 @@ private fun AuthorHeaderSection(
         Text(
             text = author.lifespan,
             style = MaterialTheme.typography.bodyLarge.copy(fontSize = 14.sp),
-            color = MaterialTheme.colorScheme.secondary  // FeedBrown
+            color = ProfileColors.Accent
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -250,7 +251,7 @@ private fun AuthorHeaderSection(
                 onClick = onFollowClick,
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.inverseSurface,
+                    containerColor = ProfileColors.SurfaceStrong,
                     contentColor = Color.White
                 ),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp)
@@ -291,7 +292,7 @@ private fun BiographySection(
         TextButton(onClick = onToggle) {
             Text(
                 text = if (showFull) "Ver menos" else "Ver más",
-                color = MaterialTheme.colorScheme.secondary
+                color = ProfileColors.Accent
             )
         }
     }
@@ -318,12 +319,12 @@ private fun BooksHeader(onSeeAll: () -> Unit) {
             Text(
                 text = "Ver todas",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.secondary
+                color = ProfileColors.Accent
             )
             Icon(
                 imageVector = Icons.Outlined.ChevronRight,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.secondary,
+                tint = ProfileColors.Accent,
                 modifier = Modifier.size(16.dp)
             )
         }
@@ -340,7 +341,7 @@ private fun BookRow(book: AuthorBookUiModel, onClick: () -> Unit) {
             .padding(horizontal = 20.dp, vertical = 4.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = ProfileColors.Surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
@@ -356,7 +357,7 @@ private fun BookRow(book: AuthorBookUiModel, onClick: () -> Unit) {
                     .width(44.dp)
                     .height(60.dp)
                     .clip(RoundedCornerShape(6.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .background(ProfileColors.AccentSoft)
             ) {
                 if (!book.coverUrl.isNullOrBlank() && !LocalInspectionMode.current) {
                     AsyncImage(
@@ -385,6 +386,7 @@ private fun BookRow(book: AuthorBookUiModel, onClick: () -> Unit) {
                 Text(
                     text = book.genreAndYear,
                     style = MaterialTheme.typography.bodyLarge.copy(fontSize = 13.sp),
+                    color = ProfileColors.SecondaryText
                 )
             }
 
@@ -406,7 +408,7 @@ private fun FollowersSection(followersText: String) {
             .padding(horizontal = 20.dp, vertical = 16.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = ProfileColors.Surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
@@ -422,6 +424,7 @@ private fun FollowersSection(followersText: String) {
             Text(
                 text = followersText,
                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = 13.sp),
+                color = ProfileColors.SecondaryText
             )
             Spacer(modifier = Modifier.height(10.dp))
             // Avatares decorativos

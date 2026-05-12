@@ -31,6 +31,12 @@ object FeedBookColors {
     val LoginPrimaryButton = Color(0xFF0C2439)
     val LoginError = Color(0xFFB45A52)
     val LoginGradientMid = Color(0xFFF7F4F1)
+
+    val HeatmapNoReading = Color(0xFFF3EFEB)
+    val HeatmapBelowTarget = Color(0xFFE0D0BC)
+    val HeatmapNearTarget = Color(0xFFC5A583)
+    val HeatmapGoalMet = Color(0xFF7B8EA3)
+    val HeatmapAboveTarget = Color(0xFF32475E)
 }
 
 val FeedNavy = FeedBookColors.Navy

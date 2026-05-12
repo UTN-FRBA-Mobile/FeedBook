@@ -13,18 +13,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import coil.compose.AsyncImage
+import com.example.feedbook.core.ui.theme.FeedBookColors
 
 @Composable
 fun RemoteBookCover(
     title: String,
     coverImageUrl: String?,
     modifier: Modifier = Modifier,
-    fallbackBackground: Color = Color(0xFFE8E3DE),
+    fallbackBackground: Color = FeedBookColors.AccentSoft,
     fallbackContent: @Composable BoxScope.() -> Unit = {
         Text(
             text = title,
             style = MaterialTheme.typography.labelMedium,
-            color = Color(0xFF475569),
+            color = FeedBookColors.SecondaryText,
             textAlign = TextAlign.Center
         )
     }

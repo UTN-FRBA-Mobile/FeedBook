@@ -1,6 +1,7 @@
 package com.example.feedbook.features.stats.presentation
 
 import androidx.compose.ui.graphics.Color
+import com.example.feedbook.core.ui.theme.FeedBookColors
 import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.defaultAvatarStyle
@@ -46,15 +47,33 @@ data class RadarSection(
 data class HeatmapScale(
     val levels: List<HeatmapScaleLevel>
 ) {
-    fun colorFor(value: Float): Color {
+    fun levelFor(value: Float): HeatmapScaleLevel {
         val normalized = value.coerceIn(0f, 1f)
-        return levels.lastOrNull { normalized >= it.minValue }?.color
-            ?: levels.firstOrNull()?.color
-            ?: Color.Unspecified
+        return levels.lastOrNull { normalized >= it.minValue }
+            ?: levels.firstOrNull()
+            ?: HeatmapScaleLevel(
+                meaning = HeatmapMeaning.NO_READING,
+                minValue = 0f,
+                color = Color.Unspecified,
+                label = HeatmapMeaning.NO_READING.defaultLabel
+            )
+    }
+
+    fun colorFor(value: Float): Color {
+        return levelFor(value).color
     }
 }
 
+enum class HeatmapMeaning(val defaultLabel: String) {
+    NO_READING("No leiste"),
+    BELOW_TARGET("Mucho menos que el objetivo"),
+    NEAR_TARGET("Casi llegas al objetivo"),
+    GOAL_MET("Objetivo cumplido"),
+    ABOVE_TARGET("Superas el objetivo")
+}
+
 data class HeatmapScaleLevel(
+    val meaning: HeatmapMeaning,
     val minValue: Float,
     val color: Color,
     val label: String
@@ -63,29 +82,34 @@ data class HeatmapScaleLevel(
 fun defaultHeatmapScale(): HeatmapScale = HeatmapScale(
     levels = listOf(
         HeatmapScaleLevel(
+            meaning = HeatmapMeaning.NO_READING,
             minValue = 0f,
-            color = Color(0xFFF3EFEB),
-            label = "No leiste"
+            color = FeedBookColors.HeatmapNoReading,
+            label = HeatmapMeaning.NO_READING.defaultLabel
         ),
         HeatmapScaleLevel(
+            meaning = HeatmapMeaning.BELOW_TARGET,
             minValue = 0.12f,
-            color = Color(0xFFE0D0BC),
-            label = "Mucho menos que el objetivo"
+            color = FeedBookColors.HeatmapBelowTarget,
+            label = HeatmapMeaning.BELOW_TARGET.defaultLabel
         ),
         HeatmapScaleLevel(
+            meaning = HeatmapMeaning.NEAR_TARGET,
             minValue = 0.35f,
-            color = Color(0xFFC5A583),
-            label = "Casi llegas al objetivo"
+            color = FeedBookColors.HeatmapNearTarget,
+            label = HeatmapMeaning.NEAR_TARGET.defaultLabel
         ),
         HeatmapScaleLevel(
+            meaning = HeatmapMeaning.GOAL_MET,
             minValue = 0.60f,
-            color = Color(0xFF7B8EA3),
-            label = "Objetivo cumplido"
+            color = FeedBookColors.HeatmapGoalMet,
+            label = HeatmapMeaning.GOAL_MET.defaultLabel
         ),
         HeatmapScaleLevel(
+            meaning = HeatmapMeaning.ABOVE_TARGET,
             minValue = 0.82f,
-            color = Color(0xFF32475E),
-            label = "Superas el objetivo"
+            color = FeedBookColors.HeatmapAboveTarget,
+            label = HeatmapMeaning.ABOVE_TARGET.defaultLabel
         )
     )
 )

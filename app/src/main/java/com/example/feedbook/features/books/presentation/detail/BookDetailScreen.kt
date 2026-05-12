@@ -1,6 +1,8 @@
 package com.example.feedbook.features.books.presentation.detail
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -193,6 +195,7 @@ private fun BookDetailContent(
                 book.published
             )
         }
+        item { PullQuoteSection(description = book.description, genre = book.genre) }
     }
 }
 
@@ -215,13 +218,13 @@ private fun CoverSection(coverUrl: String?) {
                     .width(160.dp)
                     .height(240.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
+                    .background(ProfileColors.AccentSoft),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = "No Cover",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = ProfileColors.PrimaryText
                 )
             }
         } else {
@@ -307,7 +310,7 @@ private fun ActionButtonsSection(
                 .height(48.dp),
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
+                containerColor = ProfileColors.SurfaceStrong,
                 contentColor = Color.White
             )
         ) {
@@ -358,10 +361,10 @@ private fun ProgressCard(
     onSliderChange: (Float) -> Unit,
     onSave: () -> Unit
 ) {
-    val cardBg = MaterialTheme.colorScheme.secondary
+    val cardBg = ProfileColors.SurfaceStrong
     val trackBg = Color.White.copy(alpha = 0.2f)
     val saveBg = Color.White.copy(alpha = 0.1f)
-    val accentColor = MaterialTheme.colorScheme.onSecondary
+    val accentColor = Color.White
 
     Card(
         modifier = Modifier
@@ -452,47 +455,43 @@ private fun ProgressCard(
 // ─── Friends Section ───────────────────────────────────────────────────────
 @Composable
 private fun FriendsSection() {
-    Card(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 12.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = "FRIENDS WHO READ THIS",
-                style = MaterialTheme.typography.labelSmall.copy(
-                    letterSpacing = 1.5.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                repeat(3) { index ->
-                    Box(
-                        modifier = Modifier
-                            .offset(x = (-index * 10).dp)
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(
-                                listOf(
-                                    Color(0xFF7B9EA8),
-                                    Color(0xFFB8956A),
-                                    Color(0xFF8FA882)
-                                )[index]
-                            )
-                    )
-                }
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "Marcus, Elena, and 12 others\nhave read this volume.",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 13.sp),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    lineHeight = 18.sp
+        Text(
+            text = "FRIENDS WHO READ THIS",
+            style = MaterialTheme.typography.labelSmall.copy(
+                letterSpacing = 1.3.sp,
+                fontWeight = FontWeight.Bold
+            ),
+            color = ProfileColors.SecondaryText.copy(alpha = 0.85f)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            repeat(3) { index ->
+                Box(
+                    modifier = Modifier
+                        .offset(x = (-index * 8).dp)
+                        .size(28.dp)
+                        .clip(CircleShape)
+                        .border(1.dp, Color.White, CircleShape)
+                        .background(
+                            listOf(
+                                Color(0xFF7B9EA8),
+                                Color(0xFFB8956A),
+                                Color(0xFF8FA882)
+                            )[index]
+                        )
                 )
             }
+            Spacer(modifier = Modifier.width(2.dp))
+            Text(
+                text = "Marcus, Elena, and 12 others\nhave read this volume.",
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp, lineHeight = 17.sp),
+                color = ProfileColors.SecondaryText
+            )
         }
     }
 }
@@ -509,20 +508,21 @@ private fun ReviewsHeader(onWriteReview: () -> Unit) {
     ) {
         Text(
             text = "Community Reviews",
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
+            color = ProfileColors.PrimaryText
         )
         TextButton(onClick = onWriteReview) {
             Text(
                 text = "Write a review",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.secondary
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp),
+                color = ProfileColors.Accent
             )
             Spacer(modifier = Modifier.width(8.dp))
             Icon(
                 imageVector = Icons.Outlined.Create,
                 contentDescription = null,
                 modifier = Modifier.size(18.dp),
-                tint = MaterialTheme.colorScheme.secondary
+                tint = ProfileColors.Accent
             )
         }
     }
@@ -535,26 +535,28 @@ private fun ReviewCard(review: ReviewUiModel) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 6.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = ProfileColors.Surface),
+        border = BorderStroke(1.dp, ProfileColors.Border),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(14.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top
             ) {
                 Box(
                     modifier = Modifier
-                        .size(44.dp)
+                        .size(34.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
+                        .background(ProfileColors.AccentSoft),
                     contentAlignment = Alignment.Center
                 ) {
                     if (LocalInspectionMode.current || review.reviewerAvatar == null) {
                         Text(
                             text = review.reviewerName.first().toString(),
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.primary
+                            style = MaterialTheme.typography.titleMedium,
+                            color = ProfileColors.SurfaceStrong
                         )
                     } else {
                         AsyncImage(
@@ -569,25 +571,29 @@ private fun ReviewCard(review: ReviewUiModel) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = review.reviewerName,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleMedium.copy(fontSize = 14.sp),
+                        color = ProfileColors.Accent
                     )
                     StarRatingRow(rating = review.rating)
                 }
                 Text(
                     text = review.createdAt,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                    color = ProfileColors.SecondaryText
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
             Text(
                 text = review.text,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 13.sp,
+                    lineHeight = 20.sp
+                ),
+                color = ProfileColors.PrimaryText
             )
             Spacer(modifier = Modifier.height(12.dp))
             HorizontalDivider(
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
+                color = ProfileColors.Divider,
                 thickness = 0.5.dp
             )
             Spacer(modifier = Modifier.height(10.dp))
@@ -596,13 +602,14 @@ private fun ReviewCard(review: ReviewUiModel) {
                     Icon(
                         imageVector = Icons.Outlined.ThumbUp,
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(14.dp),
+                        tint = ProfileColors.SecondaryText
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = review.likes.toString(),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                        color = ProfileColors.SecondaryText
                     )
                 }
             }
@@ -618,33 +625,18 @@ private fun BookMetadataSection(
     language: String,
     published: String,
 ) {
-    Card(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 12.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
+            .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            MetadataRow(label = "ISBN", value = isbn)
-            Spacer(modifier = Modifier.height(14.dp))
-            MetadataRow(
-                label = "PUBLISHED",
-                value = published,
-            )
-            Spacer(modifier = Modifier.height(14.dp))
-            MetadataRow(
-                label = "PAGES",
-                value = totalPages.toString(),
-            )
-            Spacer(modifier = Modifier.height(14.dp))
-            MetadataRow(
-                label = "LANGUAGE",
-                value = language,
-            )
-        }
+        MetadataRow(label = "ISBN", value = isbn)
+        HorizontalDivider(color = ProfileColors.Divider, modifier = Modifier.padding(vertical = 14.dp))
+        MetadataRow(label = "PUBLISHED", value = published)
+        HorizontalDivider(color = ProfileColors.Divider, modifier = Modifier.padding(vertical = 14.dp))
+        MetadataRow(label = "PAGES", value = totalPages.toString())
+        HorizontalDivider(color = ProfileColors.Divider, modifier = Modifier.padding(vertical = 14.dp))
+        MetadataRow(label = "LANGUAGE", value = language)
     }
 }
 
@@ -656,15 +648,65 @@ private fun MetadataRow(
     Column {
         Text(
             text = label,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.secondary
+            style = MaterialTheme.typography.labelMedium.copy(
+                fontSize = 10.sp,
+                letterSpacing = 1.2.sp
+            ),
+            color = ProfileColors.SecondaryText
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = value,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.primary
+            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp, lineHeight = 18.sp),
+            color = ProfileColors.PrimaryText
         )
+    }
+}
+
+@Composable
+private fun PullQuoteSection(
+    description: String,
+    genre: String
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = ProfileColors.Surface)
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "\"${description.ifBlank { "A book worth keeping close." }}\"",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 12.sp,
+                    lineHeight = 18.sp,
+                    fontStyle = FontStyle.Italic
+                ),
+                color = ProfileColors.SecondaryText
+            )
+            Spacer(modifier = Modifier.height(14.dp))
+            OutlinedButton(
+                onClick = {},
+                shape = RoundedCornerShape(10.dp),
+                border = BorderStroke(1.dp, ProfileColors.Border),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = ProfileColors.PrimaryText,
+                    containerColor = Color.Transparent
+                )
+            ) {
+                Text(
+                    text = genre.uppercase(),
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        letterSpacing = 1.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+        }
     }
 }
 
@@ -674,7 +716,7 @@ private fun LoadingContent() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
+            .background(ProfileColors.Background),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
@@ -686,7 +728,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
+            .background(ProfileColors.Background),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {

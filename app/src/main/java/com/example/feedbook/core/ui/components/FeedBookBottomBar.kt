@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.feedbook.R
+import com.example.feedbook.features.profile.presentation.components.ProfileColors
 
 internal enum class BottomBarTab {
     FEED,
@@ -56,7 +57,7 @@ internal fun FeedBookBottomBar(
     BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color(0xFFFAFAF9))
+            .background(ProfileColors.Background)
     ) {
         val density = LocalDensity.current
         val widthDp = maxWidth
@@ -68,7 +69,7 @@ internal fun FeedBookBottomBar(
         val touchTargetSize = (widthDp * 0.14f).coerceIn(52.dp, 64.dp)
 
         Column {
-            HorizontalDivider(color = Color(0xFFE2E8F0))
+            HorizontalDivider(color = ProfileColors.Divider)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -154,7 +155,7 @@ private fun BottomNavItem(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(1.dp))
-                .background(if (active) Color(0xFF0F172A) else Color.Transparent)
+                .background(if (active) ProfileColors.SurfaceStrong else Color.Transparent)
                 .then(
                     Modifier.size(
                         width = indicatorWidth,
@@ -166,7 +167,7 @@ private fun BottomNavItem(
             imageVector = icon,
             contentDescription = contentDescription,
             modifier = Modifier.size(iconSize),
-            tint = if (active) Color(0xFF0F172A) else Color(0xFF64748B)
+            tint = if (active) ProfileColors.SurfaceStrong else ProfileColors.SecondaryText
         )
     }
 }

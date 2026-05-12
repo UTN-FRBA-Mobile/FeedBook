@@ -110,6 +110,11 @@ start_backend() {
   exit 1
 }
 
+is_scrcpy_running() {
+  local device_serial="$1"
+  pgrep -f "scrcpy --serial ${device_serial}" >/dev/null 2>&1
+}
+
 get_device_http_proxy() {
   local device_serial="$1"
   adb -s "$device_serial" shell settings get global http_proxy 2>/dev/null | tr -d '\r'
@@ -189,8 +194,12 @@ main() {
   ensure_reverse "$device_serial"
   launch_app "$device_serial"
 
-  echo "Abriendo scrcpy..."
-  nohup scrcpy --serial "$device_serial" --always-on-top >"$SCRCPY_LOG_FILE" 2>&1 &
+  if is_scrcpy_running "$device_serial"; then
+    echo "scrcpy ya esta corriendo para ${device_serial}."
+  else
+    echo "Abriendo scrcpy..."
+    nohup scrcpy --serial "$device_serial" --always-on-top >"$SCRCPY_LOG_FILE" 2>&1 &
+  fi
 
   cat <<EOF
 Listo.
