@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,12 +32,14 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -75,6 +78,11 @@ private enum class ExploreFilter {
     AUTHORS,
     USERS
 }
+
+private data class ExploreFacetOption(
+    val value: String,
+    val count: Int
+)
 
 @Composable
 fun BookListScreen(
@@ -130,28 +138,44 @@ fun BookListContent(
     val snackbarHostState = remember { SnackbarHostState() }
     var query by rememberSaveable { mutableStateOf("") }
     var activeFilter by rememberSaveable { mutableStateOf(ExploreFilter.ALL) }
+    var showFilterSheet by rememberSaveable { mutableStateOf(false) }
+    var selectedGenres by rememberSaveable { mutableStateOf(setOf<String>()) }
+    var selectedAuthors by rememberSaveable { mutableStateOf(setOf<String>()) }
 
-    val filteredBooks = remember(state.books, query) {
+    val availableGenres = remember(state.books) {
+        buildGenreFacetOptions(state.books)
+    }
+
+    val availableAuthorNames = remember(state.books, state.authors) {
+        buildAuthorFacetOptions(state.books, state.authors)
+    }
+
+    val filteredBooks = remember(state.books, query, selectedGenres, selectedAuthors) {
         state.books.filter { book ->
             val search = query.trim().lowercase()
-            if (search.isBlank()) {
+            val matchesSearch = if (search.isBlank()) {
                 true
             } else {
                 listOf(book.title, book.author, book.genre, book.description)
                     .any { candidate -> candidate.lowercase().contains(search) }
             }
+            val matchesGenre = selectedGenres.isEmpty() || selectedGenres.contains(book.genre)
+            val matchesAuthor = selectedAuthors.isEmpty() || selectedAuthors.contains(book.author)
+            matchesSearch && matchesGenre && matchesAuthor
         }
     }
 
-    val filteredAuthors = remember(state.authors, query) {
+    val filteredAuthors = remember(state.authors, query, selectedAuthors) {
         state.authors.filter { author ->
             val search = query.trim().lowercase()
-            if (search.isBlank()) {
+            val matchesSearch = if (search.isBlank()) {
                 true
             } else {
                 listOf(author.name, author.nationality, author.description)
                     .any { candidate -> candidate.lowercase().contains(search) }
             }
+            val matchesAuthor = selectedAuthors.isEmpty() || selectedAuthors.contains(author.name)
+            matchesSearch && matchesAuthor
         }
     }
 
@@ -174,17 +198,32 @@ fun BookListContent(
         (showingAuthors && filteredAuthors.isNotEmpty()) ||
         (showingUsers && filteredUsers.isNotEmpty())
 
-    val recentTags = remember(state.books, state.authors, state.users) {
-        buildList {
-            state.books.firstOrNull()?.genre?.takeIf { it.isNotBlank() }?.let(::add)
-            state.authors.firstOrNull()?.name?.substringAfterLast(" ")?.let(::add)
-            state.books.getOrNull(1)?.genre?.takeIf { it.isNotBlank() }?.let(::add)
-            state.users.firstOrNull()?.handle?.removePrefix("@")?.let(::add)
-        }.distinct().take(3)
-    }
-
     LaunchedEffect(state.error) {
         state.error?.let { snackbarHostState.showSnackbar(it) }
+    }
+
+    if (showFilterSheet) {
+        ExploreFilterSheet(
+            genres = availableGenres,
+            authors = availableAuthorNames,
+            selectedGenres = selectedGenres,
+            selectedAuthors = selectedAuthors,
+            onGenreToggled = { genre ->
+                selectedGenres = selectedGenres.toMutableSet().apply {
+                    if (contains(genre)) remove(genre) else add(genre)
+                }
+            },
+            onAuthorToggled = { author ->
+                selectedAuthors = selectedAuthors.toMutableSet().apply {
+                    if (contains(author)) remove(author) else add(author)
+                }
+            },
+            onClearFilters = {
+                selectedGenres = emptySet()
+                selectedAuthors = emptySet()
+            },
+            onDismiss = { showFilterSheet = false }
+        )
     }
 
     FeedBookScreenScaffold(
@@ -239,7 +278,8 @@ fun BookListContent(
                     item {
                         ExploreSearchField(
                             query = query,
-                            onQueryChange = { query = it }
+                            onQueryChange = { query = it },
+                            onFilterClick = { showFilterSheet = true }
                         )
                     }
                     item {
@@ -248,11 +288,17 @@ fun BookListContent(
                             onFilterSelected = { activeFilter = it }
                         )
                     }
-                    if (recentTags.isNotEmpty()) {
+                    if (selectedGenres.isNotEmpty() || selectedAuthors.isNotEmpty()) {
                         item {
-                            RecentTagsSection(
-                                tags = recentTags,
-                                onTagClick = { tag -> query = tag }
+                            ActiveExploreFilters(
+                                selectedGenres = selectedGenres,
+                                selectedAuthors = selectedAuthors,
+                                onClearGenre = { genre -> selectedGenres = selectedGenres - genre },
+                                onClearAuthor = { author -> selectedAuthors = selectedAuthors - author },
+                                onClearAll = {
+                                    selectedGenres = emptySet()
+                                    selectedAuthors = emptySet()
+                                }
                             )
                         }
                     }
@@ -333,7 +379,8 @@ private fun EmptyBookList(
 @Composable
 private fun ExploreSearchField(
     query: String,
-    onQueryChange: (String) -> Unit
+    onQueryChange: (String) -> Unit,
+    onFilterClick: () -> Unit
 ) {
     TextField(
         value = query,
@@ -361,7 +408,8 @@ private fun ExploreSearchField(
                 Icon(
                     imageVector = Icons.Outlined.Tune,
                     contentDescription = null,
-                    tint = ProfileColors.SecondaryText
+                    tint = ProfileColors.SecondaryText,
+                    modifier = Modifier.clickable(onClick = onFilterClick)
                 )
             }
         },
@@ -373,6 +421,179 @@ private fun ExploreSearchField(
             cursorColor = ProfileColors.SurfaceStrong
         )
     )
+}
+
+@Composable
+private fun ActiveExploreFilters(
+    selectedGenres: Set<String>,
+    selectedAuthors: Set<String>,
+    onClearGenre: (String) -> Unit,
+    onClearAuthor: (String) -> Unit,
+    onClearAll: () -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "FILTROS ACTIVOS",
+                style = ProfileTypography.LabelUppercase.copy(fontSize = 10.sp),
+                color = ProfileColors.SecondaryText
+            )
+            Text(
+                text = "Limpiar todo",
+                style = ProfileTypography.Label,
+                color = ProfileColors.Accent,
+                modifier = Modifier.clickable(onClick = onClearAll)
+            )
+        }
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            selectedGenres.forEach { genre ->
+                AssistChip(
+                    onClick = { onClearGenre(genre) },
+                    label = { Text(text = "Genero: $genre", style = ProfileTypography.Label.copy(fontSize = 11.sp)) },
+                    colors = AssistChipDefaults.assistChipColors(
+                        containerColor = ProfileColors.AccentSoft,
+                        labelColor = ProfileColors.PrimaryText
+                    ),
+                    border = BorderStroke(1.dp, ProfileColors.Border)
+                )
+            }
+            selectedAuthors.forEach { author ->
+                AssistChip(
+                    onClick = { onClearAuthor(author) },
+                    label = { Text(text = "Autor: $author", style = ProfileTypography.Label.copy(fontSize = 11.sp)) },
+                    colors = AssistChipDefaults.assistChipColors(
+                        containerColor = ProfileColors.AccentSoft,
+                        labelColor = ProfileColors.PrimaryText
+                    ),
+                    border = BorderStroke(1.dp, ProfileColors.Border)
+                )
+            }
+        }
+    }
+}
+
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+private fun ExploreFilterSheet(
+    genres: List<ExploreFacetOption>,
+    authors: List<ExploreFacetOption>,
+    selectedGenres: Set<String>,
+    selectedAuthors: Set<String>,
+    onGenreToggled: (String) -> Unit,
+    onAuthorToggled: (String) -> Unit,
+    onClearFilters: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        containerColor = ProfileColors.Surface
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(18.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Filtrar resultados",
+                    style = ProfileTypography.SectionTitle,
+                    color = ProfileColors.PrimaryText
+                )
+                TextButton(onClick = onClearFilters) {
+                    Text(
+                        text = "Limpiar",
+                        style = ProfileTypography.Label,
+                        color = ProfileColors.Accent
+                    )
+                }
+            }
+
+            ExploreMultiSelectFilterGroup(
+                title = "Generos",
+                options = genres,
+                selectedOptions = selectedGenres,
+                onOptionToggled = onGenreToggled
+            )
+
+            ExploreMultiSelectFilterGroup(
+                title = "Autores",
+                options = authors,
+                selectedOptions = selectedAuthors,
+                onOptionToggled = onAuthorToggled
+            )
+
+            Button(
+                onClick = onDismiss,
+                modifier = Modifier.fillMaxWidth(),
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = ProfileColors.SurfaceStrong,
+                    contentColor = Color.White
+                )
+            ) {
+                Text("Aplicar", style = ProfileTypography.Button)
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
+
+@Composable
+private fun ExploreMultiSelectFilterGroup(
+    title: String,
+    options: List<ExploreFacetOption>,
+    selectedOptions: Set<String>,
+    onOptionToggled: (String) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Text(
+            text = title,
+            style = ProfileTypography.LabelUppercase.copy(fontSize = 10.sp),
+            color = ProfileColors.SecondaryText
+        )
+        if (options.isEmpty()) {
+            Text(
+                text = "Sin opciones disponibles por ahora.",
+                style = ProfileTypography.Body.copy(fontSize = 13.sp),
+                color = ProfileColors.SecondaryText
+            )
+        } else {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+            options.forEach { option ->
+                FilterChip(
+                    selected = selectedOptions.contains(option.value),
+                    onClick = { onOptionToggled(option.value) },
+                    label = {
+                        Text(
+                            text = "${option.value} (${option.count})",
+                            style = ProfileTypography.Label.copy(fontSize = 12.sp)
+                        )
+                    },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = ProfileColors.SurfaceStrong,
+                        selectedLabelColor = Color.White,
+                        containerColor = ProfileColors.Background,
+                        labelColor = ProfileColors.SecondaryText
+                    )
+                )
+            }
+            }
+        }
+    }
 }
 
 @Composable
@@ -404,38 +625,6 @@ private fun ExploreFilterRow(
                     labelColor = ProfileColors.SecondaryText
                 )
             )
-        }
-    }
-}
-
-@Composable
-private fun RecentTagsSection(
-    tags: List<String>,
-    onTagClick: (String) -> Unit
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = "RECIENTES",
-            style = ProfileTypography.LabelUppercase.copy(fontSize = 10.sp),
-            color = ProfileColors.SecondaryText
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            tags.forEach { tag ->
-                AssistChip(
-                    onClick = { onTagClick(tag) },
-                    label = {
-                        Text(
-                            text = tag,
-                            style = ProfileTypography.Label.copy(fontSize = 11.sp)
-                        )
-                    },
-                    colors = AssistChipDefaults.assistChipColors(
-                        containerColor = ProfileColors.Surface,
-                        labelColor = ProfileColors.SecondaryText
-                    ),
-                    border = BorderStroke(1.dp, ProfileColors.Border)
-                )
-            }
         }
     }
 }
@@ -699,6 +888,46 @@ private fun EmptySearchResults(
             )
         }
     }
+}
+
+private fun buildGenreFacetOptions(books: List<Book>): List<ExploreFacetOption> =
+    books
+        .asSequence()
+        .map { it.genre.trim() }
+        .filter { it.isNotBlank() }
+        .groupingBy { it }
+        .eachCount()
+        .entries
+        .sortedWith(compareByDescending<Map.Entry<String, Int>> { it.value }.thenBy { it.key })
+        .map { (genre, count) -> ExploreFacetOption(value = genre, count = count) }
+
+private fun buildAuthorFacetOptions(
+    books: List<Book>,
+    authors: List<Author>
+): List<ExploreFacetOption> {
+    val bookCounts = books
+        .asSequence()
+        .map { it.author.trim() }
+        .filter { it.isNotBlank() }
+        .groupingBy { it }
+        .eachCount()
+
+    val authorCounts = authors
+        .asSequence()
+        .map { it.name.trim() }
+        .filter { it.isNotBlank() }
+        .groupingBy { it }
+        .eachCount()
+
+    return (bookCounts.keys + authorCounts.keys)
+        .sorted()
+        .map { authorName ->
+            ExploreFacetOption(
+                value = authorName,
+                count = (bookCounts[authorName] ?: 0) + (authorCounts[authorName] ?: 0)
+            )
+        }
+        .sortedWith(compareByDescending<ExploreFacetOption> { it.count }.thenBy { it.value })
 }
 
 @Preview(apiLevel = 36, showBackground = true)
