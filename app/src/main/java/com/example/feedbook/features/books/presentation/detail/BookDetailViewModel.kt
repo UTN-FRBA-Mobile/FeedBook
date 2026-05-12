@@ -10,6 +10,7 @@ import com.example.feedbook.features.profile.domain.usecase.ObserveOwnProfileUse
 import com.example.feedbook.features.profile.presentation.AvatarPresentation
 import com.example.feedbook.features.profile.presentation.defaultAvatarStyle
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,14 +38,16 @@ class BookDetailViewModel(
     init {
         loadBook()
         viewModelScope.launch {
-            observeOwnProfileUseCase().collectLatest { profile ->
-                avatarPresentation = profile.toAvatarPresentation()
-                _state.value = _state.value.copy(
-                    avatarStyle = avatarPresentation.style,
-                    avatarPreset = avatarPresentation.preset,
-                    avatarImageUri = avatarPresentation.imageUri
-                )
-            }
+            observeOwnProfileUseCase()
+                .catch { }
+                .collectLatest { profile ->
+                    avatarPresentation = profile.toAvatarPresentation()
+                    _state.value = _state.value.copy(
+                        avatarStyle = avatarPresentation.style,
+                        avatarPreset = avatarPresentation.preset,
+                        avatarImageUri = avatarPresentation.imageUri
+                    )
+                }
         }
     }
 

@@ -1,20 +1,39 @@
 package com.example.feedbook.features.profile.data.remote
 
+import com.example.feedbook.core.network.ApiService
 import com.example.feedbook.features.profile.data.remote.dto.ProfileDto
 import com.example.feedbook.features.profile.data.remote.dto.UpdateProfileRequestDto
-import com.example.feedbook.shared.fakebackend.FakeFeedBookBackend
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.onStart
 
 class ProfileRemoteDataSource(
-    private val fakeBackend: FakeFeedBookBackend
+    private val apiService: ApiService
 ) {
-    fun observeOwnProfile(): Flow<ProfileDto> = fakeBackend.observeOwnProfile()
+    private val ownProfileState = MutableStateFlow<ProfileDto?>(null)
+    private val ownPublicPreviewState = MutableStateFlow<ProfileDto?>(null)
 
-    fun observeOwnPublicPreview(): Flow<ProfileDto> = fakeBackend.observeOwnPublicPreview()
+    fun observeOwnProfile(): Flow<ProfileDto> =
+        ownProfileState.filterNotNull().onStart {
+            if (ownProfileState.value == null) {
+                ownProfileState.value = apiService.getOwnProfile()
+            }
+        }
 
-    suspend fun getPublicProfile(): ProfileDto = fakeBackend.getPublicProfile()
+    fun observeOwnPublicPreview(): Flow<ProfileDto> =
+        ownPublicPreviewState.filterNotNull().onStart {
+            if (ownPublicPreviewState.value == null) {
+                ownPublicPreviewState.value = apiService.getOwnPublicProfilePreview()
+            }
+        }
 
-    suspend fun updateOwnProfile(request: UpdateProfileRequestDto) {
-        fakeBackend.updateOwnProfile(request)
+    suspend fun getPublicProfile(): ProfileDto = apiService.getPublicProfile()
+
+    suspend fun updateOwnProfile(request: UpdateProfileRequestDto): ProfileDto {
+        val updatedProfile = apiService.updateOwnProfile(request)
+        ownProfileState.value = updatedProfile
+        ownPublicPreviewState.value = apiService.getOwnPublicProfilePreview()
+        return updatedProfile
     }
 }

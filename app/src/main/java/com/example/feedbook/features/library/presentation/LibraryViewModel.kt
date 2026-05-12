@@ -7,20 +7,40 @@ import com.example.feedbook.features.library.domain.usecase.ObserveOwnLibraryUse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class LibraryViewModel(
-    observeOwnLibraryUseCase: ObserveOwnLibraryUseCase
+    private val observeOwnLibraryUseCase: ObserveOwnLibraryUseCase
 ) : ViewModel() {
-    private val _state = MutableStateFlow(sampleLibraryUiState())
+    private val _state = MutableStateFlow(emptyLibraryUiState().copy(isLoading = true))
     val state: StateFlow<LibraryUiState> = _state.asStateFlow()
+    private var loadJob: Job? = null
 
     init {
-        viewModelScope.launch {
-            observeOwnLibraryUseCase().collectLatest { library ->
-                _state.value = library.toUiState()
-            }
+        loadLibrary()
+    }
+
+    fun retry() {
+        loadLibrary()
+    }
+
+    private fun loadLibrary() {
+        loadJob?.cancel()
+        _state.value = _state.value.copy(isLoading = true, errorMessage = null)
+        loadJob = viewModelScope.launch {
+            observeOwnLibraryUseCase()
+                .catch { throwable ->
+                    _state.value = emptyLibraryUiState().copy(
+                        isLoading = false,
+                        errorMessage = throwable.message ?: "Unable to load library."
+                    )
+                }
+                .collectLatest { library ->
+                    _state.value = library.toUiState()
+                }
         }
     }
 

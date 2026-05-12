@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import com.example.feedbook.features.profile.presentation.toAvatarPresentation
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 
@@ -35,14 +36,16 @@ class AuthorDetailViewModel (
     init {
         loadAuthor()
         viewModelScope.launch {
-            observeOwnProfileUseCase().collectLatest { profile ->
-                avatarPresentation = profile.toAvatarPresentation()
-                _state.value = _state.value.copy(
-                    avatarStyle = avatarPresentation.style,
-                    avatarPreset = avatarPresentation.preset,
-                    avatarImageUri = avatarPresentation.imageUri
-                )
-            }
+            observeOwnProfileUseCase()
+                .catch { }
+                .collectLatest { profile ->
+                    avatarPresentation = profile.toAvatarPresentation()
+                    _state.value = _state.value.copy(
+                        avatarStyle = avatarPresentation.style,
+                        avatarPreset = avatarPresentation.preset,
+                        avatarImageUri = avatarPresentation.imageUri
+                    )
+                }
         }
     }
 

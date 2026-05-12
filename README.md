@@ -39,7 +39,41 @@ FeedBook busca combinar un gestor personal de lecturas con una capa social simpl
 - Android nativo
 - Kotlin
 - Jetpack Compose
+- backend companion en Go dentro del submodulo `back/`
 - soporte desde Android 9 en adelante
+
+## Backend local
+
+El contenido principal que antes estaba mockeado en la app ahora se sirve desde
+el backend REST del submodulo `back/`.
+
+Para levantarlo localmente:
+
+```bash
+cd back
+go test ./...
+go run .
+```
+
+Por defecto escucha en `http://127.0.0.1:8080`. Se puede cambiar con
+`FEEDBOOK_ADDR`.
+
+La app Android usa una sola origin configurable mediante
+`BuildConfig.BACKEND_ORIGIN`, que inicialmente apunta a
+`http://localhost:8080/`.
+
+Tips de entorno:
+
+- emulador Android Studio: usar `http://10.0.2.2:8080/`
+- dispositivo fisico con `adb reverse tcp:8080 tcp:8080`: mantener `http://localhost:8080/`
+
+## Forma de trabajo
+
+- La constitucion del proyecto vive en `.specify/memory/constitution.md` y fija
+  reglas para arquitectura por feature, limites de red/offline, testing,
+  accesibilidad y configuracion segura.
+- Cada nuevo cambio de producto deberia reflejar esas reglas en su spec, plan y
+  tareas antes de implementarse.
 
 ## Nota
 

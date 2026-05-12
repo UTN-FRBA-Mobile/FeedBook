@@ -71,43 +71,66 @@ fun HomeScreen(
         onNotificationsClick = onNotificationsClick,
         onLogoutClick = onLogoutClick
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(ProfileColors.Background)
-                .padding(innerPadding),
-            contentPadding = PaddingValues(top = 36.dp, bottom = 40.dp),
-            verticalArrangement = Arrangement.spacedBy(34.dp)
-        ) {
-            item {
-                TrendingHeader(
-                    title = state.trendingTitle,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
+        if (state.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(ProfileColors.Background)
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Loading home feed...", color = ProfileColors.PrimaryText)
             }
-            item {
-                FeaturedBookCard(
-                    book = state.featuredBook,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
+        } else if (state.errorMessage != null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(ProfileColors.Background)
+                    .padding(innerPadding)
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = state.errorMessage, color = ProfileColors.PrimaryText)
             }
-            item {
-                RankedBooksSection(
-                    books = state.rankedBooks,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
-            item {
-                ReadingRoomsSection(
-                    rooms = state.readingRooms,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-            item {
-                CuratorsSection(
-                    curators = state.curators,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(ProfileColors.Background)
+                    .padding(innerPadding),
+                contentPadding = PaddingValues(top = 36.dp, bottom = 40.dp),
+                verticalArrangement = Arrangement.spacedBy(34.dp)
+            ) {
+                item {
+                    TrendingHeader(
+                        title = state.trendingTitle,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+                item {
+                    FeaturedBookCard(
+                        book = state.featuredBook,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+                item {
+                    RankedBooksSection(
+                        books = state.rankedBooks,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+                item {
+                    ReadingRoomsSection(
+                        rooms = state.readingRooms,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                item {
+                    CuratorsSection(
+                        curators = state.curators,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
             }
         }
     }

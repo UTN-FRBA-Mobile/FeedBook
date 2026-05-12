@@ -1,9 +1,14 @@
 package com.example.feedbook.features.library.data.remote
 
-import com.example.feedbook.shared.fakebackend.FakeFeedBookBackend
+import com.example.feedbook.core.network.ApiService
+import com.example.feedbook.features.library.data.remote.dto.LibraryDto
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class LibraryRemoteDataSource(
-    private val fakeBackend: FakeFeedBookBackend
+    private val apiService: ApiService
 ) {
-    fun observeOwnLibrary() = fakeBackend.observeOwnLibrary()
+    fun observeOwnLibrary(): Flow<LibraryDto> = flow {
+        emit(apiService.getOwnLibrary())
+    }
 }

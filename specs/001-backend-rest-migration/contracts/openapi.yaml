@@ -1,0 +1,646 @@
+openapi: 3.0.3
+info:
+  title: FeedBook Backend API
+  version: 1.0.0
+  description: |
+    Contract for the hardcoded FeedBook backend used by the Android app during
+    the backend rest migration feature.
+servers:
+  - url: http://127.0.0.1:8080
+paths:
+  /login:
+    post:
+      summary: Authenticate a local user
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Invalid request
+        '401':
+          description: Invalid credentials
+  /api/books:
+    get:
+      summary: List all books
+      operationId: listBooks
+      responses:
+        '200':
+          description: Books list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+  /api/books/{bookId}:
+    get:
+      summary: Get one book
+      operationId: getBook
+      parameters:
+        - $ref: '#/components/parameters/BookId'
+      responses:
+        '200':
+          description: Book detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Book not found
+  /api/books/{bookId}/progress:
+    get:
+      summary: Get reading progress for a book
+      operationId: getReadingProgress
+      parameters:
+        - $ref: '#/components/parameters/BookId'
+      responses:
+        '200':
+          description: Reading progress found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadingProgress'
+        '404':
+          description: Reading progress not found
+  /api/books/{bookId}/reviews:
+    get:
+      summary: Get reviews for a book
+      operationId: getReviews
+      parameters:
+        - $ref: '#/components/parameters/BookId'
+      responses:
+        '200':
+          description: Reviews list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Review'
+  /api/explore/users:
+    get:
+      summary: List explore users
+      operationId: listExploreUsers
+      responses:
+        '200':
+          description: Explore users list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExploreUser'
+  /api/authors:
+    get:
+      summary: List authors
+      operationId: listAuthors
+      responses:
+        '200':
+          description: Authors list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
+  /api/authors/{authorId}:
+    get:
+      summary: Get one author
+      operationId: getAuthor
+      parameters:
+        - $ref: '#/components/parameters/AuthorId'
+      responses:
+        '200':
+          description: Author detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '404':
+          description: Author not found
+  /api/authors/{authorId}/follow-toggle:
+    post:
+      summary: Toggle author follow state
+      operationId: toggleAuthorFollow
+      parameters:
+        - $ref: '#/components/parameters/AuthorId'
+      responses:
+        '204':
+          description: Follow state updated
+        '404':
+          description: Author not found
+  /api/home:
+    get:
+      summary: Get home feed snapshot
+      operationId: getHome
+      responses:
+        '200':
+          description: Home feed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Home'
+  /api/library/me:
+    get:
+      summary: Get own library snapshot
+      operationId: getOwnLibrary
+      responses:
+        '200':
+          description: Reader library
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Library'
+  /api/profile/me:
+    get:
+      summary: Get own profile snapshot
+      operationId: getOwnProfile
+      responses:
+        '200':
+          description: Own profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+    put:
+      summary: Update own profile snapshot
+      operationId: updateOwnProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Updated own profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          description: Invalid update payload
+  /api/profile/me/preview:
+    get:
+      summary: Get own public preview snapshot
+      operationId: getOwnPublicPreview
+      responses:
+        '200':
+          description: Public preview profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+  /api/profile/public:
+    get:
+      summary: Get public profile snapshot
+      operationId: getPublicProfile
+      responses:
+        '200':
+          description: Public profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+  /api/stats:
+    get:
+      summary: Get stats snapshot
+      operationId: getStats
+      responses:
+        '200':
+          description: Stats payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stats'
+  /api/notifications:
+    get:
+      summary: Get notifications snapshot
+      operationId: getNotifications
+      responses:
+        '200':
+          description: Notifications payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notifications'
+components:
+  parameters:
+    BookId:
+      name: bookId
+      in: path
+      required: true
+      schema:
+        type: string
+    AuthorId:
+      name: authorId
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    LoginRequest:
+      type: object
+      required: [password, secure_login]
+      properties:
+        username:
+          type: string
+        user:
+          type: string
+        password:
+          type: string
+        secure_login:
+          type: boolean
+    LoginResponse:
+      type: object
+      required: [token, exp]
+      properties:
+        token:
+          type: string
+        exp:
+          type: integer
+          format: int64
+    Book:
+      type: object
+      required: [id, title, author, description, pages, isbn, genre, language, published]
+      properties:
+        id: { type: string }
+        title: { type: string }
+        author: { type: string }
+        description: { type: string }
+        cover_image_url: { type: string, nullable: true }
+        pages: { type: integer }
+        isbn: { type: string }
+        genre: { type: string }
+        language: { type: string }
+        published: { type: string }
+    ReadingProgress:
+      type: object
+      required: [book_id, current_page, total_pages, updated_at]
+      properties:
+        book_id: { type: string }
+        current_page: { type: integer }
+        total_pages: { type: integer }
+        updated_at: { type: string }
+    Review:
+      type: object
+      required: [id, reviewer_name, rating, text, likes, created_at]
+      properties:
+        id: { type: string }
+        reviewer_name: { type: string }
+        reviewer_avatar: { type: string, nullable: true }
+        rating: { type: number, format: float }
+        text: { type: string }
+        likes: { type: integer }
+        created_at: { type: string }
+    ExploreUser:
+      type: object
+      required: [id, name, handle, bio, avatarTopColorHex, avatarBottomColorHex, followersLabel, booksReadLabel]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        handle: { type: string }
+        bio: { type: string }
+        avatarImageUrl: { type: string, nullable: true }
+        avatarTopColorHex: { type: integer, format: int64 }
+        avatarBottomColorHex: { type: integer, format: int64 }
+        followersLabel: { type: string }
+        booksReadLabel: { type: string }
+    Author:
+      type: object
+      required: [id, name, birth_year, nationality, description, biography, books, followers]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        birth_year: { type: integer }
+        death_year: { type: integer, nullable: true }
+        nationality: { type: string }
+        description: { type: string }
+        biography: { type: string }
+        image_url: { type: string, nullable: true }
+        books:
+          type: array
+          items:
+            $ref: '#/components/schemas/Book'
+        followers: { type: integer }
+    Avatar:
+      type: object
+      required: [topColorHex, bottomColorHex]
+      properties:
+        topColorHex: { type: integer, format: int64 }
+        bottomColorHex: { type: integer, format: int64 }
+        avatarPresetId: { type: string, nullable: true }
+        presetImageUrl: { type: string, nullable: true }
+        imageUri: { type: string, nullable: true }
+    AvatarPreset:
+      type: object
+      required: [id, topColorHex, bottomColorHex]
+      properties:
+        id: { type: string }
+        topColorHex: { type: integer, format: int64 }
+        bottomColorHex: { type: integer, format: int64 }
+        imageUrl: { type: string, nullable: true }
+    ReadingGoal:
+      type: object
+      required: [targetPagesPerDay, currentAveragePagesPerDay]
+      properties:
+        targetPagesPerDay: { type: integer }
+        currentAveragePagesPerDay: { type: integer }
+    StreakDay:
+      type: object
+      required: [label, fillFraction, isToday, completed]
+      properties:
+        label: { type: string }
+        fillFraction: { type: number, format: float }
+        isToday: { type: boolean }
+        completed: { type: boolean }
+    ReadingStreak:
+      type: object
+      required: [days, week]
+      properties:
+        days: { type: integer }
+        week:
+          type: array
+          items:
+            $ref: '#/components/schemas/StreakDay'
+    CurrentBook:
+      type: object
+      required: [id, title, author, page, totalPages, progress]
+      properties:
+        id: { type: string }
+        title: { type: string }
+        author: { type: string }
+        page: { type: integer }
+        totalPages: { type: integer }
+        progress: { type: number, format: float }
+        coverImageUrl: { type: string, nullable: true }
+    QueuedBook:
+      type: object
+      required: [title, author]
+      properties:
+        title: { type: string }
+        author: { type: string }
+        coverImageUrl: { type: string, nullable: true }
+    ProfileStat:
+      type: object
+      required: [label, value]
+      properties:
+        label: { type: string }
+        value: { type: string }
+    LibraryBook:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string }
+        coverImageUrl: { type: string, nullable: true }
+    FeaturedReview:
+      type: object
+      required: [bookTitle, rating, timeAgo, excerpt]
+      properties:
+        bookTitle: { type: string }
+        rating: { type: integer }
+        timeAgo: { type: string }
+        excerpt: { type: string }
+        coverImageUrl: { type: string, nullable: true }
+    Profile:
+      type: object
+      required: [name, handle, quote, avatar, availableAvatarPresets, readingStreak, currentBook, upNextBooks, completedBooks, profileStats, publicLibrary, featuredReviews]
+      properties:
+        name: { type: string }
+        handle: { type: string }
+        quote: { type: string }
+        avatar:
+          $ref: '#/components/schemas/Avatar'
+        availableAvatarPresets:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvatarPreset'
+        readingGoal:
+          allOf:
+            - $ref: '#/components/schemas/ReadingGoal'
+          nullable: true
+        readingStreak:
+          $ref: '#/components/schemas/ReadingStreak'
+        currentBook:
+          $ref: '#/components/schemas/CurrentBook'
+        upNextBooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueuedBook'
+        completedBooks: { type: integer }
+        profileStats:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileStat'
+        publicLibrary:
+          type: array
+          items:
+            $ref: '#/components/schemas/LibraryBook'
+        featuredReviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeaturedReview'
+    UpdateProfileRequest:
+      type: object
+      required: [name, handle, quote, avatarTopColorHex, avatarBottomColorHex]
+      properties:
+        name: { type: string }
+        handle: { type: string }
+        quote: { type: string }
+        avatarTopColorHex: { type: integer, format: int64 }
+        avatarBottomColorHex: { type: integer, format: int64 }
+        avatarPresetId: { type: string, nullable: true }
+        avatarImageUri: { type: string, nullable: true }
+        targetPagesPerDay: { type: integer, nullable: true }
+    HomeFeaturedBook:
+      type: object
+      required: [label, title, author]
+      properties:
+        label: { type: string }
+        title: { type: string }
+        author: { type: string }
+        coverImageUrl: { type: string, nullable: true }
+    HomeRankedBook:
+      type: object
+      required: [rankLabel, title, author]
+      properties:
+        rankLabel: { type: string }
+        title: { type: string }
+        author: { type: string }
+        coverImageUrl: { type: string, nullable: true }
+    HomeReadingRoom:
+      type: object
+      required: [hostName, title, readerCountLabel]
+      properties:
+        hostName: { type: string }
+        hostImageUrl: { type: string, nullable: true }
+        title: { type: string }
+        readerCountLabel: { type: string }
+    HomeCurator:
+      type: object
+      required: [name, focus]
+      properties:
+        name: { type: string }
+        focus: { type: string }
+        imageUrl: { type: string, nullable: true }
+    Home:
+      type: object
+      required: [trendingTitle, avatar, featuredBook, rankedBooks, readingRooms, curators]
+      properties:
+        trendingTitle: { type: string }
+        avatar:
+          $ref: '#/components/schemas/Avatar'
+        featuredBook:
+          $ref: '#/components/schemas/HomeFeaturedBook'
+        rankedBooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/HomeRankedBook'
+        readingRooms:
+          type: array
+          items:
+            $ref: '#/components/schemas/HomeReadingRoom'
+        curators:
+          type: array
+          items:
+            $ref: '#/components/schemas/HomeCurator'
+    ReadBook:
+      type: object
+      required: [title, author, startedOn, finishedOn, personalRating, coverAccentHex]
+      properties:
+        title: { type: string }
+        author: { type: string }
+        startedOn: { type: string }
+        finishedOn: { type: string }
+        personalRating: { type: integer }
+        coverAccentHex: { type: integer, format: int64 }
+    Library:
+      type: object
+      required: [title, subtitle, avatar, currentBook, readingBooks, shelfBooks, completedBooks, readHistory]
+      properties:
+        title: { type: string }
+        subtitle: { type: string }
+        avatar:
+          $ref: '#/components/schemas/Avatar'
+        currentBook:
+          $ref: '#/components/schemas/CurrentBook'
+        readingBooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/LibraryBook'
+        shelfBooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/LibraryBook'
+        completedBooks: { type: integer }
+        readHistory:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReadBook'
+    StatsMetric:
+      type: object
+      required: [label, value]
+      properties:
+        label: { type: string }
+        value: { type: string }
+    RadarAxis:
+      type: object
+      required: [label, value]
+      properties:
+        label: { type: string }
+        value: { type: number, format: float }
+    RankingItem:
+      type: object
+      required: [rank, label]
+      properties:
+        rank: { type: integer }
+        label: { type: string }
+    RadarSection:
+      type: object
+      required: [mode, axes, ranking]
+      properties:
+        mode: { type: string }
+        axes:
+          type: array
+          items:
+            $ref: '#/components/schemas/RadarAxis'
+        ranking:
+          type: array
+          items:
+            $ref: '#/components/schemas/RankingItem'
+    Stats:
+      type: object
+      required: [title, subtitle, metrics, heatmapMonths, heatmapRows, heatmapValues, radarSections]
+      properties:
+        title: { type: string }
+        subtitle: { type: string }
+        metrics:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatsMetric'
+        heatmapMonths:
+          type: array
+          items:
+            type: string
+        heatmapRows:
+          type: array
+          items:
+            type: string
+        heatmapValues:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+              format: float
+        radarSections:
+          type: array
+          items:
+            $ref: '#/components/schemas/RadarSection'
+    NotificationActor:
+      type: object
+      required: [name, avatarTopColorHex, avatarBottomColorHex]
+      properties:
+        name: { type: string }
+        avatarTopColorHex: { type: integer, format: int64 }
+        avatarBottomColorHex: { type: integer, format: int64 }
+    NotificationBookSummary:
+      type: object
+      required: [title, author]
+      properties:
+        title: { type: string }
+        author: { type: string }
+        coverImageUrl: { type: string, nullable: true }
+    NotificationEntry:
+      type: object
+      required: [id, type, timestamp, actor, fallbackText]
+      properties:
+        id: { type: string }
+        type: { type: string }
+        timestamp: { type: string }
+        actor:
+          $ref: '#/components/schemas/NotificationActor'
+        book:
+          allOf:
+            - $ref: '#/components/schemas/NotificationBookSummary'
+          nullable: true
+        fallbackText: { type: string }
+    Notifications:
+      type: object
+      required: [title, items]
+      properties:
+        title: { type: string }
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationEntry'

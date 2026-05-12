@@ -1,10 +1,10 @@
 package com.example.feedbook.features.stats.data.remote
 
 import com.example.feedbook.features.stats.data.remote.dto.StatsDto
-import com.example.feedbook.shared.fakebackend.FakeFeedBookBackend
+import com.example.feedbook.core.network.ApiService
 
 class StatsRemoteDataSource(
-    private val fakeBackend: FakeFeedBookBackend
+    private val apiService: ApiService
 ) {
-    suspend fun getStats(): StatsDto = fakeBackend.getStats()
+    suspend fun getStats(): StatsDto = apiService.getStats()
 }
