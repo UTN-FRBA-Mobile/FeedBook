@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,6 +63,7 @@ import com.example.feedbook.core.ui.components.RemoteBookCover
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 import com.example.feedbook.features.authors.domain.model.Author
 import com.example.feedbook.features.books.domain.model.Book
+import com.example.feedbook.features.books.domain.model.ExploreUser
 import com.example.feedbook.features.profile.presentation.ProfileVariant
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
 import com.example.feedbook.features.profile.presentation.components.ProfileSurfaceCard
@@ -79,6 +81,7 @@ fun BookListScreen(
     onBookClick: (String) -> Unit,
     viewModelFactory: ViewModelProvider.Factory,
     onAuthorClick: (String) -> Unit = {},
+    onUserClick: (String) -> Unit = {},
     onFeedClick: () -> Unit = {},
     onExploreClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
@@ -95,6 +98,7 @@ fun BookListScreen(
         state = state,
         onBookClick = onBookClick,
         onAuthorClick = onAuthorClick,
+        onUserClick = onUserClick,
         onFeedClick = onFeedClick,
         onExploreClick = onExploreClick,
         onProfileClick = onProfileClick,
@@ -112,6 +116,7 @@ fun BookListContent(
     state: BookListState,
     onBookClick: (String) -> Unit,
     onAuthorClick: (String) -> Unit,
+    onUserClick: (String) -> Unit,
     onFeedClick: () -> Unit,
     onExploreClick: () -> Unit,
     onProfileClick: () -> Unit,
@@ -150,11 +155,31 @@ fun BookListContent(
         }
     }
 
-    val recentTags = remember(state.books, state.authors) {
+    val filteredUsers = remember(state.users, query) {
+        state.users.filter { user ->
+            val search = query.trim().lowercase()
+            if (search.isBlank()) {
+                true
+            } else {
+                listOf(user.name, user.handle, user.bio, user.followersLabel, user.booksReadLabel)
+                    .any { candidate -> candidate.lowercase().contains(search) }
+            }
+        }
+    }
+
+    val showingBooks = activeFilter == ExploreFilter.ALL || activeFilter == ExploreFilter.BOOKS
+    val showingAuthors = activeFilter == ExploreFilter.ALL || activeFilter == ExploreFilter.AUTHORS
+    val showingUsers = activeFilter == ExploreFilter.ALL || activeFilter == ExploreFilter.USERS
+    val hasVisibleResults = (showingBooks && filteredBooks.isNotEmpty()) ||
+        (showingAuthors && filteredAuthors.isNotEmpty()) ||
+        (showingUsers && filteredUsers.isNotEmpty())
+
+    val recentTags = remember(state.books, state.authors, state.users) {
         buildList {
             state.books.firstOrNull()?.genre?.takeIf { it.isNotBlank() }?.let(::add)
             state.authors.firstOrNull()?.name?.substringAfterLast(" ")?.let(::add)
             state.books.getOrNull(1)?.genre?.takeIf { it.isNotBlank() }?.let(::add)
+            state.users.firstOrNull()?.handle?.removePrefix("@")?.let(::add)
         }.distinct().take(3)
     }
 
@@ -193,7 +218,7 @@ fun BookListContent(
                 }
             }
 
-            state.books.isEmpty() && state.authors.isEmpty() && state.error == null -> {
+            state.books.isEmpty() && state.authors.isEmpty() && state.users.isEmpty() && state.error == null -> {
                 EmptyBookList(
                     modifier = Modifier
                         .fillMaxSize()
@@ -225,43 +250,62 @@ fun BookListContent(
                     }
                     if (recentTags.isNotEmpty()) {
                         item {
-                            RecentTagsSection(tags = recentTags)
-                        }
-                    }
-                    if (activeFilter != ExploreFilter.AUTHORS && filteredBooks.isNotEmpty()) {
-                        item {
-                            ExploreSectionHeader(
-                                title = "Libros",
-                                actionLabel = "Ver todos",
-                                onActionClick = { activeFilter = ExploreFilter.BOOKS }
+                            RecentTagsSection(
+                                tags = recentTags,
+                                onTagClick = { tag -> query = tag }
                             )
                         }
                     }
-                    items(
-                        items = if (activeFilter == ExploreFilter.AUTHORS) emptyList() else filteredBooks,
-                        key = { book -> book.id }
-                    ) { book ->
+                    if (showingBooks && filteredBooks.isNotEmpty()) {
+                        item {
+                            ExploreSectionHeader(
+                                title = "Libros",
+                                actionLabel = if (activeFilter == ExploreFilter.ALL) "Ver todos" else null,
+                                onActionClick = if (activeFilter == ExploreFilter.ALL) ({ activeFilter = ExploreFilter.BOOKS }) else null
+                            )
+                        }
+                    }
+                    items(items = if (showingBooks) filteredBooks else emptyList(), key = { book -> book.id }) { book ->
                         ExploreBookCard(
                             book = book,
                             onClick = { selectedBook -> onBookClick(selectedBook.id) }
                         )
                     }
-                    if (activeFilter != ExploreFilter.BOOKS && filteredAuthors.isNotEmpty()) {
+                    if (showingAuthors && filteredAuthors.isNotEmpty()) {
                         item {
-                            ExploreSectionHeader(title = "Autores")
-                        }
-                        item {
-                            AuthorsGrid(
-                                authors = filteredAuthors,
-                                onAuthorClick = onAuthorClick
+                            ExploreSectionHeader(
+                                title = "Autores",
+                                actionLabel = if (activeFilter == ExploreFilter.ALL) "Ver todos" else null,
+                                onActionClick = if (activeFilter == ExploreFilter.ALL) ({ activeFilter = ExploreFilter.AUTHORS }) else null
                             )
                         }
                     }
-                    if (activeFilter == ExploreFilter.USERS) {
+                    items(items = if (showingAuthors) filteredAuthors else emptyList(), key = { author -> author.id }) { author ->
+                        ExploreAuthorCard(
+                            author = author,
+                            onClick = { onAuthorClick(author.id) }
+                        )
+                    }
+                    if (showingUsers && filteredUsers.isNotEmpty()) {
                         item {
-                            ComingSoonCard(
+                            ExploreSectionHeader(
                                 title = "Usuarios",
-                                description = "La búsqueda de usuarios todavía no está disponible."
+                                actionLabel = if (activeFilter == ExploreFilter.ALL) "Ver todos" else null,
+                                onActionClick = if (activeFilter == ExploreFilter.ALL) ({ activeFilter = ExploreFilter.USERS }) else null
+                            )
+                        }
+                    }
+                    items(items = if (showingUsers) filteredUsers else emptyList(), key = { user -> user.id }) { user ->
+                        ExploreUserCard(
+                            user = user,
+                            onClick = { onUserClick(user.id) }
+                        )
+                    }
+                    if (!hasVisibleResults) {
+                        item {
+                            EmptySearchResults(
+                                query = query,
+                                activeFilter = activeFilter
                             )
                         }
                     }
@@ -295,12 +339,11 @@ private fun ExploreSearchField(
         value = query,
         onValueChange = onQueryChange,
         modifier = Modifier.fillMaxWidth(),
-        singleLine = false,
-        minLines = 2,
+        singleLine = true,
         shape = RoundedCornerShape(8.dp),
         placeholder = {
             Text(
-                text = "Buscar títulos,\nautores, o temas...",
+                text = "Buscar libros, autores o usuarios...",
                 style = ProfileTypography.Body,
                 color = ProfileColors.SecondaryText
             )
@@ -366,7 +409,10 @@ private fun ExploreFilterRow(
 }
 
 @Composable
-private fun RecentTagsSection(tags: List<String>) {
+private fun RecentTagsSection(
+    tags: List<String>,
+    onTagClick: (String) -> Unit
+) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
             text = "RECIENTES",
@@ -376,7 +422,7 @@ private fun RecentTagsSection(tags: List<String>) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             tags.forEach { tag ->
                 AssistChip(
-                    onClick = {},
+                    onClick = { onTagClick(tag) },
                     label = {
                         Text(
                             text = tag,
@@ -458,6 +504,13 @@ private fun ExploreBookCard(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
+                Text(
+                    text = book.description,
+                    style = ProfileTypography.Body.copy(fontSize = 13.sp, lineHeight = 19.sp),
+                    color = ProfileColors.SecondaryText,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                )
                 MetaPill(text = book.genre)
             }
         }
@@ -481,111 +534,167 @@ private fun MetaPill(text: String) {
 }
 
 @Composable
-private fun AuthorsGrid(
-    authors: List<Author>,
-    onAuthorClick: (String) -> Unit
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        authors.chunked(2).forEach { rowAuthors ->
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                rowAuthors.forEach { author ->
-                    ExploreAuthorCard(
-                        author = author,
-                        modifier = Modifier.weight(1f),
-                        onClick = { onAuthorClick(author.id) }
-                    )
-                }
-                if (rowAuthors.size == 1) {
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun ExploreAuthorCard(
     author: Author,
-    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     ProfileSurfaceCard(
-        modifier = modifier,
+        modifier = Modifier.fillMaxWidth(),
         onClick = onClick
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            verticalAlignment = Alignment.Top
         ) {
             if (!author.imageUrl.isNullOrBlank()) {
                 AsyncImage(
                     model = author.imageUrl,
                     contentDescription = author.name,
                     modifier = Modifier
-                        .size(56.dp)
+                        .size(72.dp)
                         .clip(RoundedCornerShape(10.dp))
                 )
             } else {
                 Box(
                     modifier = Modifier
-                        .size(56.dp)
+                        .size(72.dp)
                         .clip(RoundedCornerShape(10.dp))
                         .background(ProfileColors.AccentSoft),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = author.name.split(" ").take(2).mapNotNull { it.firstOrNull()?.toString() }.joinToString(""),
-                        style = ProfileTypography.Body.copy(fontWeight = FontWeight.Bold),
+                        style = ProfileTypography.SectionTitle.copy(fontWeight = FontWeight.Bold),
                         color = ProfileColors.SurfaceStrong
                     )
                 }
             }
-            Text(
-                text = author.name,
-                style = ProfileTypography.Body.copy(
-                    fontSize = 18.sp,
-                    lineHeight = 24.sp,
-                    fontWeight = FontWeight.Medium
-                ),
-                color = ProfileColors.PrimaryText,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = "${author.books.size} Obras",
-                style = ProfileTypography.Label,
-                color = ProfileColors.SecondaryText
-            )
-            OutlinedButton(
-                onClick = onClick,
-                shape = RoundedCornerShape(16.dp),
-                border = BorderStroke(1.dp, ProfileColors.Border)
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Seguir",
-                    style = ProfileTypography.Label,
-                    color = ProfileColors.SecondaryText
+                    text = author.name,
+                    style = ProfileTypography.SectionTitle.copy(fontSize = 22.sp),
+                    color = ProfileColors.PrimaryText,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
+                Text(
+                    text = author.nationality,
+                    style = ProfileTypography.LabelUppercase.copy(fontSize = 10.sp),
+                    color = ProfileColors.Accent
+                )
+                Text(
+                    text = author.description,
+                    style = ProfileTypography.Body.copy(fontSize = 13.sp, lineHeight = 19.sp),
+                    color = ProfileColors.SecondaryText,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    MetaPill(text = "${author.books.size} obras")
+                    MetaPill(text = "${author.followers} seguidores")
+                }
             }
         }
     }
 }
 
 @Composable
-private fun ComingSoonCard(
-    title: String,
-    description: String
+private fun ExploreUserCard(
+    user: ExploreUser,
+    onClick: () -> Unit
+) {
+    ProfileSurfaceCard(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(72.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                Color(user.avatarTopColorHex),
+                                Color(user.avatarBottomColorHex)
+                            )
+                        )
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                if (!user.avatarImageUrl.isNullOrBlank()) {
+                    AsyncImage(
+                        model = user.avatarImageUrl,
+                        contentDescription = user.name,
+                        modifier = Modifier
+                            .matchParentSize()
+                            .clip(RoundedCornerShape(20.dp))
+                    )
+                } else {
+                    Text(
+                        text = user.name.take(1),
+                        style = ProfileTypography.SectionTitle,
+                        color = Color.White
+                    )
+                }
+            }
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = user.name,
+                    style = ProfileTypography.SectionTitle.copy(fontSize = 22.sp),
+                    color = ProfileColors.PrimaryText
+                )
+                Text(
+                    text = user.handle,
+                    style = ProfileTypography.LabelUppercase.copy(fontSize = 10.sp),
+                    color = ProfileColors.Accent
+                )
+                Text(
+                    text = user.bio,
+                    style = ProfileTypography.Body.copy(fontSize = 13.sp, lineHeight = 19.sp),
+                    color = ProfileColors.SecondaryText,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    MetaPill(text = user.followersLabel)
+                    MetaPill(text = user.booksReadLabel)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun EmptySearchResults(
+    query: String,
+    activeFilter: ExploreFilter
 ) {
     ProfileSurfaceCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
-                text = title,
+                text = "Sin resultados",
                 style = ProfileTypography.SectionTitle,
                 color = ProfileColors.PrimaryText
             )
             Text(
-                text = description,
-                style = ProfileTypography.Body,
+                text = when {
+                    query.isBlank() -> "Todavía no hay contenido disponible para este filtro."
+                    activeFilter == ExploreFilter.ALL -> "No encontramos coincidencias para \"$query\" en libros, autores o usuarios."
+                    activeFilter == ExploreFilter.BOOKS -> "No encontramos libros para \"$query\"."
+                    activeFilter == ExploreFilter.AUTHORS -> "No encontramos autores para \"$query\"."
+                    else -> "No encontramos usuarios para \"$query\"."
+                },
+                style = ProfileTypography.Body.copy(fontSize = 14.sp, lineHeight = 20.sp),
                 color = ProfileColors.SecondaryText
             )
         }
@@ -647,11 +756,25 @@ fun BookListContentPreview() {
             followers = 900
         )
     )
+    val mockUsers = listOf(
+        ExploreUser(
+            id = "u1",
+            name = "Evelyn Vance",
+            handle = "@evelynv",
+            bio = "Reader of gothic fiction and annotated classics.",
+            avatarImageUrl = null,
+            avatarTopColorHex = 0xFF5B4A80,
+            avatarBottomColorHex = 0xFFF0CCE9,
+            followersLabel = "2.1K seguidores",
+            booksReadLabel = "142 libros"
+        )
+    )
     FeedBookTheme(dynamicColor = false) {
         BookListContent(
-            state = BookListState(books = mockBooks, authors = mockAuthors),
+            state = BookListState(books = mockBooks, authors = mockAuthors, users = mockUsers),
             onBookClick = {},
             onAuthorClick = {},
+            onUserClick = {},
             onFeedClick = {},
             onExploreClick = {},
             onProfileClick = {},

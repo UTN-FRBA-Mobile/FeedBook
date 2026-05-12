@@ -16,6 +16,7 @@ import com.example.feedbook.features.books.data.repository.BookRepositoryImpl
 import com.example.feedbook.features.books.data.remote.BookRemoteDataSource
 import com.example.feedbook.features.books.domain.usecase.GetBookByIdUseCase
 import com.example.feedbook.features.books.domain.usecase.GetBooksUseCase
+import com.example.feedbook.features.books.domain.usecase.GetExploreUsersUseCase
 import com.example.feedbook.features.books.domain.usecase.GetReadingProgressUseCase
 import com.example.feedbook.features.books.domain.usecase.GetReviewsUseCase
 import com.example.feedbook.features.home.data.remote.HomeRemoteDataSource
@@ -69,6 +70,7 @@ class AppContainer(
 
     val loginUseCase = LoginUseCase(authRepository)
     val getBooksUseCase = GetBooksUseCase(bookRepository)
+    val getExploreUsersUseCase = GetExploreUsersUseCase(bookRepository)
     val getBookByIdUseCase = GetBookByIdUseCase(bookRepository)
 
     val getAuthorsUseCase = GetAuthorsUseCase(authorRepository)

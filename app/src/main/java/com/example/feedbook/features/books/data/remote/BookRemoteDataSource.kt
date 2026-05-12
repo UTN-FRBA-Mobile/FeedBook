@@ -2,6 +2,7 @@ package com.example.feedbook.features.books.data.remote
 
 import com.example.feedbook.core.network.ApiService
 import com.example.feedbook.features.books.data.remote.dto.BookDto
+import com.example.feedbook.features.books.data.remote.dto.ExploreUserDto
 import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewDto
 import com.example.feedbook.shared.fakebackend.FakeFeedBookBackend
@@ -15,6 +16,8 @@ class BookRemoteDataSource(
 
 //    suspend fun getBookById(bookId: String): BookDto = apiService.getBookById(bookId)
     suspend fun getBookById(bookId: String): BookDto = fakeBackend.getBookById(bookId)
+
+    suspend fun getExploreUsers(): List<ExploreUserDto> = fakeBackend.getExploreUsers()
 
 //    suspend fun getReadingProgress(bookId: String): ReadingProgressDto? = apiService.getReadingProgress(bookId)
     suspend fun getReadingProgress(bookId: String): ReadingProgressDto? = fakeBackend.getReadingProgress(bookId)

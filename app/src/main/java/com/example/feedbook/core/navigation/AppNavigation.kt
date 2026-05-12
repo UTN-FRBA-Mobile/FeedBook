@@ -360,10 +360,12 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 BookListScreen(
                     viewModelFactory = BookListViewModel.provideFactory(
                         getBooksUseCase = appContainer.getBooksUseCase,
-                        getAuthorsUseCase = appContainer.getAuthorsUseCase
+                        getAuthorsUseCase = appContainer.getAuthorsUseCase,
+                        getExploreUsersUseCase = appContainer.getExploreUsersUseCase
                     ),
                     onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
                     onAuthorClick = { authorId -> navController.navigate(AppRoutes.authorDetail(authorId)) },
+                    onUserClick = { navController.navigate(AppRoutes.PUBLIC_PROFILE) },
                     onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
                     onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
                     onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },

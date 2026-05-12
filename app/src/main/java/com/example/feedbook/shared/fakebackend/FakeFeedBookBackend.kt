@@ -2,6 +2,7 @@ package com.example.feedbook.shared.fakebackend
 
 import com.example.feedbook.features.authors.data.remote.dto.AuthorDto
 import com.example.feedbook.features.books.data.remote.dto.BookDto
+import com.example.feedbook.features.books.data.remote.dto.ExploreUserDto
 import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationActorDto
@@ -503,6 +504,42 @@ class FakeFeedBookBackend {
         )
     )
 
+    private val exploreUsers = listOf(
+        ExploreUserDto(
+            id = "user_1",
+            name = "Evelyn Vance",
+            handle = "@evelynv",
+            bio = "Reader of gothic fiction, essays and books that leave a trace.",
+            avatarImageUrl = avatarUrl("witch"),
+            avatarTopColorHex = 0xFF5B4A80,
+            avatarBottomColorHex = 0xFFF0CCE9,
+            followersLabel = "2.1K seguidores",
+            booksReadLabel = "142 libros"
+        ),
+        ExploreUserDto(
+            id = "user_2",
+            name = "Julian Thorne",
+            handle = "@julianthorne",
+            bio = "Collects impossible cities, labyrinths and dreamlike novels.",
+            avatarImageUrl = avatarUrl("pirate"),
+            avatarTopColorHex = 0xFF5A3527,
+            avatarBottomColorHex = 0xFFE2C09A,
+            followersLabel = "2.4K seguidores",
+            booksReadLabel = "58 libros"
+        ),
+        ExploreUserDto(
+            id = "user_3",
+            name = "Mina Solberg",
+            handle = "@minareads",
+            bio = "Nordic noir, quiet classics and deeply annotated rereads.",
+            avatarImageUrl = avatarUrl("ghost"),
+            avatarTopColorHex = 0xFF5B6775,
+            avatarBottomColorHex = 0xFFE6EBF0,
+            followersLabel = "980 seguidores",
+            booksReadLabel = "87 libros"
+        )
+    )
+
     private val readingProgress = mapOf(
         "1" to ReadingProgressDto(bookId = "1", currentPage = 248, totalPages = 559, updatedAt = "11/05/2026"),
         "2" to ReadingProgressDto(bookId = "2", currentPage = 312, totalPages = 512, updatedAt = "11/05/2026")
@@ -554,6 +591,8 @@ class FakeFeedBookBackend {
     )
 
     suspend fun getBooks(): List<BookDto> = books
+
+    suspend fun getExploreUsers(): List<ExploreUserDto> = exploreUsers
 
     suspend fun getBookById(bookId: String): BookDto =
         books.find { it.id == bookId }
