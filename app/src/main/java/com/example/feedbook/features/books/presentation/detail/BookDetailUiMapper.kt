@@ -19,6 +19,7 @@ fun Book.toUiModel() = BookUiModel(
 
 fun Review.toUiModel() = ReviewUiModel(
     id = id,
+    userId = userId,
     reviewerName = reviewerName,
     reviewerAvatar = reviewerAvatar,
     rating = rating,

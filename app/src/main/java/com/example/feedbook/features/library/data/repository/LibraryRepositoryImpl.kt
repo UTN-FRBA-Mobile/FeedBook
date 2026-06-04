@@ -12,4 +12,12 @@ class LibraryRepositoryImpl(
 ) : LibraryRepository {
     override fun observeOwnLibrary(): Flow<ReaderLibrary> =
         remoteDataSource.observeOwnLibrary().map { it.toDomain() }
+
+    override suspend fun addBookToLibrary(bookId: String) {
+        remoteDataSource.addBookToLibrary(bookId)
+    }
+
+    override suspend fun removeBookFromLibrary(bookId: String) {
+        remoteDataSource.removeBookFromLibrary(bookId)
+    }
 }

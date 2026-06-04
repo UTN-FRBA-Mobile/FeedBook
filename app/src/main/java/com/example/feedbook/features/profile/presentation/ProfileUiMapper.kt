@@ -67,7 +67,7 @@ private fun ReaderProfile.toUiState(
     upNextBooks = upNextBooks.map { QueuedBook(it.title, it.author, it.coverImageUrl) },
     completedBooks = completedBooks,
     profileStats = profileStats,
-    publicLibrary = publicLibrary.map { LibraryBook(it.title, it.coverImageUrl) },
+    publicLibrary = publicLibrary.map { LibraryBook(it.id, it.title, it.coverImageUrl) },
     featuredReviews = featuredReviews.map {
         FeaturedReview(
             bookTitle = it.bookTitle,

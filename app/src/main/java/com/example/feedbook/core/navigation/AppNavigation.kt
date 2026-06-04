@@ -393,22 +393,37 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             route = AppRoutes.BOOK_DETAIL,
             arguments = listOf(navArgument("bookId") { type = NavType.StringType })
         ) { backStackEntry ->
-            BookDetailScreen(
-                viewModelFactory = BookDetailViewModel.provideFactory(
+            val detailViewModel: BookDetailViewModel = viewModel(
+                factory = BookDetailViewModel.provideFactory(
                     bookId = backStackEntry.arguments?.getString("bookId").orEmpty(),
                     getBookByIdUseCase = appContainer.getBookByIdUseCase,
                     getReviewsUseCase = appContainer.getReviewsUseCase,
                     getReadingProgressUseCase = appContainer.getReadingProgress,
+                    saveReadingProgressUseCase = appContainer.saveReadingProgressUseCase,
+                    saveReviewUseCase = appContainer.saveReviewUseCase,
+                    addBookToLibraryUseCase = appContainer.addBookToLibraryUseCase,
+                    removeBookFromLibraryUseCase = appContainer.removeBookFromLibraryUseCase,
+                    observeOwnLibraryUseCase = appContainer.observeOwnLibraryUseCase,
                     observeOwnProfileUseCase = appContainer.observeOwnProfileUseCase
-                ),
+                )
+            )
+            val detailState by detailViewModel.state.collectAsStateWithLifecycle()
+            BookDetailScreen(
+                state = detailState,
+                onRetry = detailViewModel::loadBook,
+                onToggleLibrary = detailViewModel::toggleBookInLibrary,
+                onSaveProgress = detailViewModel::saveProgress,
+                onSaveReview = detailViewModel::saveReview,
+                onReviewFeedbackShown = detailViewModel::clearReviewFeedback,
+                onLibraryFeedbackShown = detailViewModel::clearLibraryFeedback,
+                onBackClick = { navController.popBackStack() },
                 onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
                 onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
-                onLogoutClick = onLogout,
-                onBackClick = { navController.popBackStack() }
+                onLogoutClick = onLogout
             )
         }
 

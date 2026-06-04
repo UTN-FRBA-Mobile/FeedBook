@@ -70,6 +70,7 @@ data class ProfileStatDto(
 )
 
 data class LibraryBookDto(
+    val id: String,
     val title: String,
     val coverImageUrl: String?
 )

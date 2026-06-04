@@ -5,6 +5,7 @@ import com.example.feedbook.features.books.domain.model.Review
 
 fun ReviewDto.toDomain(): Review = Review(
     id = id,
+    userId = userId,
     reviewerName = reviewerName,
     reviewerAvatar = reviewerAvatar,
     rating = rating,

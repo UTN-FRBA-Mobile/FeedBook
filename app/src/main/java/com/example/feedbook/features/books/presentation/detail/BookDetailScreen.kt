@@ -39,6 +39,7 @@ import com.example.feedbook.core.ui.components.BottomBarTab
 import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
+import kotlinx.coroutines.launch
 
 // ─── Stateful Wrapper ──────────────────────────────────────────────────────
 @Composable
@@ -68,6 +69,9 @@ fun BookDetailScreen(
         onStatsClick = onStatsClick,
         onNotificationsClick = onNotificationsClick,
         onLogoutClick = onLogoutClick,
+        onSaveReview = viewModel::saveReview,
+        onReviewFeedbackShown = viewModel::clearReviewFeedback,
+        onLibraryFeedbackShown = viewModel::clearLibraryFeedback,
         modifier = modifier
     )
 }
@@ -81,8 +85,10 @@ fun BookDetailScreen(
     onRetry: () -> Unit,
     onBackClick: () -> Unit,
     onUpdateProgress: () -> Unit = {},
-    onAddToList: () -> Unit = {},
+    onToggleLibrary: () -> Unit = {},
     onSaveProgress: (Int) -> Unit = {},
+    onSaveReview: (Float, String) -> Unit = { _, _ -> },
+    onReviewFeedbackShown: () -> Unit = {},
     onWriteReview: () -> Unit = {},
     onFeedClick: () -> Unit = {},
     onExploreClick: () -> Unit = {},
@@ -92,7 +98,37 @@ fun BookDetailScreen(
     onNotificationsClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
     onModeSelected: (String) -> Unit = {},
+    onLibraryFeedbackShown: () -> Unit = {},
 ) {
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    var showReviewDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(state.libraryFeedback) {
+        state.libraryFeedback?.let {
+            snackbarHostState.showSnackbar(it)
+            onLibraryFeedbackShown()
+        }
+    }
+
+    LaunchedEffect(state.reviewFeedback) {
+        state.reviewFeedback?.let {
+            snackbarHostState.showSnackbar(it)
+            onReviewFeedbackShown()
+        }
+    }
+
+    if (showReviewDialog) {
+        ReviewDialog(
+            existingReview = state.userReview,
+            isSaving = state.isSavingReview,
+            onConfirm = { rating, text ->
+                onSaveReview(rating, text)
+                showReviewDialog = false
+            },
+            onDismiss = { showReviewDialog = false }
+        )
+    }
 
     FeedBookScreenScaffold(
         modifier = modifier.fillMaxSize(),
@@ -107,7 +143,8 @@ fun BookDetailScreen(
         onLibraryClick = onLibraryClick,
         onStatsClick = onStatsClick,
         onNotificationsClick = onNotificationsClick,
-        onLogoutClick = onLogoutClick
+        onLogoutClick = onLogoutClick,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -126,9 +163,9 @@ fun BookDetailScreen(
                     state.book != null -> BookDetailContent(
                         state = state,
                         onUpdateProgress = onUpdateProgress,
-                        onAddToList = onAddToList,
+                        onToggleLibrary = onToggleLibrary,
                         onSaveProgress = onSaveProgress,
-                        onWriteReview = onWriteReview
+                        onWriteReview = { showReviewDialog = true }
                     )
                 }
             }
@@ -141,15 +178,19 @@ fun BookDetailScreen(
 private fun BookDetailContent(
     state: BookDetailUiState,
     onUpdateProgress: () -> Unit,
-    onAddToList: () -> Unit,
+    onToggleLibrary: () -> Unit,
     onSaveProgress: (Int) -> Unit,
     onWriteReview: () -> Unit
 ) {
     val book = state.book!!
     var showProgressCard by remember { mutableStateOf(false) }
-    val totalPages = state.readingProgress?.totalPages ?: 218
-    var sliderValue by remember {
+    val totalPages = state.readingProgress?.totalPages ?: book.pages
+    var sliderValue by remember(showProgressCard) {
         mutableFloatStateOf(state.readingProgress?.currentPage?.toFloat() ?: 0f)
+    }
+
+    if (!state.isBookInLibrary) {
+        showProgressCard = false
     }
     val averageRating = state.reviews
         .map { it.rating }
@@ -170,7 +211,9 @@ private fun BookDetailContent(
                     showProgressCard = !showProgressCard
                     onUpdateProgress()
                 },
-                onAddToList = onAddToList
+                onToggleLibrary = onToggleLibrary,
+                isBookInLibrary = state.isBookInLibrary,
+                isTogglingLibrary = state.isTogglingLibrary
             )
         }
         if (showProgressCard) {
@@ -295,7 +338,9 @@ private fun StarRatingRow(rating: Float) {
 @Composable
 private fun ActionButtonsSection(
     onUpdateProgress: () -> Unit,
-    onAddToList: () -> Unit
+    onToggleLibrary: () -> Unit,
+    isBookInLibrary: Boolean,
+    isTogglingLibrary: Boolean
 ) {
     Column(
         modifier = Modifier
@@ -303,51 +348,106 @@ private fun ActionButtonsSection(
             .padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Button(
-            onClick = onUpdateProgress,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            shape = RoundedCornerShape(10.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = ProfileColors.SurfaceStrong,
-                contentColor = Color.White
+        val libraryButtonColors = if (isBookInLibrary) {
+            ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFDC2626),
+                contentColor = Color.White,
+                disabledContainerColor = Color(0xFFDC2626).copy(alpha = 0.5f),
+                disabledContentColor = Color.White.copy(alpha = 0.5f)
             )
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.TrendingUp,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "UPDATE PROGRESS",
-                style = MaterialTheme.typography.labelSmall.copy(
-                    letterSpacing = 1.5.sp,
-                    fontWeight = FontWeight.Bold
-                )
+        } else {
+            ButtonDefaults.outlinedButtonColors(
+                contentColor = Color(0xFF1A2E44),
+                disabledContentColor = Color(0xFF1A2E44).copy(alpha = 0.38f)
             )
         }
-        OutlinedButton(
-            onClick = onAddToList,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
-            shape = RoundedCornerShape(10.dp),
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.BookmarkBorder,
-                contentDescription = null,
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Add to List",
-                style = MaterialTheme.typography.titleLarge.copy(fontSize = 15.sp)
-            )
+
+        if (isBookInLibrary) {
+            Button(
+                onClick = onToggleLibrary,
+                enabled = !isTogglingLibrary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = libraryButtonColors
+            ) {
+                if (isTogglingLibrary) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp),
+                        color = Color.White,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Outlined.BookmarkBorder,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Remove from List",
+                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 15.sp)
+                )
+            }
+        } else {
+            OutlinedButton(
+                onClick = onToggleLibrary,
+                enabled = !isTogglingLibrary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(10.dp),
+                border = BorderStroke(1.5.dp, Color(0xFF1A2E44).copy(alpha = if (isTogglingLibrary) 0.38f else 1f)),
+                colors = libraryButtonColors
+            ) {
+                if (isTogglingLibrary) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp),
+                        color = Color(0xFF1A2E44),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Outlined.BookmarkBorder,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Add to List",
+                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 15.sp)
+                )
+            }
+        }
+        if (isBookInLibrary) {
+            Button(
+                onClick = onUpdateProgress,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = ProfileColors.SurfaceStrong,
+                    contentColor = Color.White
+                )
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.TrendingUp,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "UPDATE PROGRESS",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        letterSpacing = 1.5.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
         }
     }
 }
@@ -749,6 +849,90 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
             }
         }
     }
+}
+
+// ─── Review Dialog ──────────────────────────────────────────────────────────
+@Composable
+private fun ReviewDialog(
+    existingReview: ReviewUiModel?,
+    isSaving: Boolean,
+    onConfirm: (Float, String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var rating by remember { mutableFloatStateOf(existingReview?.rating ?: 0f) }
+    var text by remember { mutableStateOf(existingReview?.text ?: "") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = ProfileColors.Surface,
+        titleContentColor = ProfileColors.PrimaryText,
+        textContentColor = ProfileColors.PrimaryText,
+        title = {
+            Text(
+                text = if (existingReview != null) "Edit Your Review" else "Write a Review",
+                style = MaterialTheme.typography.titleLarge,
+                color = ProfileColors.PrimaryText
+            )
+        },
+        text = {
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    for (i in 1..5) {
+                        IconButton(onClick = { rating = i.toFloat() }) {
+                            Icon(
+                                imageVector = if (i <= rating) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                                contentDescription = "Star $i",
+                                tint = if (i <= rating) Color(0xFFFFB800) else ProfileColors.SecondaryText
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    label = { Text("Your review") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(140.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = ProfileColors.Accent,
+                        unfocusedBorderColor = ProfileColors.Border,
+                        cursorColor = ProfileColors.Accent,
+                        focusedLabelColor = ProfileColors.Accent
+                    )
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onConfirm(rating, text) },
+                enabled = !isSaving && rating > 0 && text.isNotBlank(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = ProfileColors.Accent,
+                    contentColor = ProfileColors.SurfaceStrong
+                )
+            ) {
+                if (isSaving) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp),
+                        color = ProfileColors.SurfaceStrong,
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text("Save")
+                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel", color = ProfileColors.SecondaryText)
+            }
+        }
+    )
 }
 
 // ─── Previews ──────────────────────────────────────────────────────────────

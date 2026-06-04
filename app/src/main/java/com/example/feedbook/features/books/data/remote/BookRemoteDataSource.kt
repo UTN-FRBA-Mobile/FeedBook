@@ -18,5 +18,11 @@ class BookRemoteDataSource(
     suspend fun getReadingProgress(bookId: String): ReadingProgressDto? =
         apiService.getReadingProgress(bookId)
 
+    suspend fun saveReadingProgress(bookId: String, currentPage: Int): ReadingProgressDto =
+        apiService.updateReadingProgress(bookId, mapOf("current_page" to currentPage))
+
     suspend fun getReviews(bookId: String): List<ReviewDto> = apiService.getReviews(bookId)
+
+    suspend fun saveReview(bookId: String, rating: Float, text: String): ReviewDto =
+        apiService.saveReview(bookId, mapOf("rating" to rating, "text" to text))
 }

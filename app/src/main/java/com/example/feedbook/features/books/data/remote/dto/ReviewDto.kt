@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class ReviewDto (
     @SerializedName("id")              val id: String,
+    @SerializedName("user_id")         val userId: String,
     @SerializedName("reviewer_name")   val reviewerName: String,
     @SerializedName("reviewer_avatar") val reviewerAvatar: String?,
     @SerializedName("rating")          val rating: Float,

@@ -20,6 +20,7 @@ private val LightColorScheme = lightColorScheme(
     onSecondary  = Color.White,
     onSurface    = FeedNeutral,
     inverseSurface = FeedNavy,
+    inverseOnSurface = Color.White,
     error        = FeedError
 )
 
@@ -31,6 +32,7 @@ private val DarkColorScheme = darkColorScheme(
     onPrimary    = FeedNeutral,
     onSurface    = FeedCream,
     inverseSurface = FeedNeutral,
+    inverseOnSurface = Color.White,
     error        = FeedError
 )
 

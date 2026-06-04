@@ -83,13 +83,33 @@ cleanup_stale_pid() {
   fi
 }
 
-start_backend() {
-  cleanup_stale_pid
+stop_existing_backend() {
+  if [[ -f "$BACK_PID_FILE" ]]; then
+    local pid
+    pid="$(cat "$BACK_PID_FILE")"
+    if [[ -n "$pid" ]] && kill -0 "$pid" >/dev/null 2>&1; then
+      echo "Deteniendo backend existente (PID $pid)..."
+      kill "$pid" 2>/dev/null || true
+      for _ in {1..10}; do
+        if ! kill -0 "$pid" >/dev/null 2>&1; then
+          break
+        fi
+        sleep 1
+      done
+    fi
+    rm -f "$BACK_PID_FILE"
+  fi
 
   if is_backend_up; then
-    echo "Backend ya activo en http://${BACK_HOST}:${BACK_PORT}."
-    return
+    echo "Backend responde en el puerto ${BACK_PORT}, forzando detencion..."
+    fuser -k "${BACK_PORT}/tcp" 2>/dev/null || true
+    sleep 1
   fi
+}
+
+start_backend() {
+  stop_existing_backend
+  cleanup_stale_pid
 
   echo "Levantando backend..."
   (
@@ -175,6 +195,7 @@ main() {
   require_cmd curl
   require_cmd go
   require_cmd nohup
+  require_cmd fuser
   require_cmd scrcpy
 
   local device_serial

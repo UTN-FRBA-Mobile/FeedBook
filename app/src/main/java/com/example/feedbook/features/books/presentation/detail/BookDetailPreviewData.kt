@@ -18,6 +18,7 @@ object BookDetailPreviewData {
     val sampleReviews = listOf(
         ReviewUiModel(
             id = "1",
+            userId = "",
             reviewerName = "Juan Pérez",
             reviewerAvatar = null,
             rating = 4.5f,

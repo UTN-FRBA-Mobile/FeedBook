@@ -49,17 +49,17 @@ fun sampleLibraryUiState(): LibraryUiState = LibraryUiState(
         coverImageUrl = "https://covers.openlibrary.org/b/isbn/9781400031702-L.jpg"
     ),
     readingBooks = listOf(
-        LibraryBook("The Secret History", "https://covers.openlibrary.org/b/isbn/9781400031702-L.jpg"),
-        LibraryBook("Foucault's Pendulum", "https://covers.openlibrary.org/b/isbn/9780156032971-L.jpg"),
-        LibraryBook("If on a winter's night a traveler", "https://covers.openlibrary.org/b/isbn/9780156439619-L.jpg")
+        LibraryBook("2", "The Secret History", "https://covers.openlibrary.org/b/isbn/9781400031702-L.jpg"),
+        LibraryBook("3", "Foucault's Pendulum", "https://covers.openlibrary.org/b/isbn/9780156032971-L.jpg"),
+        LibraryBook("4", "If on a winter's night a traveler", "https://covers.openlibrary.org/b/isbn/9780156439619-L.jpg")
     ),
     shelfBooks = listOf(
-        LibraryBook("The Secret History", "https://covers.openlibrary.org/b/isbn/9781400031702-L.jpg"),
-        LibraryBook("Fictions", "https://covers.openlibrary.org/b/isbn/9780802130303-L.jpg"),
-        LibraryBook("Never Let Me Go", "https://covers.openlibrary.org/b/isbn/9781400078776-L.jpg"),
-        LibraryBook("Beloved", "https://covers.openlibrary.org/b/isbn/9781400033416-L.jpg"),
-        LibraryBook("Pale Fire", "https://covers.openlibrary.org/b/isbn/9780679723424-L.jpg"),
-        LibraryBook("The Waves", "https://covers.openlibrary.org/b/isbn/9780156949606-L.jpg")
+        LibraryBook("2", "The Secret History", "https://covers.openlibrary.org/b/isbn/9781400031702-L.jpg"),
+        LibraryBook("5", "Fictions", "https://covers.openlibrary.org/b/isbn/9780802130303-L.jpg"),
+        LibraryBook("3", "Never Let Me Go", "https://covers.openlibrary.org/b/isbn/9781400078776-L.jpg"),
+        LibraryBook("4", "Beloved", "https://covers.openlibrary.org/b/isbn/9781400033416-L.jpg"),
+        LibraryBook("5", "Pale Fire", "https://covers.openlibrary.org/b/isbn/9780679723424-L.jpg"),
+        LibraryBook("6", "The Waves", "https://covers.openlibrary.org/b/isbn/9780156949606-L.jpg")
     ),
     completedBooks = 142,
     readHistory = listOf(

@@ -28,7 +28,15 @@ class BookRepositoryImpl(
             .map { it.toDomain() }
     }
 
+    override suspend fun saveReview(bookId: String, rating: Float, text: String): Review {
+        return remoteDataSource.saveReview(bookId, rating, text).toDomain()
+    }
+
     override suspend fun getReadingProgress(bookId: String): ReadingProgress? {
         return remoteDataSource.getReadingProgress(bookId)?.toDomain()
+    }
+
+    override suspend fun saveReadingProgress(bookId: String, currentPage: Int): ReadingProgress {
+        return remoteDataSource.saveReadingProgress(bookId, currentPage).toDomain()
     }
 }

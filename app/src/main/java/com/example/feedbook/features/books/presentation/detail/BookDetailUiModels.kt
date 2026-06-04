@@ -9,10 +9,16 @@ data class BookDetailUiState(
     val error: String? = null,
     val book: BookUiModel? = null,
     val reviews: List<ReviewUiModel> = emptyList(),
+    val userReview: ReviewUiModel? = null,
     val readingProgress: ReadingProgressUiModel? = null,
     val avatarStyle: AvatarStyle = defaultAvatarStyle(),
     val avatarPreset: AvatarPreset? = null,
-    val avatarImageUri: String? = null
+    val avatarImageUri: String? = null,
+    val isBookInLibrary: Boolean = false,
+    val isTogglingLibrary: Boolean = false,
+    val libraryFeedback: String? = null,
+    val reviewFeedback: String? = null,
+    val isSavingReview: Boolean = false
 )
 
 data class BookUiModel(
@@ -30,6 +36,7 @@ data class BookUiModel(
 
 data class ReviewUiModel(
     val id: String,
+    val userId: String,
     val reviewerName: String,
     val reviewerAvatar: String?,
     val rating: Float,
