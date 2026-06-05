@@ -111,10 +111,10 @@ start_backend() {
   stop_existing_backend
   cleanup_stale_pid
 
-  echo "Levantando backend..."
+  echo "Levantando backend (SQLite)..."
   (
     cd "$BACK_DIR"
-    nohup go run . >"$BACK_LOG_FILE" 2>&1 &
+    FEEDBOOK_STORE=sqlite nohup go run . >"$BACK_LOG_FILE" 2>&1 &
     echo $! >"$BACK_PID_FILE"
   )
 

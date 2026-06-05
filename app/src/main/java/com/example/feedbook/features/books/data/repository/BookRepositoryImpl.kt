@@ -23,9 +23,9 @@ class BookRepositoryImpl(
         return remoteDataSource.getBookById(bookId).toDomain()
     }
 
-    override suspend fun getReviews(bookId: String): List<Review> {
-        return remoteDataSource.getReviews(bookId)
-            .map { it.toDomain() }
+    override suspend fun getReviews(bookId: String, page: Int, limit: Int): Pair<List<Review>, Int> {
+        val response = remoteDataSource.getReviews(bookId, page, limit)
+        return response.reviews.map { it.toDomain() } to response.total
     }
 
     override suspend fun saveReview(bookId: String, rating: Float, text: String): Review {
@@ -38,5 +38,9 @@ class BookRepositoryImpl(
 
     override suspend fun saveReadingProgress(bookId: String, currentPage: Int): ReadingProgress {
         return remoteDataSource.saveReadingProgress(bookId, currentPage).toDomain()
+    }
+
+    override suspend fun toggleLike(bookId: String, reviewId: String): Review {
+        return remoteDataSource.toggleLike(bookId, reviewId).toDomain()
     }
 }

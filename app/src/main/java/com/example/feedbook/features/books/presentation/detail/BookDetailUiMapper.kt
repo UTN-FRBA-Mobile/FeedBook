@@ -27,6 +27,7 @@ fun Review.toUiModel() = ReviewUiModel(
     text = text,
     likes = likes,
     likesText = if (likes == 1) "1 like" else "$likes likes",
+    isLikedByMe = isLikedByMe,
     createdAt = createdAt
 )
 

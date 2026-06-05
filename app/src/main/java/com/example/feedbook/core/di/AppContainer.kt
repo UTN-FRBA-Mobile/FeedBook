@@ -21,6 +21,7 @@ import com.example.feedbook.features.books.domain.usecase.GetReadingProgressUseC
 import com.example.feedbook.features.books.domain.usecase.SaveReadingProgressUseCase
 import com.example.feedbook.features.books.domain.usecase.GetReviewsUseCase
 import com.example.feedbook.features.books.domain.usecase.SaveReviewUseCase
+import com.example.feedbook.features.books.domain.usecase.ToggleLikeUseCase
 import com.example.feedbook.features.home.data.remote.HomeRemoteDataSource
 import com.example.feedbook.features.home.data.repository.HomeRepositoryImpl
 import com.example.feedbook.features.home.domain.usecase.ObserveHomeFeedUseCase
@@ -86,6 +87,7 @@ class AppContainer(
 
     val getReviewsUseCase = GetReviewsUseCase(bookRepository)
     val saveReviewUseCase = SaveReviewUseCase(bookRepository)
+    val toggleLikeUseCase = ToggleLikeUseCase(bookRepository)
 
     val observeHomeFeedUseCase = ObserveHomeFeedUseCase(homeRepository)
     val observeOwnProfileUseCase = ObserveOwnProfileUseCase(profileRepository)

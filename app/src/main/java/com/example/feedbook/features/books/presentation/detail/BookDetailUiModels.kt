@@ -11,6 +11,7 @@ data class BookDetailUiState(
     val reviews: List<ReviewUiModel> = emptyList(),
     val userReview: ReviewUiModel? = null,
     val readingProgress: ReadingProgressUiModel? = null,
+    val allReviewsTotal: Int = 0,
     val avatarStyle: AvatarStyle = defaultAvatarStyle(),
     val avatarPreset: AvatarPreset? = null,
     val avatarImageUri: String? = null,
@@ -44,6 +45,7 @@ data class ReviewUiModel(
     val text: String,
     val likes: Int,
     val likesText: String,
+    val isLikedByMe: Boolean,
     val createdAt: String
 )
 

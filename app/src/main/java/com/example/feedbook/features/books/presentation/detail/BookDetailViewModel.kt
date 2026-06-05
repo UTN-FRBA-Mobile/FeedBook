@@ -8,6 +8,7 @@ import com.example.feedbook.features.books.domain.usecase.GetReadingProgressUseC
 import com.example.feedbook.features.books.domain.usecase.GetReviewsUseCase
 import com.example.feedbook.features.books.domain.usecase.SaveReadingProgressUseCase
 import com.example.feedbook.features.books.domain.usecase.SaveReviewUseCase
+import com.example.feedbook.features.books.domain.usecase.ToggleLikeUseCase
 import com.example.feedbook.features.library.domain.usecase.AddBookToLibraryUseCase
 import com.example.feedbook.features.library.domain.usecase.ObserveOwnLibraryUseCase
 import com.example.feedbook.features.library.domain.usecase.RemoveBookFromLibraryUseCase
@@ -30,6 +31,7 @@ class BookDetailViewModel(
     private val getReadingProgressUseCase: GetReadingProgressUseCase,
     private val saveReadingProgressUseCase: SaveReadingProgressUseCase,
     private val saveReviewUseCase: SaveReviewUseCase,
+    private val toggleLikeUseCase: ToggleLikeUseCase,
     private val addBookToLibraryUseCase: AddBookToLibraryUseCase,
     private val removeBookFromLibraryUseCase: RemoveBookFromLibraryUseCase,
     private val observeOwnLibraryUseCase: ObserveOwnLibraryUseCase,
@@ -126,10 +128,11 @@ class BookDetailViewModel(
             val reviewsResult = reviewsDeferred.await()
             val progressResult = progressDeferred.await()
 
-            val reviews = reviewsResult.getOrDefault(emptyList()).map { it.toUiModel() }
+            val reviewsData = reviewsResult.getOrDefault(Pair(emptyList(), 0))
+            val reviews = reviewsData.first.map { it.toUiModel() }
             val userReview = reviews.find { it.userId == "me" }
 
-            _state.value = BookDetailUiState(
+            _state.value = _state.value.copy(
                 isLoading = false,
                 avatarStyle = avatarPresentation.style,
                 avatarPreset = avatarPresentation.preset,
@@ -137,6 +140,7 @@ class BookDetailViewModel(
                 book = bookResult.getOrNull()?.toUiModel(),
                 reviews = reviews,
                 userReview = userReview,
+                allReviewsTotal = reviewsData.second,
                 readingProgress = progressResult.getOrNull()?.toUiModel(),
                 error = bookResult.exceptionOrNull()?.message
                     ?: if (bookResult.isSuccess && bookResult.getOrNull() == null) "Libro no encontrado" else null
@@ -159,8 +163,43 @@ class BookDetailViewModel(
                 .onFailure {
                     _state.value = _state.value.copy(
                         isSavingReview = false,
-                        reviewFeedback = "Something went wrong"
+                        reviewFeedback = it.message ?: "Something went wrong"
                     )
+                }
+        }
+    }
+
+    fun toggleLike(reviewId: String) {
+        val currentReviews = _state.value.reviews
+        val idx = currentReviews.indexOfFirst { it.id == reviewId }
+        if (idx == -1) return
+
+        val review = currentReviews[idx]
+        val newLiked = !review.isLikedByMe
+        val newLikes = if (newLiked) review.likes + 1 else review.likes - 1
+        val patchedReview = review.copy(isLikedByMe = newLiked, likes = newLikes,
+            likesText = if (newLikes == 1) "1 like" else "$newLikes likes")
+
+        _state.value = _state.value.copy(
+            reviews = currentReviews.toMutableList().also { it[idx] = patchedReview }
+        )
+
+        viewModelScope.launch {
+            runCatching { toggleLikeUseCase(bookId, reviewId) }
+                .onSuccess { updated ->
+                    val list = _state.value.reviews.toMutableList()
+                    val uiIdx = list.indexOfFirst { it.id == reviewId }
+                    if (uiIdx != -1) {
+                        list[uiIdx] = updated.toUiModel()
+                        _state.value = _state.value.copy(reviews = list)
+                    }
+                }
+                .onFailure {
+                    val revertList = _state.value.reviews.toMutableList()
+                    if (idx < revertList.size) {
+                        revertList[idx] = review
+                        _state.value = _state.value.copy(reviews = revertList)
+                    }
                 }
         }
     }
@@ -177,6 +216,7 @@ class BookDetailViewModel(
             getReadingProgressUseCase: GetReadingProgressUseCase,
             saveReadingProgressUseCase: SaveReadingProgressUseCase,
             saveReviewUseCase: SaveReviewUseCase,
+            toggleLikeUseCase: ToggleLikeUseCase,
             addBookToLibraryUseCase: AddBookToLibraryUseCase,
             removeBookFromLibraryUseCase: RemoveBookFromLibraryUseCase,
             observeOwnLibraryUseCase: ObserveOwnLibraryUseCase,
@@ -191,6 +231,7 @@ class BookDetailViewModel(
                     getReadingProgressUseCase,
                     saveReadingProgressUseCase,
                     saveReviewUseCase,
+                    toggleLikeUseCase,
                     addBookToLibraryUseCase,
                     removeBookFromLibraryUseCase,
                     observeOwnLibraryUseCase,

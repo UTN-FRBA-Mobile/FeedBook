@@ -3,6 +3,7 @@ package com.example.feedbook.features.books.presentation.detail
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,6 +13,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.StarOutline
@@ -24,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,12 +36,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.example.feedbook.R
 import com.example.feedbook.core.ui.components.BottomBarTab
 import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
-import kotlinx.coroutines.launch
 
 // ─── Stateful Wrapper ──────────────────────────────────────────────────────
 @Composable
@@ -54,6 +54,7 @@ fun BookDetailScreen(
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
+    onShowAllReviews: () -> Unit = {},
 ) {
     val viewModel: BookDetailViewModel = viewModel(factory = viewModelFactory)
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -72,6 +73,8 @@ fun BookDetailScreen(
         onSaveReview = viewModel::saveReview,
         onReviewFeedbackShown = viewModel::clearReviewFeedback,
         onLibraryFeedbackShown = viewModel::clearLibraryFeedback,
+        onToggleLike = viewModel::toggleLike,
+        onShowAllReviews = onShowAllReviews,
         modifier = modifier
     )
 }
@@ -99,6 +102,8 @@ fun BookDetailScreen(
     onLogoutClick: () -> Unit = {},
     onModeSelected: (String) -> Unit = {},
     onLibraryFeedbackShown: () -> Unit = {},
+    onToggleLike: (String) -> Unit = {},
+    onShowAllReviews: () -> Unit = {},
 ) {
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -160,12 +165,14 @@ fun BookDetailScreen(
                 when {
                     state.isLoading -> LoadingContent()
                     state.error != null -> ErrorContent(message = state.error, onRetry = onRetry)
-                    state.book != null -> BookDetailContent(
+                    state.book != null ->                 BookDetailContent(
                         state = state,
                         onUpdateProgress = onUpdateProgress,
                         onToggleLibrary = onToggleLibrary,
                         onSaveProgress = onSaveProgress,
-                        onWriteReview = { showReviewDialog = true }
+                        onWriteReview = { showReviewDialog = true },
+                        onToggleLike = onToggleLike,
+                        onShowAllReviews = onShowAllReviews
                     )
                 }
             }
@@ -180,7 +187,9 @@ private fun BookDetailContent(
     onUpdateProgress: () -> Unit,
     onToggleLibrary: () -> Unit,
     onSaveProgress: (Int) -> Unit,
-    onWriteReview: () -> Unit
+    onWriteReview: () -> Unit,
+    onToggleLike: (String) -> Unit = {},
+    onShowAllReviews: () -> Unit = {},
 ) {
     val book = state.book!!
     var showProgressCard by remember { mutableStateOf(false) }
@@ -229,7 +238,27 @@ private fun BookDetailContent(
         }
         item { FriendsSection() }
         item { ReviewsHeader(onWriteReview = onWriteReview) }
-        items(state.reviews) { review -> ReviewCard(review = review) }
+        items(state.reviews) { review -> ReviewCard(review = review, onToggleLike = onToggleLike) }
+        if (state.allReviewsTotal > 5) {
+            item {
+                TextButton(
+                    onClick = onShowAllReviews,
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                ) {
+                    Text(
+                        text = "See all ${state.allReviewsTotal} reviews",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = ProfileColors.Accent
+                    )
+                    Icon(
+                        imageVector = Icons.Filled.ChevronRight,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = ProfileColors.Accent
+                    )
+                }
+            }
+        }
         item {
             BookMetadataSection(
                 book.isbn,
@@ -342,6 +371,8 @@ private fun ActionButtonsSection(
     isBookInLibrary: Boolean,
     isTogglingLibrary: Boolean
 ) {
+    var showRemoveConfirmDialog by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -364,7 +395,7 @@ private fun ActionButtonsSection(
 
         if (isBookInLibrary) {
             Button(
-                onClick = onToggleLibrary,
+                onClick = { showRemoveConfirmDialog = true },
                 enabled = !isTogglingLibrary,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -449,6 +480,34 @@ private fun ActionButtonsSection(
                 )
             }
         }
+    }
+
+    if (showRemoveConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showRemoveConfirmDialog = false },
+            containerColor = ProfileColors.Surface,
+            titleContentColor = ProfileColors.PrimaryText,
+            textContentColor = ProfileColors.PrimaryText,
+            title = { Text("Remove from Library") },
+            text = { Text("Are you sure you want to remove this book from your list?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showRemoveConfirmDialog = false
+                        onToggleLibrary()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFDC2626),
+                        contentColor = Color.White
+                    )
+                ) { Text("Remove") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRemoveConfirmDialog = false }) {
+                    Text("Cancel", color = ProfileColors.SecondaryText)
+                }
+            }
+        )
     }
 }
 
@@ -630,7 +689,7 @@ private fun ReviewsHeader(onWriteReview: () -> Unit) {
 
 // ─── Review Card ───────────────────────────────────────────────────────────
 @Composable
-private fun ReviewCard(review: ReviewUiModel) {
+private fun ReviewCard(review: ReviewUiModel, onToggleLike: (String) -> Unit = {}) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -698,18 +757,21 @@ private fun ReviewCard(review: ReviewUiModel) {
             )
             Spacer(modifier = Modifier.height(10.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable { onToggleLike(review.id) }
+                ) {
                     Icon(
-                        imageVector = Icons.Outlined.ThumbUp,
-                        contentDescription = null,
+                        imageVector = if (review.isLikedByMe) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
+                        contentDescription = if (review.isLikedByMe) "Unlike" else "Like",
                         modifier = Modifier.size(14.dp),
-                        tint = ProfileColors.SecondaryText
+                        tint = if (review.isLikedByMe) ProfileColors.Accent else ProfileColors.SecondaryText
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = review.likes.toString(),
+                        text = review.likesText,
                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
-                        color = ProfileColors.SecondaryText
+                        color = if (review.isLikedByMe) ProfileColors.Accent else ProfileColors.SecondaryText
                     )
                 }
             }
@@ -902,7 +964,9 @@ private fun ReviewDialog(
                         focusedBorderColor = ProfileColors.Accent,
                         unfocusedBorderColor = ProfileColors.Border,
                         cursorColor = ProfileColors.Accent,
-                        focusedLabelColor = ProfileColors.Accent
+                        focusedLabelColor = ProfileColors.Accent,
+                        focusedTextColor = ProfileColors.PrimaryText,
+                        unfocusedTextColor = ProfileColors.PrimaryText
                     )
                 )
             }
@@ -913,13 +977,13 @@ private fun ReviewDialog(
                 enabled = !isSaving && rating > 0 && text.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = ProfileColors.Accent,
-                    contentColor = ProfileColors.SurfaceStrong
+                    contentColor = Color.White
                 )
             ) {
                 if (isSaving) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(18.dp),
-                        color = ProfileColors.SurfaceStrong,
+                        color = Color.White,
                         strokeWidth = 2.dp
                     )
                 } else {

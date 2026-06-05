@@ -10,5 +10,6 @@ data class ReviewDto (
     @SerializedName("rating")          val rating: Float,
     @SerializedName("text")            val text: String,
     @SerializedName("likes")           val likes: Int,
+    @SerializedName("liked_by")        val likedBy: List<String>,
     @SerializedName("created_at")      val createdAt: String
 )

@@ -34,6 +34,8 @@ import com.example.feedbook.features.auth.presentation.LoginViewModel
 import com.example.feedbook.features.books.presentation.list.BookListScreen
 import com.example.feedbook.features.books.presentation.list.BookListViewModel
 import com.example.feedbook.features.books.presentation.scanner.IsbnScannerScreen
+import com.example.feedbook.features.books.presentation.all.AllReviewsScreen
+import com.example.feedbook.features.books.presentation.all.AllReviewsViewModel
 import com.example.feedbook.features.books.presentation.detail.BookDetailScreen
 import com.example.feedbook.features.books.presentation.detail.BookDetailViewModel
 import com.example.feedbook.features.home.presentation.HomeScreen
@@ -65,11 +67,13 @@ object AppRoutes {
     const val BOOKS = "books"
     const val ISBN_SCANNER = "isbnScanner"
     const val BOOK_DETAIL = "bookDetail/{bookId}"
+    const val ALL_REVIEWS = "allReviews/{bookId}?title={title}"
 
     const val AUTHOR_DETAIL = "authorDetail/{authorId}"
 
     fun detail(bookId: String): String = "bookDetail/$bookId"
     fun authorDetail(authorId: String): String = "authorDetail/$authorId"
+    fun allReviews(bookId: String, title: String): String = "allReviews/$bookId?title=$title"
 }
 
 private fun NavHostController.navigateTopLevel(route: String) {
@@ -393,14 +397,16 @@ fun AppNavigation(modifier: Modifier = Modifier) {
             route = AppRoutes.BOOK_DETAIL,
             arguments = listOf(navArgument("bookId") { type = NavType.StringType })
         ) { backStackEntry ->
+            val bookId = backStackEntry.arguments?.getString("bookId").orEmpty()
             val detailViewModel: BookDetailViewModel = viewModel(
                 factory = BookDetailViewModel.provideFactory(
-                    bookId = backStackEntry.arguments?.getString("bookId").orEmpty(),
+                    bookId = bookId,
                     getBookByIdUseCase = appContainer.getBookByIdUseCase,
                     getReviewsUseCase = appContainer.getReviewsUseCase,
                     getReadingProgressUseCase = appContainer.getReadingProgress,
                     saveReadingProgressUseCase = appContainer.saveReadingProgressUseCase,
                     saveReviewUseCase = appContainer.saveReviewUseCase,
+                    toggleLikeUseCase = appContainer.toggleLikeUseCase,
                     addBookToLibraryUseCase = appContainer.addBookToLibraryUseCase,
                     removeBookFromLibraryUseCase = appContainer.removeBookFromLibraryUseCase,
                     observeOwnLibraryUseCase = appContainer.observeOwnLibraryUseCase,
@@ -408,6 +414,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 )
             )
             val detailState by detailViewModel.state.collectAsStateWithLifecycle()
+            val bookForTitle = detailState.book
             BookDetailScreen(
                 state = detailState,
                 onRetry = detailViewModel::loadBook,
@@ -423,7 +430,38 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
-                onLogoutClick = onLogout
+                onLogoutClick = onLogout,
+                onToggleLike = detailViewModel::toggleLike,
+                onShowAllReviews = {
+                    val title = bookForTitle?.title?.takeIf { it.isNotBlank() } ?: "Unknown"
+                    navController.navigate(AppRoutes.allReviews(bookId, title))
+                }
+            )
+        }
+
+        composable(
+            route = AppRoutes.ALL_REVIEWS,
+            arguments = listOf(
+                navArgument("bookId") { type = NavType.StringType },
+                navArgument("title") { type = NavType.StringType; defaultValue = "Unknown" }
+            )
+        ) { backStackEntry ->
+            val reviewsBookId = backStackEntry.arguments?.getString("bookId").orEmpty()
+            val reviewsTitle = backStackEntry.arguments?.getString("title") ?: "Unknown"
+            val allReviewsViewModel: AllReviewsViewModel = viewModel(
+                factory = AllReviewsViewModel.Factory(
+                    bookId = reviewsBookId,
+                    getReviewsUseCase = appContainer.getReviewsUseCase,
+                    toggleLikeUseCase = appContainer.toggleLikeUseCase
+                )
+            )
+            val allReviewsState by allReviewsViewModel.state.collectAsStateWithLifecycle()
+            AllReviewsScreen(
+                bookTitle = reviewsTitle,
+                state = allReviewsState,
+                onBackClick = { navController.popBackStack() },
+                onToggleLike = allReviewsViewModel::toggleLike,
+                onLoadMore = allReviewsViewModel::loadMore
             )
         }
 

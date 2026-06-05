@@ -5,6 +5,8 @@ import com.example.feedbook.features.books.data.remote.dto.BookDto
 import com.example.feedbook.features.books.data.remote.dto.ExploreUserDto
 import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewDto
+import com.example.feedbook.features.books.data.remote.dto.ReviewsResponseDto
+import com.example.feedbook.features.books.data.remote.dto.SaveReviewRequestDto
 import com.example.feedbook.features.home.data.remote.dto.HomeDto
 import com.example.feedbook.features.library.data.remote.dto.LibraryDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationsDto
@@ -15,6 +17,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.HTTP
 import retrofit2.http.POST
+import retrofit2.http.Query
 import retrofit2.http.Path
 import retrofit2.http.PUT
 
@@ -41,13 +44,21 @@ interface ApiService {
 
     @GET("books/{bookId}/reviews")
     suspend fun getReviews(
-        @Path("bookId") bookId: String
-    ): List<ReviewDto>
+        @Path("bookId") bookId: String,
+        @Query("page") page: Int = 1,
+        @Query("limit") limit: Int = 5
+    ): ReviewsResponseDto
 
     @POST("books/{bookId}/reviews")
     suspend fun saveReview(
         @Path("bookId") bookId: String,
-        @Body body: Map<String, Any>
+        @Body body: SaveReviewRequestDto
+    ): ReviewDto
+
+    @POST("books/{bookId}/reviews/{reviewId}/like")
+    suspend fun toggleLike(
+        @Path("bookId") bookId: String,
+        @Path("reviewId") reviewId: String
     ): ReviewDto
 
     @GET("authors")

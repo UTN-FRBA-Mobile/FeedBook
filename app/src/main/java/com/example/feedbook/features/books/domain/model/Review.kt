@@ -8,5 +8,7 @@ data class Review(
     val rating: Float,
     val text: String,
     val likes: Int,
+    val likedBy: List<String>,
+    val isLikedByMe: Boolean,
     val createdAt: String
 )

@@ -26,6 +26,7 @@ object BookDetailPreviewData {
             text = "Excelente libro, muy recomendado.",
             likes = 128,
             likesText = "128 likes",
+            isLikedByMe = false,
             createdAt = "2024-01-01"
         )
     )

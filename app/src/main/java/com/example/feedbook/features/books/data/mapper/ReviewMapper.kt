@@ -11,5 +11,7 @@ fun ReviewDto.toDomain(): Review = Review(
     rating = rating,
     text = text,
     likes = likes,
+    likedBy = likedBy,
+    isLikedByMe = likedBy.contains("me"),
     createdAt = createdAt
 )
