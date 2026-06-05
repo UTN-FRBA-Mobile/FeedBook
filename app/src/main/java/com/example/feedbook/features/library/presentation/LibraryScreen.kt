@@ -127,13 +127,15 @@ fun LibraryScreen(
                         LibraryCollectionCard(
                             books = state.readingBooks,
                             title = "READING",
-                            modifier = Modifier.padding(horizontal = 16.dp)
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            onBookClick = onBookClick
                         )
                     }
                     item {
                         LibraryCollectionCard(
                             books = state.shelfBooks,
-                            modifier = Modifier.padding(horizontal = 16.dp)
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            onBookClick = onBookClick
                         )
                     }
                     item {

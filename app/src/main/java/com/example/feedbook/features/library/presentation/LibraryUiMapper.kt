@@ -23,8 +23,8 @@ fun ReaderLibrary.toUiState(): LibraryUiState = LibraryUiState(
         progress = currentBook.progress,
         coverImageUrl = currentBook.coverImageUrl
     ),
-    readingBooks = readingBooks.map { LibraryBook(it.title, it.coverImageUrl) },
-    shelfBooks = shelfBooks.map { LibraryBook(it.title, it.coverImageUrl) },
+    readingBooks = readingBooks.map { LibraryBook(it.id, it.title, it.coverImageUrl) },
+    shelfBooks = shelfBooks.map { LibraryBook(it.id, it.title, it.coverImageUrl) },
     completedBooks = completedBooks,
     readHistory = readHistory.map {
         ReadBookItem(

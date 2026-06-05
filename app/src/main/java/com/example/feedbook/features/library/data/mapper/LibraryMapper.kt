@@ -28,7 +28,7 @@ private fun AvatarDto.toDomain(): LibraryAvatar =
 private fun CurrentBookDto.toDomain(): LibraryCurrentBook =
     LibraryCurrentBook(id, title, author, page, totalPages, progress, coverImageUrl)
 
-private fun LibraryBookDto.toDomain(): LibraryShelfBook = LibraryShelfBook(title, coverImageUrl)
+private fun LibraryBookDto.toDomain(): LibraryShelfBook = LibraryShelfBook(id, title, coverImageUrl)
 
 private fun ReadBookDto.toDomain(): ReadBookEntry = ReadBookEntry(
     title = title,

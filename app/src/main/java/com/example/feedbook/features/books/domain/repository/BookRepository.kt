@@ -9,6 +9,9 @@ interface BookRepository {
     suspend fun getBooks(): List<Book>
     suspend fun getExploreUsers(): List<ExploreUser>
     suspend fun getBookById(bookId: String): Book
-    suspend fun getReviews(bookId: String): List<Review>
+    suspend fun getReviews(bookId: String, page: Int = 1, limit: Int = 5): Pair<List<Review>, Int>
+    suspend fun saveReview(bookId: String, rating: Float, text: String): Review
     suspend fun getReadingProgress(bookId: String): ReadingProgress?
+    suspend fun saveReadingProgress(bookId: String, currentPage: Int): ReadingProgress
+    suspend fun toggleLike(bookId: String, reviewId: String): Review
 }

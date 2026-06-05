@@ -11,4 +11,12 @@ class LibraryRemoteDataSource(
     fun observeOwnLibrary(): Flow<LibraryDto> = flow {
         emit(apiService.getOwnLibrary())
     }
+
+    suspend fun addBookToLibrary(bookId: String) {
+        apiService.addBookToLibrary(mapOf("book_id" to bookId))
+    }
+
+    suspend fun removeBookFromLibrary(bookId: String) {
+        apiService.removeBookFromLibrary(mapOf("book_id" to bookId))
+    }
 }

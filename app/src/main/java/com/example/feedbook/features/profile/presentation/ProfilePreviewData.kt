@@ -79,12 +79,12 @@ fun previewOwnProfileUiState(): ProfileUiState = emptyProfileUiState(ProfileVari
         ProfileStat(label = "This year", value = "19")
     ),
     publicLibrary = listOf(
-        LibraryBook("The Secret History", previewCoverUrl("9781400031702")),
-        LibraryBook("Ficciones", previewCoverUrl("9780802130303")),
-        LibraryBook("Never Let Me Go", previewCoverUrl("9781400078776")),
-        LibraryBook("Beloved", previewCoverUrl("9781400033416")),
-        LibraryBook("Pale Fire", previewCoverUrl("9780679723424")),
-        LibraryBook("The Waves", previewCoverUrl("9780156949606"))
+        LibraryBook("1", "The Secret History", previewCoverUrl("9781400031702")),
+        LibraryBook("2", "Ficciones", previewCoverUrl("9780802130303")),
+        LibraryBook("3", "Never Let Me Go", previewCoverUrl("9781400078776")),
+        LibraryBook("4", "Beloved", previewCoverUrl("9781400033416")),
+        LibraryBook("5", "Pale Fire", previewCoverUrl("9780679723424")),
+        LibraryBook("6", "The Waves", previewCoverUrl("9780156949606"))
     ),
     featuredReviews = listOf(
         FeaturedReview(
@@ -141,15 +141,15 @@ fun previewPublicProfileUiState(): ProfileUiState = emptyProfileUiState(ProfileV
         ProfileStat(label = "Followers", value = "2.4K")
     ),
     publicLibrary = listOf(
-        LibraryBook("One Hundred Years of Solitude", previewCoverUrl("9780060883287")),
-        LibraryBook("The Shadow of the Wind", previewCoverUrl("9780143034902")),
-        LibraryBook("Ficciones", previewCoverUrl("9780802130303")),
-        LibraryBook("Invisible Cities", previewCoverUrl("9780156453806")),
-        LibraryBook("Austerlitz", previewCoverUrl("9780811216548")),
-        LibraryBook("If on a winter's night a traveler", previewCoverUrl("9780156439619")),
-        LibraryBook("The Left Hand of Darkness", previewCoverUrl("9780441478125")),
-        LibraryBook("Pedro Paramo", previewCoverUrl("9780802133908")),
-        LibraryBook("The Master and Margarita", previewCoverUrl("9780143108276"))
+        LibraryBook("7", "One Hundred Years of Solitude", previewCoverUrl("9780060883287")),
+        LibraryBook("8", "The Shadow of the Wind", previewCoverUrl("9780143034902")),
+        LibraryBook("9", "Ficciones", previewCoverUrl("9780802130303")),
+        LibraryBook("10", "Invisible Cities", previewCoverUrl("9780156453806")),
+        LibraryBook("11", "Austerlitz", previewCoverUrl("9780811216548")),
+        LibraryBook("12", "If on a winter's night a traveler", previewCoverUrl("9780156439619")),
+        LibraryBook("13", "The Left Hand of Darkness", previewCoverUrl("9780441478125")),
+        LibraryBook("14", "Pedro Paramo", previewCoverUrl("9780802133908")),
+        LibraryBook("15", "The Master and Margarita", previewCoverUrl("9780143108276"))
     ),
     featuredReviews = listOf(
         FeaturedReview(

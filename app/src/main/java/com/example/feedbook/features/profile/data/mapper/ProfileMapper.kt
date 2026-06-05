@@ -40,5 +40,5 @@ private fun CurrentBookDto.toDomain(): CurrentBook = CurrentBook(id, title, auth
 private fun QueuedBookDto.toDomain(): QueuedBook = QueuedBook(title, author, coverImageUrl)
 
 private fun ProfileStatDto.toDomain(): ProfileStat = ProfileStat(label, value)
-private fun LibraryBookDto.toDomain(): LibraryBook = LibraryBook(title, coverImageUrl)
+private fun LibraryBookDto.toDomain(): LibraryBook = LibraryBook(id, title, coverImageUrl)
 private fun FeaturedReviewDto.toDomain(): FeaturedReview = FeaturedReview(bookTitle, rating, timeAgo, excerpt, coverImageUrl)

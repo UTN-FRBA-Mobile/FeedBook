@@ -19,6 +19,7 @@ fun Book.toUiModel() = BookUiModel(
 
 fun Review.toUiModel() = ReviewUiModel(
     id = id,
+    userId = userId,
     reviewerName = reviewerName,
     reviewerAvatar = reviewerAvatar,
     rating = rating,
@@ -26,6 +27,7 @@ fun Review.toUiModel() = ReviewUiModel(
     text = text,
     likes = likes,
     likesText = if (likes == 1) "1 like" else "$likes likes",
+    isLikedByMe = isLikedByMe,
     createdAt = createdAt
 )
 

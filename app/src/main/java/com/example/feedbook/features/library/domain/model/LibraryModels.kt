@@ -28,6 +28,7 @@ data class LibraryCurrentBook(
 )
 
 data class LibraryShelfBook(
+    val id: String,
     val title: String,
     val coverImageUrl: String?
 )
