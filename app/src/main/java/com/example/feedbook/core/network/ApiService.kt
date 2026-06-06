@@ -99,4 +99,12 @@ interface ApiService {
 
     @PUT("profile/me")
     suspend fun updateOwnProfile(@Body body: UpdateProfileRequestDto): ProfileDto
+
+    @POST("push/register")
+    suspend fun registerPushToken(@Body body: RegisterPushTokenRequestDto)
 }
+
+data class RegisterPushTokenRequestDto(
+    val token: String,
+    val platform: String = "android"
+)

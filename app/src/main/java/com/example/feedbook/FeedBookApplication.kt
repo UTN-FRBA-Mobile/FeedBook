@@ -2,7 +2,13 @@ package com.example.feedbook
 
 import android.app.Application
 import com.example.feedbook.core.di.AppContainer
+import com.example.feedbook.features.push.PushTokenRegistrar
 
 class FeedBookApplication : Application() {
     val container: AppContainer by lazy { AppContainer(this) }
+
+    override fun onCreate() {
+        super.onCreate()
+        PushTokenRegistrar.registerCurrentToken()
+    }
 }
