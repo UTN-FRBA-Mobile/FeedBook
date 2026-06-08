@@ -13,5 +13,6 @@ data class AuthorDto(
     @SerializedName("biography")    val biography: String,
     @SerializedName("image_url")    val imageUrl: String?,
     @SerializedName("books")        val books: List<BookDto>,
-    @SerializedName("followers")    val followers: Int
+    @SerializedName("followers")    val followers: Int,
+    @SerializedName("is_following") val isFollowing: Boolean = false
 )

@@ -8,6 +8,7 @@ import com.example.feedbook.features.books.domain.model.ExploreUser
 fun BookDto.toDomain(): Book {
     return Book(
         id = id,
+        authorId = authorId,
         title = title,
         author = author,
         description = description,

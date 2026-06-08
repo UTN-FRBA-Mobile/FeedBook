@@ -28,6 +28,8 @@ import com.example.feedbook.features.auth.presentation.AuthGateUiState
 import com.example.feedbook.features.auth.presentation.AuthGateViewModel
 import com.example.feedbook.features.auth.presentation.LoginBiometricPrompt
 import com.example.feedbook.features.auth.presentation.LoginScreen
+import com.example.feedbook.features.authors.presentation.detail.AuthorBooksScreen
+import com.example.feedbook.features.authors.presentation.detail.AuthorBooksViewModel
 import com.example.feedbook.features.authors.presentation.detail.AuthorDetailScreen
 import com.example.feedbook.features.authors.presentation.detail.AuthorDetailViewModel
 import com.example.feedbook.features.auth.presentation.LoginViewModel
@@ -70,10 +72,12 @@ object AppRoutes {
     const val ALL_REVIEWS = "allReviews/{bookId}?title={title}"
 
     const val AUTHOR_DETAIL = "authorDetail/{authorId}"
+    const val AUTHOR_BOOKS = "authorBooks/{authorId}?name={name}"
 
     fun detail(bookId: String): String = "bookDetail/$bookId"
     fun authorDetail(authorId: String): String = "authorDetail/$authorId"
     fun allReviews(bookId: String, title: String): String = "allReviews/$bookId?title=$title"
+    fun authorBooks(authorId: String, name: String): String = "authorBooks/$authorId?name=$name"
 }
 
 private fun NavHostController.navigateTopLevel(route: String) {
@@ -435,6 +439,9 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onShowAllReviews = {
                     val title = bookForTitle?.title?.takeIf { it.isNotBlank() } ?: "Unknown"
                     navController.navigate(AppRoutes.allReviews(bookId, title))
+                },
+                onAuthorClick = { authorId ->
+                    navController.navigate(AppRoutes.authorDetail(authorId))
                 }
             )
         }
@@ -483,7 +490,32 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
                 onLogoutClick = onLogout,
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
+                onSeeAllBooks = {
+                    val id = backStackEntry.arguments?.getString("authorId").orEmpty()
+                    navController.navigate(AppRoutes.authorBooks(id, ""))
+                }
+            )
+        }
+
+        composable(
+            route = AppRoutes.AUTHOR_BOOKS,
+            arguments = listOf(
+                navArgument("authorId") { type = NavType.StringType },
+                navArgument("name") { type = NavType.StringType; defaultValue = "" }
+            )
+        ) { backStackEntry ->
+            val authorId = backStackEntry.arguments?.getString("authorId").orEmpty()
+            val authorName = backStackEntry.arguments?.getString("name") ?: ""
+            AuthorBooksScreen(
+                viewModelFactory = AuthorBooksViewModel.Factory(
+                    authorId = authorId,
+                    authorName = authorName,
+                    getAuthorByIdUseCase = appContainer.getAuthorByIdUseCase
+                ),
+                onBackClick = { navController.popBackStack() },
+                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) }
             )
         }
         }

@@ -6,10 +6,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material.icons.filled.Star
@@ -28,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,6 +59,7 @@ fun BookDetailScreen(
     onNotificationsClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
     onShowAllReviews: () -> Unit = {},
+    onAuthorClick: (String) -> Unit = {},
 ) {
     val viewModel: BookDetailViewModel = viewModel(factory = viewModelFactory)
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -75,6 +80,7 @@ fun BookDetailScreen(
         onLibraryFeedbackShown = viewModel::clearLibraryFeedback,
         onToggleLike = viewModel::toggleLike,
         onShowAllReviews = onShowAllReviews,
+        onAuthorClick = onAuthorClick,
         modifier = modifier
     )
 }
@@ -87,7 +93,6 @@ fun BookDetailScreen(
     state: BookDetailUiState,
     onRetry: () -> Unit,
     onBackClick: () -> Unit,
-    onUpdateProgress: () -> Unit = {},
     onToggleLibrary: () -> Unit = {},
     onSaveProgress: (Int) -> Unit = {},
     onSaveReview: (Float, String) -> Unit = { _, _ -> },
@@ -104,6 +109,7 @@ fun BookDetailScreen(
     onLibraryFeedbackShown: () -> Unit = {},
     onToggleLike: (String) -> Unit = {},
     onShowAllReviews: () -> Unit = {},
+    onAuthorClick: (String) -> Unit = {},
 ) {
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -151,6 +157,13 @@ fun BookDetailScreen(
         onLogoutClick = onLogoutClick,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
+        val listState = rememberLazyListState()
+        val isScrolled by remember {
+            derivedStateOf {
+                listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 200
+            }
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -165,15 +178,43 @@ fun BookDetailScreen(
                 when {
                     state.isLoading -> LoadingContent()
                     state.error != null -> ErrorContent(message = state.error, onRetry = onRetry)
-                    state.book != null ->                 BookDetailContent(
+                    state.book != null ->                BookDetailContent(
                         state = state,
-                        onUpdateProgress = onUpdateProgress,
+                        listState = listState,
                         onToggleLibrary = onToggleLibrary,
                         onSaveProgress = onSaveProgress,
                         onWriteReview = { showReviewDialog = true },
                         onToggleLike = onToggleLike,
-                        onShowAllReviews = onShowAllReviews
+                        onShowAllReviews = onShowAllReviews,
+                        onAuthorClick = onAuthorClick
                     )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            if (isScrolled) ProfileColors.Background.copy(alpha = 0.85f)
+                            else Color.Transparent
+                        )
+                ) {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = ProfileColors.PrimaryText
+                        )
+                    }
+                    if (isScrolled) {
+                        Text(
+                            text = state.book?.title.orEmpty(),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 16.dp)
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
                 }
             }
         }
@@ -184,22 +225,18 @@ fun BookDetailScreen(
 @Composable
 private fun BookDetailContent(
     state: BookDetailUiState,
-    onUpdateProgress: () -> Unit,
+    listState: LazyListState,
     onToggleLibrary: () -> Unit,
     onSaveProgress: (Int) -> Unit,
     onWriteReview: () -> Unit,
     onToggleLike: (String) -> Unit = {},
     onShowAllReviews: () -> Unit = {},
+    onAuthorClick: (String) -> Unit = {},
 ) {
     val book = state.book!!
-    var showProgressCard by remember { mutableStateOf(false) }
     val totalPages = state.readingProgress?.totalPages ?: book.pages
-    var sliderValue by remember(showProgressCard) {
+    var sliderValue by remember(state.isBookInLibrary) {
         mutableFloatStateOf(state.readingProgress?.currentPage?.toFloat() ?: 0f)
-    }
-
-    if (!state.isBookInLibrary) {
-        showProgressCard = false
     }
     val averageRating = state.reviews
         .map { it.rating }
@@ -208,24 +245,21 @@ private fun BookDetailContent(
         .takeIf { state.reviews.isNotEmpty() } ?: 0f
 
     LazyColumn(
+        state = listState,
         modifier = Modifier
             .fillMaxSize(),
         contentPadding = PaddingValues(bottom = 80.dp)
     ) {
         item { CoverSection(coverUrl = book.coverImageUrl) }
-        item { BookInfoSection(book = book, rating = averageRating) }
+        item { BookInfoSection(book = book, rating = averageRating, onAuthorClick = onAuthorClick) }
         item {
             ActionButtonsSection(
-                onUpdateProgress = {
-                    showProgressCard = !showProgressCard
-                    onUpdateProgress()
-                },
                 onToggleLibrary = onToggleLibrary,
                 isBookInLibrary = state.isBookInLibrary,
                 isTogglingLibrary = state.isTogglingLibrary
             )
         }
-        if (showProgressCard) {
+        if (state.isBookInLibrary) {
             item {
                 ProgressCard(
                     currentPage = sliderValue.toInt(),
@@ -315,7 +349,11 @@ private fun CoverSection(coverUrl: String?) {
 
 // ─── Book Info Section ─────────────────────────────────────────────────────
 @Composable
-private fun BookInfoSection(book: BookUiModel, rating: Float) {
+private fun BookInfoSection(
+    book: BookUiModel,
+    rating: Float,
+    onAuthorClick: (String) -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -335,6 +373,12 @@ private fun BookInfoSection(book: BookUiModel, rating: Float) {
         Text(
             text = "by ${book.author}",
             style = MaterialTheme.typography.titleSmall.copy(fontStyle = FontStyle.Italic),
+            color = if (book.authorId.isNotEmpty()) ProfileColors.Accent else MaterialTheme.colorScheme.onSurface,
+            modifier = if (book.authorId.isNotEmpty()) {
+                Modifier.clickable { onAuthorClick(book.authorId) }
+            } else {
+                Modifier
+            }
         )
         Spacer(modifier = Modifier.height(10.dp))
         StarRatingRow(rating = rating)
@@ -366,7 +410,6 @@ private fun StarRatingRow(rating: Float) {
 // ─── Action Buttons ────────────────────────────────────────────────────────
 @Composable
 private fun ActionButtonsSection(
-    onUpdateProgress: () -> Unit,
     onToggleLibrary: () -> Unit,
     isBookInLibrary: Boolean,
     isTogglingLibrary: Boolean
@@ -450,33 +493,6 @@ private fun ActionButtonsSection(
                 Text(
                     text = "Add to List",
                     style = MaterialTheme.typography.titleLarge.copy(fontSize = 15.sp)
-                )
-            }
-        }
-        if (isBookInLibrary) {
-            Button(
-                onClick = onUpdateProgress,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = ProfileColors.SurfaceStrong,
-                    contentColor = Color.White
-                )
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.TrendingUp,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "UPDATE PROGRESS",
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        letterSpacing = 1.5.sp,
-                        fontWeight = FontWeight.Bold
-                    )
                 )
             }
         }

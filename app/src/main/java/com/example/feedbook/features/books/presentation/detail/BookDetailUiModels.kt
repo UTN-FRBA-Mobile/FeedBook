@@ -24,6 +24,7 @@ data class BookDetailUiState(
 
 data class BookUiModel(
     val id: String,
+    val authorId: String = "",
     val pages: Int,
     val language: String,
     val published: String,

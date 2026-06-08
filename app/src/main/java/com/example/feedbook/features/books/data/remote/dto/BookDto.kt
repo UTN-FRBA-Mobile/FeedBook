@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class BookDto(
     @SerializedName("id") val id: String,
+    @SerializedName("author_id") val authorId: String = "",
     @SerializedName("title") val title: String,
     @SerializedName("author") val author: String,
     @SerializedName("description") val description: String,
