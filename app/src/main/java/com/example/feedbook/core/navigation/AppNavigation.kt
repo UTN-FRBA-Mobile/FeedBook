@@ -300,7 +300,10 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
         composable(route = AppRoutes.LIBRARY) {
             val viewModel: LibraryViewModel = viewModel(
-                factory = LibraryViewModel.provideFactory(appContainer.observeOwnLibraryUseCase)
+                factory = LibraryViewModel.provideFactory(
+                    observeOwnLibraryUseCase = appContainer.observeOwnLibraryUseCase,
+                    getAuthorsUseCase = appContainer.getAuthorsUseCase
+                )
             )
             val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -313,8 +316,11 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onLogoutClick = onLogout,
-                onBookClick = { bookId ->                  
+                onBookClick = { bookId ->
                     navController.navigate(AppRoutes.detail(bookId))
+                },
+                onAuthorClick = { authorId ->
+                    navController.navigate(AppRoutes.authorDetail(authorId))
                 },
             )
         }

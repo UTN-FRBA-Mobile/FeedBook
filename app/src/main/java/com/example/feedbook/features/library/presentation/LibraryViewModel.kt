@@ -3,6 +3,7 @@ package com.example.feedbook.features.library.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.feedbook.features.authors.domain.usecase.GetAuthorsUseCase
 import com.example.feedbook.features.library.domain.usecase.ObserveOwnLibraryUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +14,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class LibraryViewModel(
-    private val observeOwnLibraryUseCase: ObserveOwnLibraryUseCase
+    private val observeOwnLibraryUseCase: ObserveOwnLibraryUseCase,
+    private val getAuthorsUseCase: GetAuthorsUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(emptyLibraryUiState().copy(isLoading = true))
     val state: StateFlow<LibraryUiState> = _state.asStateFlow()
@@ -31,26 +33,36 @@ class LibraryViewModel(
         loadJob?.cancel()
         _state.value = _state.value.copy(isLoading = true, errorMessage = null)
         loadJob = viewModelScope.launch {
+            val followedAuthors = try {
+                getAuthorsUseCase()
+                    .filter { it.isFollowing }
+                    .map { FollowedAuthorUiModel(id = it.id, name = it.name, imageUrl = it.imageUrl) }
+            } catch (_: Exception) {
+                emptyList()
+            }
+
             observeOwnLibraryUseCase()
                 .catch { throwable ->
                     _state.value = emptyLibraryUiState().copy(
                         isLoading = false,
-                        errorMessage = throwable.message ?: "Unable to load library."
+                        errorMessage = throwable.message ?: "Unable to load library.",
+                        followedAuthors = followedAuthors
                     )
                 }
                 .collectLatest { library ->
-                    _state.value = library.toUiState()
+                    _state.value = library.toUiState().copy(followedAuthors = followedAuthors)
                 }
         }
     }
 
     companion object {
         fun provideFactory(
-            observeOwnLibraryUseCase: ObserveOwnLibraryUseCase
+            observeOwnLibraryUseCase: ObserveOwnLibraryUseCase,
+            getAuthorsUseCase: GetAuthorsUseCase
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return LibraryViewModel(observeOwnLibraryUseCase) as T
+                return LibraryViewModel(observeOwnLibraryUseCase, getAuthorsUseCase) as T
             }
         }
     }
