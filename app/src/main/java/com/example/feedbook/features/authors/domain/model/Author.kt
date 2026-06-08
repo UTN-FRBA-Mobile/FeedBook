@@ -12,5 +12,6 @@ data class Author(
     val biography: String,
     val imageUrl: String?,
     val books: List<Book>,
-    val followers: Int
+    val followers: Int,
+    val isFollowing: Boolean = false
 )

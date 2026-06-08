@@ -935,10 +935,11 @@ private fun buildAuthorFacetOptions(
 fun BookListContentPreview() {
     val mockBooks = listOf(
         Book(
-            "1",
-            "The Great Gatsby",
-            "F. Scott Fitzgerald",
-            "A story of wealth and love",
+            id = "1",
+            authorId = "",
+            title = "The Great Gatsby",
+            author = "F. Scott Fitzgerald",
+            description = "A story of wealth and love",
             coverImageUrl = null,
             isbn = "9788445015407",
             language = "English",
@@ -947,10 +948,11 @@ fun BookListContentPreview() {
             published = "March 27, 1921"
         ),
         Book(
-            "2",
-            "1984",
-            "George Orwell",
-            "A dystopian future",
+            id = "2",
+            authorId = "",
+            title = "1984",
+            author = "George Orwell",
+            description = "A dystopian future",
             coverImageUrl = null,
             isbn = "9788445015207",
             language = "English",

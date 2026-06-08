@@ -15,6 +15,7 @@ fun AuthorDto.toDomain(): Author {
         biography = biography,
         imageUrl = imageUrl,
         books = books.map { it.toDomain() },
-        followers = followers
+        followers = followers,
+        isFollowing = isFollowing
     )
 }

@@ -1,12 +1,16 @@
 package com.example.feedbook.features.authors.presentation.detail
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.*
@@ -41,6 +45,7 @@ fun AuthorDetailScreen(
     viewModelFactory: ViewModelProvider.Factory,
     onBackClick: () -> Unit,
     onBookClick: (String) -> Unit = {},
+    onSeeAllBooks: () -> Unit = {},
     onFeedClick: () -> Unit = {},
     onExploreClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
@@ -57,6 +62,7 @@ fun AuthorDetailScreen(
         onRetry = viewModel::loadAuthor,
         onBackClick = onBackClick,
         onBookClick = onBookClick,
+        onSeeAllBooks = onSeeAllBooks,
         onFollowClick = viewModel::toggleFollow,
         onFeedClick = onFeedClick,
         onExploreClick = onExploreClick,
@@ -77,6 +83,7 @@ fun AuthorDetailScreen(
     onRetry: () -> Unit,
     onBackClick: () -> Unit,
     onBookClick: (String) -> Unit = {},
+    onSeeAllBooks: () -> Unit = {},
     onFollowClick: () -> Unit = {},
     onFeedClick: () -> Unit = {},
     onExploreClick: () -> Unit = {},
@@ -101,19 +108,55 @@ fun AuthorDetailScreen(
         onNotificationsClick = onNotificationsClick,
         onLogoutClick = onLogoutClick
     ) { innerPadding ->
-        when {
-            state.isLoading -> LoadingContent(modifier = Modifier.padding(innerPadding))
-            state.error != null -> ErrorContent(
-                message = state.error,
-                onRetry = onRetry,
-                modifier = Modifier.padding(innerPadding)
-            )
-            state.author != null -> AuthorDetailContent(
-                author = state.author,
-                onBookClick = onBookClick,
-                onFollowClick = onFollowClick,
-                modifier = Modifier.padding(innerPadding)
-            )
+        val listState = rememberLazyListState()
+        val isScrolled by remember {
+            derivedStateOf {
+                listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 200
+            }
+        }
+
+        Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+            when {
+                state.isLoading -> LoadingContent()
+                state.error != null -> ErrorContent(
+                    message = state.error,
+                    onRetry = onRetry
+                )
+                state.author != null -> AuthorDetailContent(
+                    author = state.author,
+                    listState = listState,
+                    onBookClick = onBookClick,
+                    onFollowClick = onFollowClick,
+                    onSeeAllBooks = onSeeAllBooks
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        if (isScrolled) ProfileColors.Background.copy(alpha = 0.85f)
+                        else Color.Transparent
+                    )
+            ) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = ProfileColors.PrimaryText
+                    )
+                }
+                if (isScrolled) {
+                    Text(
+                        text = state.author?.name.orEmpty(),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 16.dp)
+                            .align(Alignment.CenterVertically)
+                    )
+                }
+            }
         }
     }
 }
@@ -123,6 +166,7 @@ fun AuthorDetailScreen(
 private fun AuthorDetailContent(
     modifier: Modifier = Modifier,
     author: AuthorUiModel,
+    listState: LazyListState,
     onBookClick: (String) -> Unit,
     onFollowClick: () -> Unit,
     onSeeAllBooks: () -> Unit = {},
@@ -130,6 +174,7 @@ private fun AuthorDetailContent(
     var showFullBio by remember { mutableStateOf(false) }
 
     LazyColumn(
+        state = listState,
         modifier = modifier
             .fillMaxSize()
             .background(ProfileColors.Background),
@@ -153,7 +198,7 @@ private fun AuthorDetailContent(
             BooksHeader(onSeeAll = onSeeAllBooks)
         }
 
-        items(author.books) { book ->
+        items(author.books.take(5)) { book ->
             BookRow(book = book, onClick = { onBookClick(book.id) })
         }
 
@@ -247,28 +292,53 @@ private fun AuthorHeaderSection(
                 ),
             )
 
-            Button(
-                onClick = onFollowClick,
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = ProfileColors.SurfaceStrong,
-                    contentColor = Color.White
-                ),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.BookmarkBorder,
-                    contentDescription = null,
-                    modifier = Modifier.size(16.dp)
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = if (author.isFollowing) "Siguiendo" else "Seguir Autor",
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 13.sp
+            if (author.isFollowing) {
+                Button(
+                    onClick = onFollowClick,
+                    shape = RoundedCornerShape(10.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = ProfileColors.SurfaceStrong,
+                        contentColor = Color.White
+                    ),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.BookmarkBorder,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
                     )
-                )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "Siguiendo",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 13.sp
+                        )
+                    )
+                }
+            } else {
+                OutlinedButton(
+                    onClick = onFollowClick,
+                    shape = RoundedCornerShape(10.dp),
+                    border = BorderStroke(1.5.dp, ProfileColors.SurfaceStrong),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.BookmarkBorder,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = ProfileColors.SurfaceStrong
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "Seguir Autor",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 13.sp
+                        ),
+                        color = ProfileColors.SurfaceStrong
+                    )
+                }
             }
         }
     }
