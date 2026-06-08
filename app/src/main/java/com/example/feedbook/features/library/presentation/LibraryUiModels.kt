@@ -15,12 +15,19 @@ data class LibraryUiState(
     val shelfBooks: List<LibraryBook>,
     val completedBooks: Int,
     val readHistory: List<ReadBookItem>,
+    val followedAuthors: List<FollowedAuthorUiModel> = emptyList(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 ) {
     val readingCount: Int get() = readingBooks.size
     val shelfCount: Int get() = shelfBooks.size
 }
+
+data class FollowedAuthorUiModel(
+    val id: String,
+    val name: String,
+    val imageUrl: String?
+)
 
 data class ReadBookItem(
     val title: String,
@@ -68,6 +75,7 @@ fun sampleLibraryUiState(): LibraryUiState = LibraryUiState(
         ReadBookItem("The Waves", "Virginia Woolf", "Mar 03, 2026", "Mar 21, 2026", 5, Color(0xFF6C8A80)),
         ReadBookItem("Never Let Me Go", "Kazuo Ishiguro", "Apr 01, 2026", "Apr 14, 2026", 4, Color(0xFF536E8A))
     ),
+    followedAuthors = emptyList(),
     isLoading = false,
     errorMessage = null
 )
@@ -85,6 +93,7 @@ fun emptyLibraryUiState(): LibraryUiState = LibraryUiState(
     shelfBooks = emptyList(),
     completedBooks = 0,
     readHistory = emptyList(),
+    followedAuthors = emptyList(),
     isLoading = false,
     errorMessage = null
 )
