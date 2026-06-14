@@ -25,4 +25,23 @@ class AuthRepositoryImpl(
             expiresAtEpochSeconds = response.expiresAtEpochSeconds
         )
     }
+
+    override suspend fun register(
+        username: String,
+        password: String,
+        secureLogin: Boolean
+    ): AuthSession {
+        val response = remoteDataSource.register(
+            username = username,
+            password = password,
+            secureLogin = secureLogin
+        )
+
+        return AuthSession(
+            username = username,
+            token = response.token,
+            secureLogin = secureLogin,
+            expiresAtEpochSeconds = response.expiresAtEpochSeconds
+        )
+    }
 }

@@ -17,3 +17,12 @@ data class LoginResponseDto(
     @SerializedName("exp")
     val expiresAtEpochSeconds: Long
 )
+
+data class RegisterRequestDto(
+    @SerializedName("username")
+    val username: String,
+    @SerializedName("password")
+    val password: String,
+    @SerializedName("secure_login")
+    val secureLogin: Boolean
+)

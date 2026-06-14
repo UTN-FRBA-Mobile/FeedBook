@@ -153,6 +153,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 val viewModel: LoginViewModel = viewModel(
                     factory = LoginViewModel.provideFactory(
                         loginUseCase = appContainer.loginUseCase,
+                        registerUseCase = appContainer.registerUseCase,
                         sessionManager = appContainer.sessionManager
                     )
                 )
@@ -162,6 +163,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     state = state,
                     onUsernameChange = viewModel::updateUsername,
                     onPasswordChange = viewModel::updatePassword,
+                    onConfirmPasswordChange = viewModel::updateConfirmPassword,
                     onSecureLoginChange = viewModel::updateSecureLoginEnabled,
                     onSignInClick = {
                         viewModel.submitLogin {
@@ -171,6 +173,11 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                                 }
                             }
                         }
+                    },
+                    onCreateAccountClick = viewModel::showRegisterMode,
+                    onBackToSignInClick = viewModel::showLoginMode,
+                    onRegisterClick = {
+                        viewModel.submitRegister {}
                     }
                 )
 

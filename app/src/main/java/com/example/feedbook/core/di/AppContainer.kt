@@ -12,6 +12,7 @@ import com.example.feedbook.core.session.SessionStorage
 import com.example.feedbook.features.auth.data.remote.AuthRemoteDataSource
 import com.example.feedbook.features.auth.data.repository.AuthRepositoryImpl
 import com.example.feedbook.features.auth.domain.usecase.LoginUseCase
+import com.example.feedbook.features.auth.domain.usecase.RegisterUseCase
 import com.example.feedbook.features.books.data.repository.BookRepositoryImpl
 import com.example.feedbook.features.books.data.remote.BookRemoteDataSource
 import com.example.feedbook.features.books.domain.usecase.GetBookByIdUseCase
@@ -72,6 +73,7 @@ class AppContainer(
     private val notificationsRepository = NotificationsRepositoryImpl(notificationsRemoteDataSource)
 
     val loginUseCase = LoginUseCase(authRepository)
+    val registerUseCase = RegisterUseCase(authRepository)
     val getBooksUseCase = GetBooksUseCase(bookRepository)
     val getExploreUsersUseCase = GetExploreUsersUseCase(bookRepository)
     val getBookByIdUseCase = GetBookByIdUseCase(bookRepository)

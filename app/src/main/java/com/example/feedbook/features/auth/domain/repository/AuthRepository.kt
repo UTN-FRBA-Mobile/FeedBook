@@ -8,4 +8,10 @@ interface AuthRepository {
         password: String,
         secureLogin: Boolean
     ): AuthSession
+
+    suspend fun register(
+        username: String,
+        password: String,
+        secureLogin: Boolean
+    ): AuthSession
 }

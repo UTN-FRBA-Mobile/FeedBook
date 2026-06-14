@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.Image
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material.icons.automirrored.outlined.Login
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -71,10 +72,13 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     onUsernameChange: (String) -> Unit = {},
     onPasswordChange: (String) -> Unit = {},
+    onConfirmPasswordChange: (String) -> Unit = {},
     onSecureLoginChange: (Boolean) -> Unit = {},
     onSignInClick: () -> Unit = {},
+    onRegisterClick: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {},
-    onCreateAccountClick: () -> Unit = {}
+    onCreateAccountClick: () -> Unit = {},
+    onBackToSignInClick: () -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -106,6 +110,20 @@ fun LoginScreen(
                 LogoHeader(compact = compactLayout)
                 Spacer(modifier = Modifier.weight(if (compactLayout) 0.6f else 1f))
                 Column(modifier = Modifier.fillMaxWidth()) {
+                    if (state.isRegisterMode) {
+                        Text(
+                            text = stringResource(R.string.register_title),
+                            color = LoginColors.Title,
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontSize = if (compactLayout) 22.sp else 26.sp,
+                                fontWeight = FontWeight.Normal
+                            ),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = if (compactLayout) 14.dp else 20.dp)
+                        )
+                    }
                     LoginTextField(
                         value = state.username,
                         onValueChange = {
@@ -134,46 +152,71 @@ fun LoginScreen(
                         visualTransformation = PasswordVisualTransformation(),
                         isError = state.errorMessage != null
                     )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = if (compactLayout) 10.dp else 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Checkbox(
-                                checked = state.secureLoginEnabled,
-                                onCheckedChange = onSecureLoginChange
-                            )
-                            Text(
-                                text = stringResource(R.string.login_secure_login),
-                                color = LoginColors.Label,
-                                style = MaterialTheme.typography.bodyLarge.copy(
-                                    fontSize = if (compactLayout) 14.sp else 16.sp
+                    if (state.isRegisterMode) {
+                        Spacer(modifier = Modifier.height(if (compactLayout) 16.dp else 28.dp))
+                        LoginTextField(
+                            value = state.confirmPassword,
+                            onValueChange = {
+                                onConfirmPasswordChange(it)
+                            },
+                            label = stringResource(R.string.register_confirm_password),
+                            placeholder = stringResource(R.string.login_password_placeholder),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Password,
+                                imeAction = ImeAction.Done
+                            ),
+                            visualTransformation = PasswordVisualTransformation(),
+                            isError = state.errorMessage != null
+                        )
+                    } else {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = if (compactLayout) 10.dp else 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Checkbox(
+                                    checked = state.secureLoginEnabled,
+                                    onCheckedChange = onSecureLoginChange
                                 )
+                                Text(
+                                    text = stringResource(R.string.login_secure_login),
+                                    color = LoginColors.Label,
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontSize = if (compactLayout) 14.sp else 16.sp
+                                    )
+                                )
+                            }
+                            Text(
+                                text = stringResource(R.string.login_forgot_password),
+                                color = LoginColors.Label,
+                                style = MaterialTheme.typography.bodyLarge.copy(fontSize = if (compactLayout) 14.sp else 16.sp),
+                                modifier = Modifier.clickable(onClick = onForgotPasswordClick)
                             )
                         }
-                        Text(
-                            text = stringResource(R.string.login_forgot_password),
-                            color = LoginColors.Label,
-                            style = MaterialTheme.typography.bodyLarge.copy(fontSize = if (compactLayout) 14.sp else 16.sp),
-                            modifier = Modifier.clickable(onClick = onForgotPasswordClick)
-                        )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
-                        text = state.errorMessage ?: " ",
-                        color = LoginColors.Error,
+                        text = state.errorMessage ?: state.successMessage ?: " ",
+                        color = if (state.errorMessage != null) LoginColors.Error else LoginColors.Label,
                         style = MaterialTheme.typography.bodyLarge.copy(fontSize = 13.sp),
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(if (compactLayout) 14.dp else 22.dp))
                     Button(
                         onClick = {
-                            onSignInClick()
+                            if (state.isRegisterMode) {
+                                onRegisterClick()
+                            } else {
+                                onSignInClick()
+                            }
                         },
-                        enabled = !state.isLoading && state.username.isNotBlank() && state.password.isNotBlank(),
+                        enabled = !state.isLoading &&
+                            state.username.isNotBlank() &&
+                            state.password.isNotBlank() &&
+                            (!state.isRegisterMode || state.confirmPassword.isNotBlank()),
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(if (compactLayout) 60.dp else 76.dp),
@@ -188,8 +231,12 @@ fun LoginScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = if (state.isLoading) {
+                                text = if (state.isLoading && state.isRegisterMode) {
+                                    stringResource(R.string.register_creating)
+                                } else if (state.isLoading) {
                                     stringResource(R.string.login_signing_in)
+                                } else if (state.isRegisterMode) {
+                                    stringResource(R.string.register_create_account)
                                 } else {
                                     stringResource(R.string.login_sign_in)
                                 },
@@ -202,7 +249,11 @@ fun LoginScreen(
                             if (!state.isLoading) {
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.Login,
+                                    imageVector = if (state.isRegisterMode) {
+                                        Icons.Outlined.PersonAdd
+                                    } else {
+                                        Icons.AutoMirrored.Outlined.Login
+                                    },
                                     contentDescription = null,
                                     modifier = Modifier.size(if (compactLayout) 20.dp else 22.dp)
                                 )
@@ -218,7 +269,11 @@ fun LoginScreen(
                 )
                 Spacer(modifier = Modifier.height(if (compactLayout) 20.dp else 40.dp))
                 Text(
-                    text = stringResource(R.string.login_create_prompt),
+                    text = if (state.isRegisterMode) {
+                        stringResource(R.string.register_have_account)
+                    } else {
+                        stringResource(R.string.login_create_prompt)
+                    },
                     color = LoginColors.Label,
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontSize = if (compactLayout) 18.sp else 20.sp,
@@ -228,14 +283,20 @@ fun LoginScreen(
                 )
                 Spacer(modifier = Modifier.height(if (compactLayout) 8.dp else 12.dp))
                 Text(
-                    text = stringResource(R.string.login_create_account),
+                    text = if (state.isRegisterMode) {
+                        stringResource(R.string.register_back_to_login)
+                    } else {
+                        stringResource(R.string.login_create_account)
+                    },
                     color = LoginColors.Title,
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontSize = if (compactLayout) 16.sp else 18.sp,
                         letterSpacing = 1.4.sp
                     ),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.clickable(onClick = onCreateAccountClick)
+                    modifier = Modifier.clickable(
+                        onClick = if (state.isRegisterMode) onBackToSignInClick else onCreateAccountClick
+                    )
                 )
                 Spacer(modifier = Modifier.weight(if (compactLayout) 0.45f else 0.65f))
             }

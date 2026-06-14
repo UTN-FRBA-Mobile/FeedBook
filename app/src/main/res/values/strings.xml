@@ -98,4 +98,10 @@
     <string name="login_tagline">THE BIBLIOPHILE\'S LEDGER</string>
     <string name="login_create_prompt">Don\'t have an account?</string>
     <string name="login_create_account">CREATE ACCOUNT</string>
+    <string name="register_title">Create your account</string>
+    <string name="register_confirm_password">CONFIRM PASSWORD</string>
+    <string name="register_create_account">CREATE ACCOUNT</string>
+    <string name="register_creating">CREATING ACCOUNT...</string>
+    <string name="register_have_account">Already have an account?</string>
+    <string name="register_back_to_login">SIGN IN</string>
 </resources>

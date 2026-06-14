@@ -209,7 +209,7 @@ main() {
   echo "Compilando e instalando app debug..."
   (
     cd "$ROOT_DIR"
-    export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+    export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
     ./gradlew --stop 2>/dev/null || true
     ANDROID_SERIAL="$device_serial" ./gradlew installDebug
   )
