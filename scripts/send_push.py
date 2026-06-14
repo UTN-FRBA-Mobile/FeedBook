@@ -63,7 +63,19 @@ def main() -> int:
 
     try:
         with urllib.request.urlopen(request, timeout=15) as response:
-            print(response.read().decode("utf-8").strip())
+            body = response.read().decode("utf-8").strip()
+            print(body)
+            try:
+                parsed = json.loads(body)
+            except json.JSONDecodeError:
+                return 0
+            if parsed.get("sent") == 0 and parsed.get("message") == "no registered push tokens":
+                tokens_url = args.backend.rstrip("/") + "/api/push/tokens"
+                print(
+                    f"No hay tokens registrados. Abrí la app con el backend levantado y revisá {tokens_url}",
+                    file=sys.stderr,
+                )
+                return 1
             return 0
     except urllib.error.HTTPError as error:
         print(error.read().decode("utf-8").strip(), file=sys.stderr)

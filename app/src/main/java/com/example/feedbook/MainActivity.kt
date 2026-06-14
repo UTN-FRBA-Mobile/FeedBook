@@ -12,6 +12,7 @@ import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentActivity
 import com.example.feedbook.core.navigation.AppNavigation
 import com.example.feedbook.core.ui.theme.FeedBookTheme
+import com.example.feedbook.features.push.PushTokenRegistrar
 
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +29,11 @@ class MainActivity : FragmentActivity() {
                 }
             }
         )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        PushTokenRegistrar.registerCurrentToken()
     }
 
     private fun requestNotificationPermission() {
