@@ -1,3 +1,1 @@
-- Registro
-- Sesiones (no hardcodear el usuario en back, que tome de los datos de sesión) que persista en el SQL del back. Registrar funcione y no te deje seguir sin credenciales validas
-- 
+- Guardar los device tokens en la sqlite así sobreviven reinicios del server

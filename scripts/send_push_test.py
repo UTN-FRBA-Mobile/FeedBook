@@ -11,8 +11,12 @@ import urllib.request
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Send a push notification through FeedBook backend")
     parser.add_argument("--backend", default="http://127.0.0.1:8080", help="Backend origin")
-    parser.add_argument("--title", required=True, help="Notification title")
-    parser.add_argument("--body", required=True, help="Notification body")
+    parser.add_argument("--title", default="Notificación de prueba", help="Notification title")
+    parser.add_argument(
+        "--body",
+        default="Esta es una notificación de prueba, firebase está andando!",
+        help="Notification body",
+    )
     parser.add_argument("--token", help="Optional FCM token; defaults to all registered tokens")
     parser.add_argument(
         "--data",
