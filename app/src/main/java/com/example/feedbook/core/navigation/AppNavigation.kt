@@ -154,7 +154,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     factory = LoginViewModel.provideFactory(
                         loginUseCase = appContainer.loginUseCase,
                         registerUseCase = appContainer.registerUseCase,
-                        sessionManager = appContainer.sessionManager
+                        sessionManager = appContainer.sessionManager,
+                        backendServerConfig = appContainer.backendServerConfig
                     )
                 )
                 val state by viewModel.state.collectAsStateWithLifecycle()
@@ -165,6 +166,9 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     onPasswordChange = viewModel::updatePassword,
                     onConfirmPasswordChange = viewModel::updateConfirmPassword,
                     onSecureLoginChange = viewModel::updateSecureLoginEnabled,
+                    onServerOriginChange = viewModel::updateServerOriginDraft,
+                    onSaveServerOrigin = viewModel::saveServerOrigin,
+                    onResetServerOrigin = viewModel::resetServerOrigin,
                     onSignInClick = {
                         viewModel.submitLogin {
                             navController.navigate(AppRoutes.HOME) {

@@ -1,6 +1,7 @@
 package com.example.feedbook.core.di
 
 import android.content.Context
+import com.example.feedbook.core.network.BackendServerConfig
 import com.example.feedbook.core.network.NetworkModule
 import com.example.feedbook.features.authors.data.remote.AuthorRemoteDataSource
 import com.example.feedbook.features.authors.data.repository.AuthorRepositoryImpl
@@ -47,6 +48,7 @@ import com.example.feedbook.features.stats.domain.usecase.GetStatsUseCase
 class AppContainer(
     context: Context
 ) {
+    val backendServerConfig = BackendServerConfig(context)
     private val apiService = NetworkModule.apiService
     private val authApiService = NetworkModule.authApiService
     private val sessionStorage = SessionStorage(context)

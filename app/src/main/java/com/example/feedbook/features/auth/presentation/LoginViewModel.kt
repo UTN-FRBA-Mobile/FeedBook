@@ -3,6 +3,8 @@ package com.example.feedbook.features.auth.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.feedbook.core.network.BackendServerConfig
+import com.example.feedbook.core.network.NetworkModule
 import com.example.feedbook.core.session.SessionManager
 import com.example.feedbook.features.auth.domain.usecase.LoginUseCase
 import com.example.feedbook.features.auth.domain.usecase.RegisterUseCase
@@ -22,15 +24,25 @@ data class LoginUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val successMessage: String? = null,
-    val biometricPromptTrigger: Int = 0
+    val biometricPromptTrigger: Int = 0,
+    val serverOrigin: String = "",
+    val serverOriginDraft: String = "",
+    val serverConfigError: String? = null
 )
 
 class LoginViewModel(
     private val loginUseCase: LoginUseCase,
     private val registerUseCase: RegisterUseCase,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val backendServerConfig: BackendServerConfig
 ) : ViewModel() {
-    private val _state = MutableStateFlow(LoginUiState())
+    private val initialServerOrigin = backendServerConfig.getOrigin()
+    private val _state = MutableStateFlow(
+        LoginUiState(
+            serverOrigin = initialServerOrigin,
+            serverOriginDraft = initialServerOrigin
+        )
+    )
     val state: StateFlow<LoginUiState> = _state.asStateFlow()
 
     fun updateUsername(username: String) {
@@ -47,6 +59,42 @@ class LoginViewModel(
 
     fun updateSecureLoginEnabled(enabled: Boolean) {
         _state.value = _state.value.copy(secureLoginEnabled = enabled, errorMessage = null, successMessage = null)
+    }
+
+    fun updateServerOriginDraft(serverOrigin: String) {
+        _state.value = _state.value.copy(serverOriginDraft = serverOrigin, serverConfigError = null)
+    }
+
+    fun saveServerOrigin(): Boolean {
+        val currentState = _state.value
+        return runCatching {
+            backendServerConfig.setOrigin(currentState.serverOriginDraft)
+        }.onSuccess { normalizedOrigin ->
+            NetworkModule.updateBackendOrigin(normalizedOrigin)
+            _state.value = currentState.copy(
+                serverOrigin = normalizedOrigin,
+                serverOriginDraft = normalizedOrigin,
+                serverConfigError = null,
+                errorMessage = null,
+                successMessage = "Server set to $normalizedOrigin"
+            )
+        }.onFailure { error ->
+            _state.value = currentState.copy(
+                serverConfigError = error.message ?: "Invalid server address"
+            )
+        }.isSuccess
+    }
+
+    fun resetServerOrigin() {
+        val defaultOrigin = backendServerConfig.resetOrigin()
+        NetworkModule.updateBackendOrigin(defaultOrigin)
+        _state.value = _state.value.copy(
+            serverOrigin = defaultOrigin,
+            serverOriginDraft = defaultOrigin,
+            serverConfigError = null,
+            errorMessage = null,
+            successMessage = "Server reset to $defaultOrigin"
+        )
     }
 
     fun showRegisterMode() {
@@ -159,11 +207,17 @@ class LoginViewModel(
         fun provideFactory(
             loginUseCase: LoginUseCase,
             registerUseCase: RegisterUseCase,
-            sessionManager: SessionManager
+            sessionManager: SessionManager,
+            backendServerConfig: BackendServerConfig
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return LoginViewModel(loginUseCase, registerUseCase, sessionManager) as T
+                return LoginViewModel(
+                    loginUseCase,
+                    registerUseCase,
+                    sessionManager,
+                    backendServerConfig
+                ) as T
             }
         }
     }
@@ -184,6 +238,6 @@ private fun Throwable.toAuthErrorMessage(registerMode: Boolean): String = when (
     } else {
         if (registerMode) "Unable to create account right now" else "Unable to sign in right now"
     }
-    is IOException -> "Cannot reach auth server on localhost:8080"
+    is IOException -> "Cannot reach auth server. Check the server IP and port."
     else -> message ?: if (registerMode) "Unable to create account right now" else "Unable to sign in right now"
 }

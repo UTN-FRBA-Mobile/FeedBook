@@ -98,6 +98,14 @@
     <string name="login_tagline">THE BIBLIOPHILE\'S LEDGER</string>
     <string name="login_create_prompt">Don\'t have an account?</string>
     <string name="login_create_account">CREATE ACCOUNT</string>
+    <string name="server_config_open">Configure server</string>
+    <string name="server_config_title">Backend server</string>
+    <string name="server_config_current">Current: %1$s</string>
+    <string name="server_config_field_label">IP or URL</string>
+    <string name="server_config_field_placeholder">192.168.1.20:8080</string>
+    <string name="server_config_save">Save</string>
+    <string name="server_config_reset">Reset</string>
+    <string name="server_config_cancel">Cancel</string>
     <string name="register_title">Create your account</string>
     <string name="register_confirm_password">CONFIRM PASSWORD</string>
     <string name="register_create_account">CREATE ACCOUNT</string>

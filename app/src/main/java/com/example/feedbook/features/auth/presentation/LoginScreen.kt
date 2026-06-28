@@ -23,17 +23,25 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.Image
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PersonAdd
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.automirrored.outlined.Login
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -74,12 +82,17 @@ fun LoginScreen(
     onPasswordChange: (String) -> Unit = {},
     onConfirmPasswordChange: (String) -> Unit = {},
     onSecureLoginChange: (Boolean) -> Unit = {},
+    onServerOriginChange: (String) -> Unit = {},
+    onSaveServerOrigin: () -> Boolean = { true },
+    onResetServerOrigin: () -> Unit = {},
     onSignInClick: () -> Unit = {},
     onRegisterClick: () -> Unit = {},
     onForgotPasswordClick: () -> Unit = {},
     onCreateAccountClick: () -> Unit = {},
     onBackToSignInClick: () -> Unit = {}
 ) {
+    var showServerConfig by remember { mutableStateOf(false) }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -94,6 +107,19 @@ fun LoginScreen(
             )
             .windowInsetsPadding(WindowInsets.safeDrawing)
     ) {
+        IconButton(
+            onClick = { showServerConfig = true },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(8.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Settings,
+                contentDescription = stringResource(R.string.server_config_open),
+                tint = LoginColors.Title
+            )
+        }
+
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
@@ -301,6 +327,25 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.weight(if (compactLayout) 0.45f else 0.65f))
             }
         }
+
+        if (showServerConfig) {
+            ServerConfigDialog(
+                serverOrigin = state.serverOrigin,
+                serverOriginDraft = state.serverOriginDraft,
+                errorMessage = state.serverConfigError,
+                onServerOriginChange = onServerOriginChange,
+                onSaveServerOrigin = {
+                    if (onSaveServerOrigin()) {
+                        showServerConfig = false
+                    }
+                },
+                onResetServerOrigin = {
+                    onResetServerOrigin()
+                    showServerConfig = false
+                },
+                onDismiss = { showServerConfig = false }
+            )
+        }
     }
 }
 
@@ -419,6 +464,73 @@ private fun LoginTextField(
             thickness = 1.dp
         )
     }
+}
+
+@Composable
+private fun ServerConfigDialog(
+    serverOrigin: String,
+    serverOriginDraft: String,
+    errorMessage: String?,
+    onServerOriginChange: (String) -> Unit,
+    onSaveServerOrigin: () -> Unit,
+    onResetServerOrigin: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(R.string.server_config_title),
+                color = LoginColors.Title
+            )
+        },
+        text = {
+            Column {
+                Text(
+                    text = stringResource(R.string.server_config_current, serverOrigin),
+                    color = LoginColors.Label,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = serverOriginDraft,
+                    onValueChange = onServerOriginChange,
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    label = { Text(stringResource(R.string.server_config_field_label)) },
+                    placeholder = { Text(stringResource(R.string.server_config_field_placeholder)) },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Uri,
+                        imeAction = ImeAction.Done
+                    ),
+                    isError = errorMessage != null
+                )
+                if (errorMessage != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = errorMessage,
+                        color = LoginColors.Error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onSaveServerOrigin) {
+                Text(text = stringResource(R.string.server_config_save))
+            }
+        },
+        dismissButton = {
+            Row {
+                TextButton(onClick = onResetServerOrigin) {
+                    Text(text = stringResource(R.string.server_config_reset))
+                }
+                TextButton(onClick = onDismiss) {
+                    Text(text = stringResource(R.string.server_config_cancel))
+                }
+            }
+        }
+    )
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFBF9F8, heightDp = 909, widthDp = 394)
