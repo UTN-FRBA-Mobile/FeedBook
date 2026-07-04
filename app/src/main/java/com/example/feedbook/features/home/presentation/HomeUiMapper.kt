@@ -30,10 +30,15 @@ fun HomeFeed.toUiState(): HomeUiState {
         },
         readingRooms = readingRooms.map {
             HomeReadingRoomUi(
+                id = it.id,
                 hostName = it.hostName,
                 hostImageUrl = it.hostImageUrl,
                 title = it.title,
-                readerCountLabel = it.readerCountLabel
+                shortDescription = it.shortDescription,
+                readerCountLabel = it.readerCountLabel,
+                memberCount = it.memberCount,
+                isFollowed = it.isFollowed,
+                isAdult = it.isAdult
             )
         },
         curators = curators.map {

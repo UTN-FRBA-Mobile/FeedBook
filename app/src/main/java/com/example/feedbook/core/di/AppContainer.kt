@@ -42,6 +42,7 @@ import com.example.feedbook.features.profile.domain.usecase.GetPublicProfileUseC
 import com.example.feedbook.features.profile.domain.usecase.ObserveOwnProfileUseCase
 import com.example.feedbook.features.profile.domain.usecase.ObserveOwnPublicProfilePreviewUseCase
 import com.example.feedbook.features.profile.domain.usecase.UpdateProfileUseCase
+import com.example.feedbook.features.readingrooms.data.remote.ReadingRoomsRemoteDataSource
 import com.example.feedbook.features.stats.data.remote.StatsRemoteDataSource
 import com.example.feedbook.features.stats.data.repository.StatsRepositoryImpl
 import com.example.feedbook.features.stats.domain.usecase.GetStatsUseCase
@@ -64,6 +65,7 @@ class AppContainer(
     private val libraryRemoteDataSource = LibraryRemoteDataSource(apiService)
     private val statsRemoteDataSource = StatsRemoteDataSource(apiService)
     private val notificationsRemoteDataSource = NotificationsRemoteDataSource(apiService)
+    val readingRoomsRemoteDataSource = ReadingRoomsRemoteDataSource(apiService)
 
     private val authRepository = AuthRepositoryImpl(authRemoteDataSource)
     private val bookRepository = BookRepositoryImpl(bookRemoteDataSource)

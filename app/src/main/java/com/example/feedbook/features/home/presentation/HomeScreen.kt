@@ -2,6 +2,7 @@ package com.example.feedbook.features.home.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,7 +57,9 @@ fun HomeScreen(
     onLibraryClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
-    onLogoutClick: () -> Unit = {}
+    onLogoutClick: () -> Unit = {},
+    onReadingRoomClick: (String) -> Unit = {},
+    onSeeAllReadingRoomsClick: () -> Unit = {}
 ) {
     FeedBookScreenScaffold(
         modifier = modifier.fillMaxSize(),
@@ -124,7 +127,9 @@ fun HomeScreen(
                 item {
                     ReadingRoomsSection(
                         rooms = state.readingRooms,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        onRoomClick = onReadingRoomClick,
+                        onSeeAllClick = onSeeAllReadingRoomsClick
                     )
                 }
                 item {
@@ -296,7 +301,9 @@ private fun RankedBooksSection(
 @Composable
 private fun ReadingRoomsSection(
     rooms: List<HomeReadingRoomUi>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onRoomClick: (String) -> Unit = {},
+    onSeeAllClick: () -> Unit = {}
 ) {
     Column(
         modifier = modifier,
@@ -321,7 +328,8 @@ private fun ReadingRoomsSection(
             Text(
                 text = "See all",
                 style = ProfileTypography.Body.copy(fontSize = 16.sp, lineHeight = 20.sp),
-                color = ProfileColors.SecondaryText
+                color = ProfileColors.SecondaryText,
+                modifier = Modifier.clickable(onClick = onSeeAllClick)
             )
         }
         LazyRow(
@@ -329,19 +337,26 @@ private fun ReadingRoomsSection(
             horizontalArrangement = Arrangement.spacedBy(18.dp)
         ) {
             items(rooms) { room ->
-                ReadingRoomCard(room = room)
+                ReadingRoomCard(room = room, onClick = { onRoomClick(room.id) })
             }
         }
     }
 }
 
 @Composable
-private fun ReadingRoomCard(room: HomeReadingRoomUi) {
+private fun ReadingRoomCard(room: HomeReadingRoomUi, onClick: () -> Unit) {
     ProfileSurfaceCard(
-        modifier = Modifier.width(400.dp),
+        modifier = Modifier
+            .width(400.dp)
+            .border(
+                width = if (room.isFollowed) 2.dp else 1.dp,
+                color = if (room.isFollowed) ProfileColors.Accent else ProfileColors.Border,
+                shape = RoundedCornerShape(8.dp)
+            ),
+        onClick = onClick,
         containerColor = ProfileColors.Surface
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(28.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -367,6 +382,13 @@ private fun ReadingRoomCard(room: HomeReadingRoomUi) {
                     fontWeight = FontWeight.Normal
                 ),
                 color = ProfileColors.PrimaryText
+            )
+            Text(
+                text = room.shortDescription,
+                style = ProfileTypography.Body.copy(fontSize = 16.sp, lineHeight = 22.sp),
+                color = ProfileColors.SecondaryText,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,

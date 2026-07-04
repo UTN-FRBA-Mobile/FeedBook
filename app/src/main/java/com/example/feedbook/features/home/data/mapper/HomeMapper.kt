@@ -37,10 +37,15 @@ private fun HomeRankedBookDto.toDomain(): HomeRankedBook = HomeRankedBook(
 )
 
 private fun HomeReadingRoomDto.toDomain(): HomeReadingRoom = HomeReadingRoom(
+    id = id,
     hostName = hostName,
     hostImageUrl = hostImageUrl,
     title = title,
-    readerCountLabel = readerCountLabel
+    shortDescription = shortDescription,
+    readerCountLabel = readerCountLabel,
+    memberCount = memberCount,
+    isFollowed = isFollowed,
+    isAdult = isAdult
 )
 
 private fun HomeCuratorDto.toDomain(): HomeCurator = HomeCurator(

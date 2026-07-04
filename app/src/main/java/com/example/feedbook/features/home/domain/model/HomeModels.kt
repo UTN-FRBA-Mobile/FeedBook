@@ -30,10 +30,15 @@ data class HomeRankedBook(
 )
 
 data class HomeReadingRoom(
+    val id: String,
     val hostName: String,
     val hostImageUrl: String?,
     val title: String,
-    val readerCountLabel: String
+    val shortDescription: String,
+    val readerCountLabel: String,
+    val memberCount: Int,
+    val isFollowed: Boolean,
+    val isAdult: Boolean
 )
 
 data class HomeCurator(

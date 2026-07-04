@@ -12,8 +12,16 @@ import com.example.feedbook.features.library.data.remote.dto.LibraryDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationsDto
 import com.example.feedbook.features.profile.data.remote.dto.ProfileDto
 import com.example.feedbook.features.profile.data.remote.dto.AvatarUploadResponseDto
-import com.example.feedbook.features.stats.data.remote.dto.StatsDto
 import com.example.feedbook.features.profile.data.remote.dto.UpdateProfileRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.ChangeReadingRoomBookRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.CreateReadingRoomRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.DeleteReadingRoomRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.ReadingRoomDetailDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.ReadingRoomListDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.SaveReadingRoomCommentRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.SaveReadingRoomRatingRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.UpdateReadingRoomDescriptionRequestDto
+import com.example.feedbook.features.stats.data.remote.dto.StatsDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.HTTP
@@ -80,8 +88,62 @@ interface ApiService {
     @GET("home")
     suspend fun getHomeFeed(): HomeDto
 
+    @GET("reading-rooms")
+    suspend fun getReadingRooms(): ReadingRoomListDto
+
+    @POST("reading-rooms")
+    suspend fun createReadingRoom(@Body body: CreateReadingRoomRequestDto): ReadingRoomDetailDto
+
+    @GET("reading-rooms/{id}")
+    suspend fun getReadingRoom(@Path("id") id: String): ReadingRoomDetailDto
+
+    @POST("reading-rooms/{id}/join")
+    suspend fun joinReadingRoom(@Path("id") id: String): ReadingRoomDetailDto
+
+    @POST("reading-rooms/{id}/leave")
+    suspend fun leaveReadingRoom(@Path("id") id: String)
+
+    @PUT("reading-rooms/{id}/description")
+    suspend fun updateReadingRoomDescription(
+        @Path("id") id: String,
+        @Body body: UpdateReadingRoomDescriptionRequestDto
+    ): ReadingRoomDetailDto
+
+    @HTTP(method = "DELETE", path = "reading-rooms/{id}", hasBody = true)
+    suspend fun deleteReadingRoom(
+        @Path("id") id: String,
+        @Body body: DeleteReadingRoomRequestDto
+    )
+
+    @HTTP(method = "DELETE", path = "reading-rooms/{id}/members/{userId}/kick")
+    suspend fun kickReadingRoomMember(
+        @Path("id") id: String,
+        @Path("userId") userId: String
+    )
+
+    @PUT("reading-rooms/{id}/active-book")
+    suspend fun changeReadingRoomBook(
+        @Path("id") id: String,
+        @Body body: ChangeReadingRoomBookRequestDto
+    ): ReadingRoomDetailDto
+
+    @POST("reading-rooms/{id}/ratings")
+    suspend fun saveReadingRoomRating(
+        @Path("id") id: String,
+        @Body body: SaveReadingRoomRatingRequestDto
+    ): ReadingRoomDetailDto
+
+    @POST("reading-rooms/{id}/comments")
+    suspend fun saveReadingRoomComment(
+        @Path("id") id: String,
+        @Body body: SaveReadingRoomCommentRequestDto
+    ): ReadingRoomDetailDto
+
     @GET("library/me")
     suspend fun getOwnLibrary(): LibraryDto
+
+    @GET("library/me/followed-books")
+    suspend fun getFollowedBooks(): List<BookDto>
 
     @POST("library/me/books")
     suspend fun addBookToLibrary(@Body body: Map<String, String>)
