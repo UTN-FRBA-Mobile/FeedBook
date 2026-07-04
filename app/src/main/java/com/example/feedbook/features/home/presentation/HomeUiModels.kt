@@ -32,10 +32,15 @@ data class HomeRankedBookUi(
 )
 
 data class HomeReadingRoomUi(
+    val id: String,
     val hostName: String,
     val hostImageUrl: String?,
     val title: String,
-    val readerCountLabel: String
+    val shortDescription: String,
+    val readerCountLabel: String,
+    val memberCount: Int,
+    val isFollowed: Boolean,
+    val isAdult: Boolean
 )
 
 data class HomeCuratorUi(
@@ -65,16 +70,26 @@ fun sampleHomeUiState(): HomeUiState = HomeUiState(
     ),
     readingRooms = listOf(
         HomeReadingRoomUi(
+            id = "room-magical-realism",
             hostName = "Eleanor",
             hostImageUrl = "https://api.dicebear.com/9.x/adventurer/png?seed=eleanor&size=128",
             title = "Magical Realism Book Club",
-            readerCountLabel = "1.2k readers"
+            shortDescription = "Realismo magico y debates lentos.",
+            readerCountLabel = "1.2k readers",
+            memberCount = 1200,
+            isFollowed = true,
+            isAdult = false
         ),
         HomeReadingRoomUi(
+            id = "room-classics",
             hostName = "James",
             hostImageUrl = "https://api.dicebear.com/9.x/adventurer/png?seed=james&size=128",
             title = "20th Century Classics",
-            readerCountLabel = "850 readers"
+            shortDescription = "Clasicos modernos con contexto.",
+            readerCountLabel = "850 readers",
+            memberCount = 850,
+            isFollowed = false,
+            isAdult = false
         )
     ),
     curators = listOf(
