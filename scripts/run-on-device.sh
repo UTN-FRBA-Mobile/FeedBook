@@ -114,11 +114,11 @@ start_backend() {
   echo "Levantando backend (SQLite)..."
   (
     cd "$BACK_DIR"
-    FEEDBOOK_STORE=sqlite nohup go run . >"$BACK_LOG_FILE" 2>&1 &
+    GOCACHE=/tmp/feedbook-go-cache GOMODCACHE=/tmp/feedbook-go-mod FEEDBOOK_STORE=sqlite nohup go run . >"$BACK_LOG_FILE" 2>&1 &
     echo $! >"$BACK_PID_FILE"
   )
 
-  for _ in {1..30}; do
+  for _ in {1..120}; do
     if is_backend_up; then
       echo "Backend listo. Log: $BACK_LOG_FILE"
       return
@@ -210,8 +210,8 @@ main() {
   (
     cd "$ROOT_DIR"
     export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
-    ./gradlew --stop 2>/dev/null || true
-    ANDROID_SERIAL="$device_serial" ./gradlew installDebug
+    bash ./gradlew --stop 2>/dev/null || true
+    ANDROID_SERIAL="$device_serial" bash ./gradlew installDebug
   )
 
   ensure_reverse "$device_serial"

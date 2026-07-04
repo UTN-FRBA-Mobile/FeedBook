@@ -156,7 +156,7 @@ main() {
   (
     cd "$ROOT_DIR"
     export JAVA_HOME
-    ANDROID_SERIAL="$device_serial" ./gradlew installDebug
+    ANDROID_SERIAL="$device_serial" bash ./gradlew installDebug
   )
 
   echo "App instalada en $device_serial."
