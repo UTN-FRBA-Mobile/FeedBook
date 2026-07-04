@@ -9,6 +9,7 @@ import com.example.feedbook.features.books.domain.usecase.GetReviewsUseCase
 import com.example.feedbook.features.books.domain.usecase.SaveReadingProgressUseCase
 import com.example.feedbook.features.books.domain.usecase.SaveReviewUseCase
 import com.example.feedbook.features.books.domain.usecase.ToggleLikeUseCase
+import com.example.feedbook.features.books.domain.model.ReviewPart
 import com.example.feedbook.features.library.domain.usecase.AddBookToLibraryUseCase
 import com.example.feedbook.features.library.domain.usecase.ObserveOwnLibraryUseCase
 import com.example.feedbook.features.library.domain.usecase.RemoveBookFromLibraryUseCase
@@ -148,10 +149,10 @@ class BookDetailViewModel(
         }
     }
 
-    fun saveReview(rating: Float, text: String) {
+    fun saveReview(rating: Float, text: String, parts: List<ReviewPart>) {
         viewModelScope.launch {
             _state.value = _state.value.copy(isSavingReview = true, reviewFeedback = null)
-            runCatching { saveReviewUseCase(bookId, rating, text) }
+            runCatching { saveReviewUseCase(bookId, rating, text, parts) }
                 .onSuccess {
                     val msg = if (_state.value.userReview != null) "Review updated" else "Review posted"
                     _state.value = _state.value.copy(

@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,6 +44,7 @@ import coil.compose.AsyncImage
 import com.example.feedbook.core.ui.components.BottomBarTab
 import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
 import com.example.feedbook.core.ui.theme.FeedBookTheme
+import com.example.feedbook.features.books.domain.model.ReviewPart
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
 
 // ─── Stateful Wrapper ──────────────────────────────────────────────────────
@@ -95,7 +97,7 @@ fun BookDetailScreen(
     onBackClick: () -> Unit,
     onToggleLibrary: () -> Unit = {},
     onSaveProgress: (Int) -> Unit = {},
-    onSaveReview: (Float, String) -> Unit = { _, _ -> },
+    onSaveReview: (Float, String, List<ReviewPart>) -> Unit = { _, _, _ -> },
     onReviewFeedbackShown: () -> Unit = {},
     onWriteReview: () -> Unit = {},
     onFeedClick: () -> Unit = {},
@@ -133,8 +135,8 @@ fun BookDetailScreen(
         ReviewDialog(
             existingReview = state.userReview,
             isSaving = state.isSavingReview,
-            onConfirm = { rating, text ->
-                onSaveReview(rating, text)
+            onConfirm = { rating, text, parts ->
+                onSaveReview(rating, text, parts)
                 showReviewDialog = false
             },
             onDismiss = { showReviewDialog = false }
@@ -272,7 +274,7 @@ private fun BookDetailContent(
         }
         item { FriendsSection() }
         item { ReviewsHeader(onWriteReview = onWriteReview) }
-        items(state.reviews) { review -> ReviewCard(review = review, onToggleLike = onToggleLike) }
+        items(state.reviews, key = { it.id }) { review -> ReviewCard(review = review, onToggleLike = onToggleLike) }
         if (state.allReviewsTotal > 5) {
             item {
                 TextButton(
@@ -706,6 +708,7 @@ private fun ReviewsHeader(onWriteReview: () -> Unit) {
 // ─── Review Card ───────────────────────────────────────────────────────────
 @Composable
 private fun ReviewCard(review: ReviewUiModel, onToggleLike: (String) -> Unit = {}) {
+    var showSpoilers by remember(review.id) { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -758,13 +761,15 @@ private fun ReviewCard(review: ReviewUiModel, onToggleLike: (String) -> Unit = {
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = review.text,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontSize = 13.sp,
-                    lineHeight = 20.sp
-                ),
-                color = ProfileColors.PrimaryText
+            ReviewSpoilerText(
+                review = review,
+                showSpoilers = showSpoilers,
+                onToggleSpoilers = if (reviewHasSpoilers(review.parts)) {
+                    { showSpoilers = !showSpoilers }
+                } else {
+                    null
+                },
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(12.dp))
             HorizontalDivider(
@@ -934,11 +939,19 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
 private fun ReviewDialog(
     existingReview: ReviewUiModel?,
     isSaving: Boolean,
-    onConfirm: (Float, String) -> Unit,
+    onConfirm: (Float, String, List<ReviewPart>) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var rating by remember { mutableFloatStateOf(existingReview?.rating ?: 0f) }
-    var text by remember { mutableStateOf(existingReview?.text ?: "") }
+    var rating by remember(existingReview?.id) { mutableFloatStateOf(existingReview?.rating ?: 0f) }
+    var textValue by remember(existingReview?.id) {
+        mutableStateOf(TextFieldValue(existingReview?.text ?: ""))
+    }
+    var spoilerRanges by remember(existingReview?.id) {
+        mutableStateOf<List<IntRange>>(reviewPartsToRanges(existingReview?.parts.orEmpty()))
+    }
+    var spoilerMode by remember(existingReview?.id) {
+        mutableStateOf(spoilerRanges.isNotEmpty())
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -970,8 +983,15 @@ private fun ReviewDialog(
                 }
                 Spacer(modifier = Modifier.height(12.dp))
                 OutlinedTextField(
-                    value = text,
-                    onValueChange = { text = it },
+                    value = textValue,
+                    onValueChange = { newValue ->
+                        val textChanged = newValue.text != textValue.text
+                        textValue = newValue
+                        if (textChanged) {
+                            spoilerRanges = emptyList()
+                            spoilerMode = false
+                        }
+                    },
                     label = { Text("Your review") },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -985,12 +1005,86 @@ private fun ReviewDialog(
                         unfocusedTextColor = ProfileColors.PrimaryText
                     )
                 )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(
+                        onClick = { spoilerMode = !spoilerMode },
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = ProfileColors.Accent
+                        ),
+                        border = BorderStroke(1.dp, ProfileColors.Border)
+                    ) {
+                        Text(if (spoilerMode) "Spoiler activo" else "Seleccionar spoiler")
+                    }
+                    if (spoilerMode) {
+                        val selection = textValue.selection
+                        val hasSelection = !selection.collapsed && selection.start != selection.end
+                        TextButton(
+                            onClick = {
+                                if (hasSelection) {
+                                    val selectedRange: IntRange = selection.start until selection.end
+                                    val updatedRanges: List<IntRange> = buildList {
+                                        addAll(spoilerRanges)
+                                        add(selectedRange)
+                                    }
+                                    spoilerRanges = reviewPartsToRanges(
+                                        reviewPartsFromText(
+                                            text = textValue.text,
+                                            spoilerRanges = updatedRanges
+                                        )
+                                    )
+                                    textValue = textValue.copy(selection = androidx.compose.ui.text.TextRange.Zero)
+                                }
+                            },
+                            enabled = hasSelection
+                        ) {
+                            Text("Marcar selección")
+                        }
+                    }
+                }
+                if (spoilerMode || spoilerRanges.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = if (spoilerRanges.isNotEmpty()) "El texto marcado se ocultará por defecto." else "Selecciona un fragmento y márquelo como spoiler.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = ProfileColors.SecondaryText
+                    )
+                }
+                if (textValue.text.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = ProfileColors.Background),
+                        border = BorderStroke(1.dp, ProfileColors.Border),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                    ) {
+                        ReviewSpoilerText(
+                            review = ReviewUiModel(
+                                id = "draft",
+                                userId = "me",
+                                reviewerName = "You",
+                                reviewerAvatar = null,
+                                rating = rating,
+                                ratingText = "",
+                                text = textValue.text,
+                                parts = reviewPartsFromText(textValue.text, spoilerRanges),
+                                likes = 0,
+                                likesText = "",
+                                isLikedByMe = false,
+                                createdAt = ""
+                            ),
+                            showSpoilers = false,
+                            onToggleSpoilers = null,
+                            modifier = Modifier.padding(12.dp)
+                        )
+                    }
+                }
             }
         },
         confirmButton = {
+            val draftParts = reviewPartsFromText(textValue.text, spoilerRanges)
             Button(
-                onClick = { onConfirm(rating, text) },
-                enabled = !isSaving && rating > 0 && text.isNotBlank(),
+                onClick = { onConfirm(rating, textValue.text, draftParts) },
+                enabled = !isSaving && rating > 0 && textValue.text.isNotBlank(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = ProfileColors.Accent,
                     contentColor = Color.White

@@ -9,6 +9,7 @@ data class ReviewDto (
     @SerializedName("reviewer_avatar") val reviewerAvatar: String?,
     @SerializedName("rating")          val rating: Float,
     @SerializedName("text")            val text: String,
+    @SerializedName("parts")           val parts: List<ReviewPartDto> = emptyList(),
     @SerializedName("likes")           val likes: Int,
     @SerializedName("liked_by")        val likedBy: List<String>,
     @SerializedName("created_at")      val createdAt: String
