@@ -40,11 +40,11 @@ fun ReadingProgress.toUiModel() = ReadingProgressUiModel(
         0
     },
     progressText = if (totalPages > 0) {
-        "${((currentPage.toFloat() / totalPages) * 100).toInt()}% completado"
+        "${((currentPage.toFloat() / totalPages) * 100).toInt()}% completed"
     } else {
-        "0% completado"
+        "0% completed"
     },
     currentPage = currentPage,
     totalPages = totalPages,
-    pagesText = "Página $currentPage de $totalPages"
+    pagesText = "Page $currentPage of $totalPages"
 )

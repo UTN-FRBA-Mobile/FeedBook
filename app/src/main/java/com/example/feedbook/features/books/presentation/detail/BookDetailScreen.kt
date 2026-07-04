@@ -37,10 +37,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.feedbook.R
 import com.example.feedbook.core.ui.components.BottomBarTab
 import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
 import com.example.feedbook.core.ui.theme.FeedBookTheme
@@ -204,7 +206,7 @@ fun BookDetailScreen(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = ProfileColors.PrimaryText
                         )
                     }
@@ -284,7 +286,7 @@ private fun BookDetailContent(
                     modifier = Modifier.padding(horizontal = 12.dp)
                 ) {
                     Text(
-                        text = "See all ${state.allReviewsTotal} reviews",
+                        text = stringResource(R.string.book_detail_see_all_reviews, state.allReviewsTotal),
                         style = MaterialTheme.typography.bodyMedium,
                         color = ProfileColors.Accent
                     )
@@ -332,7 +334,7 @@ private fun CoverSection(coverUrl: String?) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "No Cover",
+                    text = stringResource(R.string.book_detail_no_cover),
                     style = MaterialTheme.typography.labelSmall,
                     color = ProfileColors.PrimaryText
                 )
@@ -340,7 +342,7 @@ private fun CoverSection(coverUrl: String?) {
         } else {
             AsyncImage(
                 model = coverUrl,
-                contentDescription = "Portada del libro",
+                contentDescription = stringResource(R.string.book_detail_no_cover),
                 modifier = Modifier
                     .width(160.dp)
                     .height(240.dp)
@@ -375,7 +377,7 @@ private fun BookInfoSection(
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "by ${book.author}",
+            text = stringResource(R.string.book_detail_author_by, book.author),
             style = MaterialTheme.typography.titleSmall.copy(fontStyle = FontStyle.Italic),
             color = if (book.authorId.isNotEmpty()) ProfileColors.Accent else MaterialTheme.colorScheme.onSurface,
             modifier = if (book.authorId.isNotEmpty()) {
@@ -404,7 +406,7 @@ private fun StarRatingRow(rating: Float) {
         }
         Spacer(modifier = Modifier.width(6.dp))
         Text(
-            text = "${"%.1f".format(rating)} Rating",
+            text = stringResource(R.string.book_detail_rating, rating),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
@@ -465,7 +467,7 @@ private fun ActionButtonsSection(
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Remove from List",
+                    text = stringResource(R.string.book_detail_remove_from_list),
                     style = MaterialTheme.typography.titleLarge.copy(fontSize = 15.sp)
                 )
             }
@@ -495,7 +497,7 @@ private fun ActionButtonsSection(
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Add to List",
+                    text = stringResource(R.string.book_detail_add_to_list),
                     style = MaterialTheme.typography.titleLarge.copy(fontSize = 15.sp)
                 )
             }
@@ -508,8 +510,8 @@ private fun ActionButtonsSection(
             containerColor = ProfileColors.Surface,
             titleContentColor = ProfileColors.PrimaryText,
             textContentColor = ProfileColors.PrimaryText,
-            title = { Text("Remove from Library") },
-            text = { Text("Are you sure you want to remove this book from your list?") },
+            title = { Text(stringResource(R.string.book_detail_remove_from_library_title)) },
+            text = { Text(stringResource(R.string.book_detail_remove_from_library_message)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -520,11 +522,11 @@ private fun ActionButtonsSection(
                         containerColor = Color(0xFFDC2626),
                         contentColor = Color.White
                     )
-                ) { Text("Remove") }
+                ) { Text(stringResource(R.string.book_detail_remove)) }
             },
             dismissButton = {
                 TextButton(onClick = { showRemoveConfirmDialog = false }) {
-                    Text("Cancel", color = ProfileColors.SecondaryText)
+                    Text(stringResource(R.string.common_cancel), color = ProfileColors.SecondaryText)
                 }
             }
         )
@@ -563,7 +565,7 @@ private fun ProgressCard(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "UPDATE PROGRESS",
+                    text = stringResource(R.string.book_detail_update_progress),
                     style = MaterialTheme.typography.labelSmall.copy(
                         letterSpacing = 1.5.sp,
                         fontWeight = FontWeight.Bold
@@ -589,7 +591,7 @@ private fun ProgressCard(
                     )
                 }
                 Text(
-                    text = "  of $totalPages pages",
+                    text = stringResource(R.string.book_detail_pages_of, currentPage, totalPages),
                     style = MaterialTheme.typography.bodyLarge.copy(fontSize = 14.sp),
                     color = Color.White.copy(alpha = 0.6f)
                 )
@@ -622,7 +624,7 @@ private fun ProgressCard(
                 colors = ButtonDefaults.buttonColors(containerColor = saveBg)
             ) {
                 Text(
-                    text = "Save Progress",
+                    text = stringResource(R.string.book_detail_save_progress),
                     style = MaterialTheme.typography.titleLarge.copy(fontSize = 15.sp),
                     color = Color.White
                 )
@@ -640,7 +642,7 @@ private fun FriendsSection() {
             .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
         Text(
-            text = "FRIENDS WHO READ THIS",
+            text = stringResource(R.string.book_detail_friends_who_read_this),
             style = MaterialTheme.typography.labelSmall.copy(
                 letterSpacing = 1.3.sp,
                 fontWeight = FontWeight.Bold
@@ -667,7 +669,7 @@ private fun FriendsSection() {
             }
             Spacer(modifier = Modifier.width(2.dp))
             Text(
-                text = "Marcus, Elena, and 12 others\nhave read this volume.",
+                text = stringResource(R.string.book_detail_friends_text),
                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp, lineHeight = 17.sp),
                 color = ProfileColors.SecondaryText
             )
@@ -686,13 +688,13 @@ private fun ReviewsHeader(onWriteReview: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Community Reviews",
+            text = stringResource(R.string.book_detail_community_reviews),
             style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
             color = ProfileColors.PrimaryText
         )
         TextButton(onClick = onWriteReview) {
             Text(
-                text = "Write a review",
+                text = stringResource(R.string.book_detail_write_review),
                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 13.sp),
                 color = ProfileColors.Accent
             )
@@ -777,7 +779,7 @@ private fun ReviewCard(review: ReviewUiModel, onToggleLike: (String) -> Unit = {
                 ) {
                     Icon(
                         imageVector = if (review.isLikedByMe) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp,
-                        contentDescription = if (review.isLikedByMe) "Unlike" else "Like",
+                        contentDescription = if (review.isLikedByMe) stringResource(R.string.book_detail_unlike) else stringResource(R.string.book_detail_like),
                         modifier = Modifier.size(14.dp),
                         tint = if (review.isLikedByMe) ProfileColors.Accent else ProfileColors.SecondaryText
                     )
@@ -806,13 +808,13 @@ private fun BookMetadataSection(
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
-        MetadataRow(label = "ISBN", value = isbn)
+        MetadataRow(label = stringResource(R.string.book_detail_metadata_isbn), value = isbn)
         HorizontalDivider(color = ProfileColors.Divider, modifier = Modifier.padding(vertical = 14.dp))
-        MetadataRow(label = "PUBLISHED", value = published)
+        MetadataRow(label = stringResource(R.string.book_detail_metadata_published), value = published)
         HorizontalDivider(color = ProfileColors.Divider, modifier = Modifier.padding(vertical = 14.dp))
-        MetadataRow(label = "PAGES", value = totalPages.toString())
+        MetadataRow(label = stringResource(R.string.book_detail_metadata_pages), value = totalPages.toString())
         HorizontalDivider(color = ProfileColors.Divider, modifier = Modifier.padding(vertical = 14.dp))
-        MetadataRow(label = "LANGUAGE", value = language)
+        MetadataRow(label = stringResource(R.string.book_detail_metadata_language), value = language)
     }
 }
 
@@ -856,7 +858,7 @@ private fun PullQuoteSection(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "\"${description.ifBlank { "A book worth keeping close." }}\"",
+                text = "\"${description.ifBlank { stringResource(R.string.book_detail_quote_default) }}\"",
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontSize = 12.sp,
                     lineHeight = 18.sp,
@@ -921,7 +923,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
-                Text("Reintentar")
+                Text(stringResource(R.string.book_detail_retry))
             }
         }
     }
@@ -953,7 +955,7 @@ private fun ReviewDialog(
         textContentColor = ProfileColors.PrimaryText,
         title = {
             Text(
-                text = if (existingReview != null) "Edit Your Review" else "Write a Review",
+                text = if (existingReview != null) stringResource(R.string.book_detail_edit_review) else stringResource(R.string.book_detail_write_review_title),
                 style = MaterialTheme.typography.titleLarge,
                 color = ProfileColors.PrimaryText
             )
@@ -968,7 +970,7 @@ private fun ReviewDialog(
                         IconButton(onClick = { rating = i.toFloat() }) {
                             Icon(
                                 imageVector = if (i <= rating) Icons.Filled.Star else Icons.Outlined.StarOutline,
-                                contentDescription = "Star $i",
+                                contentDescription = stringResource(R.string.book_detail_star, i),
                                 tint = if (i <= rating) Color(0xFFFFB800) else ProfileColors.SecondaryText
                             )
                         }
@@ -985,7 +987,7 @@ private fun ReviewDialog(
                             spoilerMode = false
                         }
                     },
-                    label = { Text("Your review") },
+                    label = { Text(stringResource(R.string.book_detail_your_review)) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(140.dp),
@@ -1007,7 +1009,7 @@ private fun ReviewDialog(
                         ),
                         border = BorderStroke(1.dp, ProfileColors.Border)
                     ) {
-                        Text(if (spoilerMode) "Spoiler activo" else "Seleccionar spoiler")
+                        Text(if (spoilerMode) stringResource(R.string.book_detail_spoiler_active) else stringResource(R.string.book_detail_select_spoiler))
                     }
                     if (spoilerMode) {
                         val selection = textValue.selection
@@ -1031,14 +1033,14 @@ private fun ReviewDialog(
                             },
                             enabled = hasSelection
                         ) {
-                            Text("Marcar selección")
+                            Text(stringResource(R.string.book_detail_mark_selection))
                         }
                     }
                 }
                 if (spoilerMode || spoilerRanges.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = if (spoilerRanges.isNotEmpty()) "El texto marcado se ocultará por defecto." else "Selecciona un fragmento y márquelo como spoiler.",
+                        text = if (spoilerRanges.isNotEmpty()) stringResource(R.string.book_detail_spoiler_hint_selected) else stringResource(R.string.book_detail_spoiler_hint_instruction),
                         style = MaterialTheme.typography.bodySmall,
                         color = ProfileColors.SecondaryText
                     )
@@ -1054,7 +1056,7 @@ private fun ReviewDialog(
                             review = ReviewUiModel(
                                 id = "draft",
                                 userId = "me",
-                                reviewerName = "You",
+                                reviewerName = stringResource(R.string.book_detail_draft_reviewer_name),
                                 reviewerAvatar = null,
                                 rating = rating,
                                 ratingText = "",
@@ -1090,13 +1092,13 @@ private fun ReviewDialog(
                         strokeWidth = 2.dp
                     )
                 } else {
-                    Text("Save")
+                    Text(stringResource(R.string.book_detail_save))
                 }
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel", color = ProfileColors.SecondaryText)
+                Text(stringResource(R.string.common_cancel), color = ProfileColors.SecondaryText)
             }
         }
     )

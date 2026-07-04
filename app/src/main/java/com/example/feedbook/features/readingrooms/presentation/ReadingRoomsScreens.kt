@@ -55,7 +55,9 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
+import com.example.feedbook.R
 import com.example.feedbook.core.ui.components.RemoteBookCover
 import com.example.feedbook.core.ui.components.BottomBarTab
 import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
@@ -102,7 +104,7 @@ private fun ReadingRoomChrome(
                 IconButton(onClick = onBackClick) {
                     Icon(
                         imageVector = Icons.Outlined.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = stringResource(R.string.common_back),
                         tint = ProfileColors.PrimaryText
                     )
                 }
@@ -133,7 +135,7 @@ fun ReadingRoomListScreen(
 ) {
     var showCreate by remember { mutableStateOf(false) }
     ReadingRoomChrome(
-        title = "Reading Rooms",
+        title = stringResource(R.string.reading_rooms_title),
         onBackClick = onBackClick
     ) {
         LazyColumn(
@@ -144,7 +146,7 @@ fun ReadingRoomListScreen(
             item {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "Reading Rooms",
+                        text = stringResource(R.string.reading_rooms_title),
                         style = ProfileTypography.HeroName.copy(fontSize = 32.sp, lineHeight = 36.sp),
                         color = ProfileColors.PrimaryText,
                         modifier = Modifier.weight(1f)
@@ -153,7 +155,7 @@ fun ReadingRoomListScreen(
                         onClick = { showCreate = true },
                         modifier = Modifier.size(48.dp)
                     ) {
-                        Icon(Icons.Outlined.Add, contentDescription = "Create", tint = ProfileColors.Accent)
+                        Icon(Icons.Outlined.Add, contentDescription = stringResource(R.string.reading_rooms_create), tint = ProfileColors.Accent)
                     }
                 }
             }
@@ -161,14 +163,14 @@ fun ReadingRoomListScreen(
                 OutlinedTextField(
                     value = state.query,
                     onValueChange = onQueryChange,
-                    label = { Text("Buscar por nombre") },
+                    label = { Text(stringResource(R.string.reading_rooms_search_hint)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     colors = readableTextFieldColors()
                 )
             }
             if (state.isLoading) {
-                item { Text("Cargando grupos...", color = ProfileColors.PrimaryText) }
+                item { Text(stringResource(R.string.reading_rooms_loading), color = ProfileColors.PrimaryText) }
             }
             state.error?.let { error ->
                 item { Text(error, color = ProfileColors.Accent) }
@@ -176,15 +178,15 @@ fun ReadingRoomListScreen(
             val query = state.query.trim().lowercase()
             val followed = state.rooms?.followed.orEmpty().filter { it.name.lowercase().contains(query) }
             val other = state.rooms?.other.orEmpty().filter { it.name.lowercase().contains(query) }
-            item { SectionTitle("Grupos que sigo") }
+            item { SectionTitle(stringResource(R.string.library_followed_authors_title)) }
             if (followed.isEmpty()) {
-                item { EmptyText("No hay grupos seguidos con ese nombre.") }
+                item { EmptyText(stringResource(R.string.reading_rooms_followed_empty)) }
             } else {
                 items(followed) { room -> RoomSummaryCard(room, onRoomClick) }
             }
-            item { SectionTitle("Otros grupos") }
+            item { SectionTitle(stringResource(R.string.reading_rooms_other_title)) }
             if (other.isEmpty()) {
-                item { EmptyText("No hay otros grupos con ese nombre.") }
+                item { EmptyText(stringResource(R.string.reading_rooms_other_empty)) }
             } else {
                 items(other) { room -> RoomSummaryCard(room, onRoomClick) }
             }
@@ -215,7 +217,7 @@ fun ReadingRoomScreen(
     var showRatings by remember { mutableStateOf<List<ReadingRoomRatingDto>?>(null) }
     val room = state.room
     ReadingRoomChrome(
-        title = room?.name ?: "Reading Room",
+        title = room?.name ?: stringResource(R.string.reading_room_info_title),
         onBackClick = onBackClick
     ) {
         Column(
@@ -225,9 +227,9 @@ fun ReadingRoomScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             if (state.isLoading) {
-                Text("Cargando grupo...", color = ProfileColors.PrimaryText)
+                Text(stringResource(R.string.reading_room_loading), color = ProfileColors.PrimaryText)
             } else if (room == null) {
-                Text(state.error ?: "No se pudo cargar el grupo", color = ProfileColors.PrimaryText)
+                Text(state.error ?: stringResource(R.string.reading_room_loading_error), color = ProfileColors.PrimaryText)
             } else {
                 RoomHeader(room, onInfoClick, onJoinClick)
                 LazyColumn(
@@ -245,13 +247,13 @@ fun ReadingRoomScreen(
                     item {
                         if (room.isMember) {
                             Button(onClick = { showBookPicker = true }, modifier = Modifier.fillMaxWidth()) {
-                                Text("Cambiar libro activo")
+                                Text(stringResource(R.string.reading_room_change_active_book))
                             }
                         }
                     }
-                    item { SectionTitle("Historico") }
+                    item { SectionTitle(stringResource(R.string.library_read_history_title)) }
                     if (room.history.isEmpty()) {
-                        item { EmptyText("Todavia no hay libros historicos.") }
+                        item { EmptyText(stringResource(R.string.reading_room_no_history)) }
                     } else {
                         items(room.history) { period -> HistoricPeriodCard(period) }
                     }
@@ -289,7 +291,7 @@ fun ReadingRoomInfoScreen(
     var description by remember(room?.description) { mutableStateOf(room?.description.orEmpty()) }
     var deleteName by remember { mutableStateOf("") }
     ReadingRoomChrome(
-        title = "Informacion del grupo",
+        title = stringResource(R.string.reading_room_info_title),
         onBackClick = onBackClick
     ) {
         LazyColumn(
@@ -300,7 +302,7 @@ fun ReadingRoomInfoScreen(
             if (room != null) {
                 item {
                     Text(
-                        "Informacion del grupo",
+                        stringResource(R.string.reading_room_info_title),
                         style = ProfileTypography.HeroName.copy(fontSize = 28.sp),
                         color = ProfileColors.PrimaryText
                     )
@@ -309,7 +311,7 @@ fun ReadingRoomInfoScreen(
                     ProfileSurfaceCard {
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(room.name, style = ProfileTypography.HeroName.copy(fontSize = 30.sp), color = ProfileColors.PrimaryText)
-                            Text("${room.memberCount} integrantes", color = ProfileColors.SecondaryText)
+                            Text(stringResource(R.string.reading_room_integrants_count, room.memberCount), color = ProfileColors.SecondaryText)
                             if (editing) {
                                 OutlinedTextField(
                                     value = description,
@@ -318,21 +320,21 @@ fun ReadingRoomInfoScreen(
                                     minLines = 4,
                                     colors = readableTextFieldColors()
                                 )
-                                Button(onClick = { editing = false; onSaveDescription(description) }) { Text("Guardar descripcion") }
+                                Button(onClick = { editing = false; onSaveDescription(description) }) { Text(stringResource(R.string.common_save)) }
                             } else {
                                 Text(room.description, color = ProfileColors.PrimaryText)
                                 if (room.creatorId == "me") {
                                     OutlinedButton(onClick = { editing = true }) {
                                         Icon(Icons.Outlined.Edit, contentDescription = null)
                                         Spacer(Modifier.width(8.dp))
-                                        Text("Editar descripcion")
+                                        Text(stringResource(R.string.edit_profile_title))
                                     }
                                 }
                             }
                         }
                     }
                 }
-                item { SectionTitle("Integrantes") }
+                item { SectionTitle(stringResource(R.string.reading_room_members)) }
                 items(room.members) { member ->
                     MemberRow(member = member, canKick = room.creatorId == "me" && !member.isAdmin, onKick = onKick)
                 }
@@ -343,7 +345,7 @@ fun ReadingRoomInfoScreen(
                             borderColor = Color(0xFF7A4D4A)
                         ) {
                             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                Text("Eliminar grupo", color = Color(0xFFFFB4A9), fontWeight = FontWeight.Bold)
+                                Text(stringResource(R.string.reading_room_delete_title), color = Color(0xFFFFB4A9), fontWeight = FontWeight.Bold)
                                 OutlinedTextField(
                                     value = deleteName,
                                     onValueChange = { deleteName = it },
@@ -354,7 +356,7 @@ fun ReadingRoomInfoScreen(
                                 Button(onClick = { onDelete(deleteName) }) {
                                     Icon(Icons.Outlined.Delete, contentDescription = null, tint = ProfileColors.PrimaryText)
                                     Spacer(Modifier.width(8.dp))
-                                    Text("Eliminar definitivamente", color = ProfileColors.PrimaryText)
+                                    Text(stringResource(R.string.reading_room_delete_confirm), color = ProfileColors.PrimaryText)
                                 }
                             }
                         }
@@ -372,10 +374,10 @@ private fun RoomHeader(room: ReadingRoomDetailDto, onInfoClick: () -> Unit, onJo
             AsyncImage(room.creatorAvatarUrl, contentDescription = room.creatorName, modifier = Modifier.size(56.dp).clip(CircleShape))
             Column(modifier = Modifier.weight(1f)) {
                 Text(room.name, style = ProfileTypography.HeroName.copy(fontSize = 30.sp, lineHeight = 34.sp), color = ProfileColors.PrimaryText)
-                Text("${room.memberCount} integrantes", color = ProfileColors.SecondaryText)
+                Text(stringResource(R.string.reading_room_integrants_count, room.memberCount), color = ProfileColors.SecondaryText)
             }
             if (!room.isMember) {
-                Button(onClick = onJoinClick) { Text("+ follow") }
+                Button(onClick = onJoinClick) { Text(stringResource(R.string.reading_room_follow)) }
             }
         }
     }
@@ -387,7 +389,13 @@ private fun ActiveBookPanel(room: ReadingRoomDetailDto, onRatingsClick: (List<Re
     val activePeriod = room.activePeriod
     ProfileSurfaceCard {
         if (active == null) {
-            EmptyText(if (room.isMember) "Todavia no hay libro activo. Usa Cambiar libro activo para elegir uno." else "Todavia no hay libro activo.")
+            EmptyText(
+                if (room.isMember) {
+                    stringResource(R.string.reading_room_no_active_book_with_hint)
+                } else {
+                    stringResource(R.string.reading_room_no_active_book)
+                }
+            )
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -395,9 +403,9 @@ private fun ActiveBookPanel(room: ReadingRoomDetailDto, onRatingsClick: (List<Re
                     Column(modifier = Modifier.weight(1f)) {
                         Text(active.title, style = ProfileTypography.HeroName.copy(fontSize = 28.sp), color = ProfileColors.PrimaryText)
                         Text(active.author, color = ProfileColors.SecondaryText)
-                        Text("Activo desde ${room.activeSince.orEmpty().take(10)}", color = ProfileColors.SecondaryText)
+                        Text(stringResource(R.string.reading_room_active_since, room.activeSince.orEmpty().take(10)), color = ProfileColors.SecondaryText)
                         Text(
-                            "Promedio ${"%.1f".format(activePeriod?.averageRating ?: 0f)}",
+                            stringResource(R.string.reading_room_rating_average, activePeriod?.averageRating ?: 0f),
                             color = ProfileColors.Accent,
                             modifier = Modifier.clickable { onRatingsClick(activePeriod?.ratings.orEmpty()) }
                         )
@@ -418,8 +426,8 @@ private fun HistoricPeriodCard(period: ReadingRoomPeriodDto) {
     ProfileSurfaceCard(containerColor = Color(0xFFF2EFE9), borderColor = Color(0xFFD6D0C6)) {
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(period.book.title, style = ProfileTypography.HeroName.copy(fontSize = 24.sp), color = ProfileColors.PrimaryText)
-            Text("${period.startedAt.take(10)} - ${period.endedAt?.take(10).orEmpty()}", color = ProfileColors.SecondaryText)
-            Text("Promedio ${"%.1f".format(period.averageRating)}", color = ProfileColors.SecondaryText)
+            Text(stringResource(R.string.reading_room_rating_period, period.startedAt.take(10), period.endedAt?.take(10).orEmpty()), color = ProfileColors.SecondaryText)
+            Text(stringResource(R.string.reading_room_rating_average, period.averageRating), color = ProfileColors.SecondaryText)
             FeedList(period.feed, isHistoric = true, canReply = false, onReply = { _, _ -> })
         }
     }
@@ -428,7 +436,7 @@ private fun HistoricPeriodCard(period: ReadingRoomPeriodDto) {
 @Composable
 private fun FeedList(items: List<ReadingRoomFeedItemDto>, isHistoric: Boolean, canReply: Boolean, onReply: (String, String?) -> Unit) {
     if (items.isEmpty()) {
-        EmptyText("Sin comentarios todavia.")
+        EmptyText(stringResource(R.string.reading_room_no_comments))
     }
     items.forEach { item ->
         item.event?.let {
@@ -472,11 +480,11 @@ private fun CommentCard(
                         onValueChange = { reply = it },
                         modifier = Modifier.weight(1f),
                         singleLine = true,
-                        placeholder = { Text("Responder") },
+                        placeholder = { Text(stringResource(R.string.reading_room_reply_hint)) },
                         colors = readableTextFieldColors()
                     )
                     IconButton(onClick = { if (reply.isNotBlank()) { onReply(reply, comment.id); reply = "" } }) {
-                        Icon(Icons.Outlined.Send, contentDescription = "Enviar respuesta", tint = ProfileColors.Accent)
+                        Icon(Icons.Outlined.Send, contentDescription = stringResource(R.string.reading_room_send_reply), tint = ProfileColors.Accent)
                     }
                 }
             }
@@ -514,9 +522,9 @@ private fun RoomSummaryCard(room: ReadingRoomSummaryDto, onRoomClick: (String) -
 private fun RatingInput(onRate: (Float) -> Unit) {
     var rating by remember { mutableFloatStateOf(4f) }
     Column {
-        Text("Mi rating: ${"%.1f".format(rating)}", color = ProfileColors.PrimaryText)
+        Text(stringResource(R.string.reading_room_rating_label, rating), color = ProfileColors.PrimaryText)
         Slider(value = rating, onValueChange = { rating = it }, valueRange = 0f..5f, steps = 9)
-        OutlinedButton(onClick = { onRate(rating) }) { Text("Guardar rating") }
+        OutlinedButton(onClick = { onRate(rating) }) { Text(stringResource(R.string.reading_room_save_rating)) }
     }
 }
 
@@ -528,11 +536,11 @@ private fun CommentInput(onSend: (String) -> Unit) {
             value = text,
             onValueChange = { text = it },
             modifier = Modifier.weight(1f),
-            placeholder = { Text("Agregar comentario") },
+            placeholder = { Text(stringResource(R.string.reading_room_add_comment)) },
             colors = readableTextFieldColors()
         )
         IconButton(onClick = { if (text.isNotBlank()) { onSend(text); text = "" } }) {
-            Icon(Icons.Outlined.Send, contentDescription = "Enviar comentario", tint = ProfileColors.Accent)
+            Icon(Icons.Outlined.Send, contentDescription = stringResource(R.string.reading_room_send_comment), tint = ProfileColors.Accent)
         }
     }
 }
@@ -547,19 +555,19 @@ private fun BookPickerDialog(books: List<BookDto>, currentBookId: String?, onDis
         titleContentColor = ProfileColors.PrimaryText,
         textContentColor = ProfileColors.PrimaryText,
         confirmButton = {},
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cerrar", color = ProfileColors.Accent) } },
-        title = { Text("Cambiar libro activo", color = ProfileColors.PrimaryText) },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.reading_room_close), color = ProfileColors.Accent) } },
+        title = { Text(stringResource(R.string.reading_room_change_active_book), color = ProfileColors.PrimaryText) },
         text = {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 item {
                     OutlinedTextField(
                         value = query,
                         onValueChange = { query = it },
-                        label = { Text("Filtrar por titulo o autor") },
+                        label = { Text(stringResource(R.string.reading_room_filter_by_title_author)) },
                         colors = readableTextFieldColors()
                     )
                 }
-                if (filtered.isEmpty()) item { EmptyText("No hay libros seguidos para mostrar.") }
+                if (filtered.isEmpty()) item { EmptyText(stringResource(R.string.reading_room_no_followed_books)) }
                 items(filtered) { book ->
                     TextButton(onClick = { if (book.id != currentBookId) onSelect(book.id) }, enabled = book.id != currentBookId) {
                         Text(
@@ -580,12 +588,12 @@ private fun RatingsDialog(ratings: List<ReadingRoomRatingDto>, onDismiss: () -> 
         containerColor = Color(0xFFF8F5EF),
         titleContentColor = ProfileColors.PrimaryText,
         textContentColor = ProfileColors.PrimaryText,
-        confirmButton = { TextButton(onClick = onDismiss) { Text("Cerrar", color = ProfileColors.Accent) } },
-        title = { Text("Ratings del grupo", color = ProfileColors.PrimaryText) },
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.reading_room_close), color = ProfileColors.Accent) } },
+        title = { Text(stringResource(R.string.reading_room_group_ratings), color = ProfileColors.PrimaryText) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (ratings.isEmpty()) {
-                    EmptyText("Todavia no hay ratings.")
+                    EmptyText(stringResource(R.string.reading_room_no_ratings))
                 }
                 ratings.forEach { rating ->
                     Row(
@@ -624,16 +632,16 @@ private fun CreateRoomDialog(onDismiss: () -> Unit, onCreate: (String, String, S
         textContentColor = ProfileColors.PrimaryText,
         confirmButton = {
             Button(onClick = { onCreate(name, description, shortDescription, isAdult) }, enabled = name.isNotBlank() && description.isNotBlank() && shortDescription.isNotBlank()) {
-                Text("Crear")
+            Text(stringResource(R.string.common_save))
             }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar", color = ProfileColors.Accent) } },
-        title = { Text("Nuevo Reading Room", color = ProfileColors.PrimaryText) },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel), color = ProfileColors.Accent) } },
+        title = { Text(stringResource(R.string.reading_room_new_title), color = ProfileColors.PrimaryText) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(name, { name = it }, label = { Text("Nombre") }, keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences), colors = readableTextFieldColors())
-                OutlinedTextField(shortDescription, { shortDescription = it }, label = { Text("Descripcion corta") }, colors = readableTextFieldColors())
-                OutlinedTextField(description, { description = it }, label = { Text("Descripcion") }, minLines = 3, colors = readableTextFieldColors())
+                OutlinedTextField(name, { name = it }, label = { Text(stringResource(R.string.reading_room_name_label)) }, keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences), colors = readableTextFieldColors())
+                OutlinedTextField(shortDescription, { shortDescription = it }, label = { Text(stringResource(R.string.reading_room_short_description_label)) }, colors = readableTextFieldColors())
+                OutlinedTextField(description, { description = it }, label = { Text(stringResource(R.string.reading_room_description_label)) }, minLines = 3, colors = readableTextFieldColors())
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(isAdult, onCheckedChange = { isAdult = it })
                     Text("+18", color = ProfileColors.PrimaryText)
@@ -650,9 +658,9 @@ private fun MemberRow(member: ReadingRoomMemberDto, canKick: Boolean, onKick: (S
         Spacer(Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(member.name, color = ProfileColors.PrimaryText, fontWeight = if (member.isAdmin) FontWeight.Bold else FontWeight.Normal)
-            if (member.isAdmin) Text("Creador", color = ProfileColors.Accent)
+            if (member.isAdmin) Text(stringResource(R.string.reading_room_creator_label), color = ProfileColors.Accent)
         }
-        if (canKick) TextButton(onClick = { onKick(member.userId) }) { Text("Expulsar") }
+        if (canKick) TextButton(onClick = { onKick(member.userId) }) { Text(stringResource(R.string.reading_room_kick)) }
     }
 }
 

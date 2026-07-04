@@ -6,9 +6,9 @@ object BookDetailPreviewData {
 
     val sampleBook = BookUiModel(
         id = "1",
-        title = "El nombre del viento",
+        title = "The Name of the Wind",
         author = "Patrick Rothfuss",
-        description = "Una historia épica de magia y aventura...",
+        description = "An epic tale of magic and adventure...",
         coverImageUrl = null,
         published = "March 27, 2007",
         pages = 662,
@@ -21,14 +21,14 @@ object BookDetailPreviewData {
         ReviewUiModel(
             id = "1",
             userId = "",
-            reviewerName = "Juan Pérez",
+            reviewerName = "Juan Perez",
             reviewerAvatar = null,
             rating = 4.5f,
             ratingText = "4.5 ★",
-            text = "Excelente libro, muy recomendado. El giro final cambia todo.",
+            text = "Excellent book, highly recommended. The final twist changes everything.",
             parts = listOf(
-                ReviewPart(text = "Excelente libro, muy recomendado. ", spoiler = false),
-                ReviewPart(text = "El giro final cambia todo.", spoiler = true)
+                ReviewPart(text = "Excellent book, highly recommended. ", spoiler = false),
+                ReviewPart(text = "The final twist changes everything.", spoiler = true)
             ),
             likes = 128,
             likesText = "128 likes",
@@ -39,10 +39,10 @@ object BookDetailPreviewData {
 
     val sampleProgress = ReadingProgressUiModel(
         percentage = 45,
-        progressText = "45% completado",
+        progressText = "45% completed",
         currentPage = 90,
         totalPages = 200,
-        pagesText = "Página 90 de 200"
+        pagesText = "Page 90 of 200"
     )
 
     val sampleState = BookDetailUiState(
@@ -53,5 +53,5 @@ object BookDetailPreviewData {
 
     val loadingState = BookDetailUiState(isLoading = true)
 
-    val errorState = BookDetailUiState(error = "No se pudo cargar el libro")
+    val errorState = BookDetailUiState(error = "Unable to load the book")
 }

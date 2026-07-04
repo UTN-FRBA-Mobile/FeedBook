@@ -46,9 +46,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feedbook.R
 import com.example.feedbook.features.books.presentation.detail.ReviewUiModel
 import com.example.feedbook.features.books.presentation.detail.ReviewSpoilerText
 import com.example.feedbook.features.books.presentation.detail.reviewHasSpoilers
@@ -86,7 +88,7 @@ fun AllReviewsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Reseñas de :$bookTitle",
+                        text = "Reviews for $bookTitle",
                         style = MaterialTheme.typography.titleLarge,
                         color = ProfileColors.PrimaryText
                     )
@@ -95,7 +97,7 @@ fun AllReviewsScreen(
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.common_back),
                             tint = ProfileColors.PrimaryText
                         )
                     }

@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontStyle
@@ -28,6 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.feedbook.R
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -141,7 +143,7 @@ fun AuthorDetailScreen(
                 IconButton(onClick = onBackClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = stringResource(R.string.common_back),
                         tint = ProfileColors.PrimaryText
                     )
                 }
@@ -278,14 +280,14 @@ private fun AuthorHeaderSection(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Fila: "Biografía" + botón Seguir
+        // Biography row + follow button
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Biografía",
+                text = stringResource(R.string.author_detail_bio),
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontStyle = FontStyle.Italic,
                     fontSize = 20.sp
@@ -309,7 +311,7 @@ private fun AuthorHeaderSection(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = "Siguiendo",
+                        text = stringResource(R.string.author_detail_following),
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 13.sp
@@ -331,7 +333,7 @@ private fun AuthorHeaderSection(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = "Seguir Autor",
+                        text = stringResource(R.string.author_detail_follow_author),
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 13.sp
@@ -361,7 +363,7 @@ private fun BiographySection(
         )
         TextButton(onClick = onToggle) {
             Text(
-                text = if (showFull) "Ver menos" else "Ver más",
+                text = if (showFull) stringResource(R.string.author_detail_show_less) else stringResource(R.string.author_detail_show_more),
                 color = ProfileColors.Accent
             )
         }
@@ -379,7 +381,7 @@ private fun BooksHeader(onSeeAll: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Obras Destacadas",
+            text = stringResource(R.string.author_detail_featured_works),
             style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
@@ -387,7 +389,7 @@ private fun BooksHeader(onSeeAll: () -> Unit) {
         )
         TextButton(onClick = onSeeAll) {
             Text(
-                text = "Ver todas",
+                text = stringResource(R.string.author_detail_see_all),
                 style = MaterialTheme.typography.bodyMedium,
                 color = ProfileColors.Accent
             )
@@ -484,7 +486,7 @@ private fun FollowersSection(followersText: String) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Lectores que siguen a este autor",
+                text = stringResource(R.string.author_detail_followers_title),
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp
@@ -557,7 +559,7 @@ private fun ErrorContent(
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
-                Text("Reintentar")
+                Text(stringResource(R.string.author_detail_error_retry))
             }
         }
     }

@@ -31,7 +31,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImage
+import com.example.feedbook.R
 import com.example.feedbook.core.ui.components.BottomBarTab
 import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
 import com.example.feedbook.core.ui.theme.FeedBookTheme
@@ -84,7 +86,7 @@ fun LibraryScreen(
                     .padding(innerPadding),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "Loading library...", color = ProfileColors.PrimaryText)
+                Text(text = stringResource(R.string.common_loading_content), color = ProfileColors.PrimaryText)
             }
         } else if (state.errorMessage != null) {
             Box(
@@ -142,7 +144,7 @@ fun LibraryScreen(
                     item {
                         LibraryCollectionCard(
                             books = state.readingBooks,
-                            title = "READING",
+                            title = stringResource(R.string.library_reading_label),
                             modifier = Modifier.padding(horizontal = 16.dp),
                             onBookClick = onBookClick
                         )
@@ -164,7 +166,7 @@ fun LibraryScreen(
                 } else {
                     item {
                         Text(
-                            text = "Back to library",
+                            text = stringResource(R.string.common_back),
                             style = ProfileTypography.LabelUppercase,
                             color = ProfileColors.Accent,
                             modifier = Modifier
@@ -202,7 +204,7 @@ private fun FollowedAuthorsSection(
     ProfileSurfaceCard(modifier = modifier.fillMaxWidth()) {
         Column {
             Text(
-                text = "AUTORES QUE SIGUES",
+                text = stringResource(R.string.library_followed_authors_title),
                 style = ProfileTypography.LabelUppercase,
                 color = ProfileColors.PrimaryText,
             )

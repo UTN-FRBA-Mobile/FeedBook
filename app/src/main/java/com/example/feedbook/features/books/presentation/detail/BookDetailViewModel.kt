@@ -144,7 +144,7 @@ class BookDetailViewModel(
                 allReviewsTotal = reviewsData.second,
                 readingProgress = progressResult.getOrNull()?.toUiModel(),
                 error = bookResult.exceptionOrNull()?.message
-                    ?: if (bookResult.isSuccess && bookResult.getOrNull() == null) "Libro no encontrado" else null
+                    ?: if (bookResult.isSuccess && bookResult.getOrNull() == null) "Book not found" else null
             )
         }
     }
