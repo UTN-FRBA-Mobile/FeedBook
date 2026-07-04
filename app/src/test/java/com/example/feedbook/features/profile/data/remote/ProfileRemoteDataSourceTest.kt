@@ -1,11 +1,14 @@
 package com.example.feedbook.features.profile.data.remote
 
 import com.example.feedbook.core.network.ApiService
+import com.example.feedbook.core.network.RegisterPushTokenRequestDto
 import com.example.feedbook.features.authors.data.remote.dto.AuthorDto
 import com.example.feedbook.features.books.data.remote.dto.BookDto
 import com.example.feedbook.features.books.data.remote.dto.ExploreUserDto
 import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewDto
+import com.example.feedbook.features.books.data.remote.dto.ReviewsResponseDto
+import com.example.feedbook.features.books.data.remote.dto.SaveReviewRequestDto
 import com.example.feedbook.features.home.data.remote.dto.HomeDto
 import com.example.feedbook.features.library.data.remote.dto.LibraryDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationsDto
@@ -32,16 +35,38 @@ class ProfileRemoteDataSourceTest {
             override suspend fun getPublicProfile(): ProfileDto = updated
             override suspend fun getBooks(): List<BookDto> = error("unused")
             override suspend fun getBookById(id: String): BookDto = error("unused")
+            override suspend fun getBookByIsbn(isbn: String): BookDto = error("unused")
             override suspend fun getExploreUsers(): List<ExploreUserDto> = error("unused")
             override suspend fun getReadingProgress(bookId: String): ReadingProgressDto? = error("unused")
-            override suspend fun getReviews(bookId: String): List<ReviewDto> = error("unused")
+            override suspend fun getReviews(
+                bookId: String,
+                page: Int,
+                limit: Int
+            ): ReviewsResponseDto = error("unused")
+
+            override suspend fun updateReadingProgress(
+                bookId: String,
+                body: Map<String, Int>
+            ): ReadingProgressDto = error("unused")
+
+            override suspend fun saveReview(
+                bookId: String,
+                body: SaveReviewRequestDto
+            ): ReviewDto = error("unused")
+
+            override suspend fun toggleLike(bookId: String, reviewId: String): ReviewDto =
+                error("unused")
             override suspend fun getAuthors(): List<AuthorDto> = error("unused")
             override suspend fun getAuthorById(id: String): AuthorDto = error("unused")
             override suspend fun toggleFollow(id: String) = error("unused")
             override suspend fun getHomeFeed(): HomeDto = error("unused")
             override suspend fun getOwnLibrary(): LibraryDto = error("unused")
+            override suspend fun addBookToLibrary(body: Map<String, String>) = error("unused")
+            override suspend fun removeBookFromLibrary(body: Map<String, String>) = error("unused")
             override suspend fun getStats(): StatsDto = error("unused")
             override suspend fun getNotifications(): NotificationsDto = error("unused")
+            override suspend fun registerPushToken(body: RegisterPushTokenRequestDto) =
+                error("unused")
         }
 
         val dataSource = ProfileRemoteDataSource(apiService)

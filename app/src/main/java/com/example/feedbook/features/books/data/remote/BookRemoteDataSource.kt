@@ -15,6 +15,8 @@ class BookRemoteDataSource(
 
     suspend fun getBookById(bookId: String): BookDto = apiService.getBookById(bookId)
 
+    suspend fun getBookByIsbn(isbn: String): BookDto = apiService.getBookByIsbn(isbn)
+
     suspend fun getExploreUsers(): List<ExploreUserDto> = apiService.getExploreUsers()
 
     suspend fun getReadingProgress(bookId: String): ReadingProgressDto? =

@@ -2,9 +2,14 @@ package com.example.feedbook.features.books.presentation.scanner
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.util.Log
+import androidx.annotation.OptIn
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ExperimentalGetImage
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -33,22 +38,32 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.example.feedbook.features.books.domain.usecase.GetBookByIsbnUseCase
+import com.google.mlkit.vision.barcode.BarcodeScanner
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.common.InputImage
 import kotlinx.coroutines.delay
+import java.util.concurrent.Executors
 
-private const val DemoScannedBookId = "1"
+private const val ScannerLogTag = "FeedBookBarcodeScanner"
+private const val FallbackBookId = "1"
 
 @Composable
 fun IsbnScannerScreen(
+    getBookByIsbnUseCase: GetBookByIsbnUseCase,
     onClose: () -> Unit,
     onScanComplete: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -62,7 +77,12 @@ fun IsbnScannerScreen(
             ) == PackageManager.PERMISSION_GRANTED
         )
     }
+    var scannedBarcode by rememberSaveable { mutableStateOf<String?>(null) }
+    var isResolvingBarcode by rememberSaveable { mutableStateOf(false) }
     var hasDispatchedResult by rememberSaveable { mutableStateOf(false) }
+    var statusMessage by rememberSaveable {
+        mutableStateOf("Keep the barcode inside the frame.")
+    }
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -75,12 +95,31 @@ fun IsbnScannerScreen(
         }
     }
 
-    LaunchedEffect(hasCameraPermission, hasDispatchedResult) {
-        if (hasCameraPermission && !hasDispatchedResult) {
-            delay(5_000)
-            hasDispatchedResult = true
-            onScanComplete(DemoScannedBookId)
+    LaunchedEffect(scannedBarcode, hasDispatchedResult) {
+        val barcode = scannedBarcode ?: return@LaunchedEffect
+        if (hasDispatchedResult) return@LaunchedEffect
+
+        val isbn = extractIsbnFromBarcode(barcode)
+            ?: barcode.filter { it.isDigit() || it == 'X' || it == 'x' }.uppercase()
+        if (isbn.isBlank()) {
+            scannedBarcode = null
+            statusMessage = "Could not read a complete barcode. Try again."
+            return@LaunchedEffect
         }
+
+        isResolvingBarcode = true
+        statusMessage = "ISBN $isbn detected. Opening book..."
+        delay(5_000)
+
+        val bookId = runCatching {
+            getBookByIsbnUseCase(isbn).id
+        }.getOrElse { error ->
+            Log.w(ScannerLogTag, "ISBN $isbn not found. Opening fallback book.", error)
+            FallbackBookId
+        }
+
+        hasDispatchedResult = true
+        onScanComplete(bookId)
     }
 
     Box(
@@ -89,9 +128,34 @@ fun IsbnScannerScreen(
             .background(Color.Black)
     ) {
         if (hasCameraPermission) {
-            CameraPreview(modifier = Modifier.fillMaxSize())
+            CameraPreview(
+                onBarcodeDetected = { barcode ->
+                    if (scannedBarcode == null && !isResolvingBarcode && !hasDispatchedResult) {
+                        scannedBarcode = barcode
+                        statusMessage = "Barcode detected."
+                    }
+                },
+                onCameraAnalyzing = {
+                    if (scannedBarcode == null && !isResolvingBarcode) {
+                        statusMessage = "Camera ready. Point it at the barcode."
+                    }
+                },
+                onScanError = {
+                    if (scannedBarcode == null && !isResolvingBarcode) {
+                        statusMessage = "Scanner error. Move the barcode and try again."
+                    }
+                },
+                onCameraError = {
+                    if (scannedBarcode == null && !isResolvingBarcode) {
+                        statusMessage = "Camera error. Close the scanner and try again."
+                    }
+                },
+                modifier = Modifier.fillMaxSize()
+            )
             ScannerOverlay(
                 onClose = onClose,
+                scannedBarcode = scannedBarcode,
+                statusMessage = statusMessage,
                 modifier = Modifier.fillMaxSize()
             )
         } else {
@@ -107,39 +171,79 @@ fun IsbnScannerScreen(
 }
 
 @Composable
-private fun CameraPreview(modifier: Modifier = Modifier) {
+private fun CameraPreview(
+    onBarcodeDetected: (String) -> Unit,
+    onCameraAnalyzing: () -> Unit,
+    onScanError: () -> Unit,
+    onCameraError: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val cameraProviderFuture = remember(context) { ProcessCameraProvider.getInstance(context) }
-    var previewView by remember { mutableStateOf<PreviewView?>(null) }
+    val currentOnBarcodeDetected by rememberUpdatedState(onBarcodeDetected)
+    val currentOnCameraAnalyzing by rememberUpdatedState(onCameraAnalyzing)
+    val currentOnScanError by rememberUpdatedState(onScanError)
+    val currentOnCameraError by rememberUpdatedState(onCameraError)
+    val previewView = remember(context) {
+        PreviewView(context).apply {
+            implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+            scaleType = PreviewView.ScaleType.FILL_CENTER
+        }
+    }
+    val scanner = remember {
+        val options = BarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
+            .build()
+        BarcodeScanning.getClient(options)
+    }
+    val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
 
     AndroidView(
-        factory = { viewContext ->
-            PreviewView(viewContext).apply {
-                scaleType = PreviewView.ScaleType.FILL_CENTER
-            }
-        },
-        modifier = modifier,
-        update = { androidPreviewView ->
-            previewView = androidPreviewView
-        }
+        factory = { previewView },
+        modifier = modifier
     )
 
-    DisposableEffect(previewView, lifecycleOwner, context) {
-        val currentPreviewView = previewView ?: return@DisposableEffect onDispose {}
+    DisposableEffect(previewView, lifecycleOwner, context, scanner, cameraExecutor) {
         val executor = ContextCompat.getMainExecutor(context)
         val listener = Runnable {
-            val cameraProvider = cameraProviderFuture.get()
-            val preview = Preview.Builder()
-                .build()
-                .also { it.surfaceProvider = currentPreviewView.surfaceProvider }
+            runCatching {
+                val cameraProvider = cameraProviderFuture.get()
+                val preview = Preview.Builder()
+                    .build()
+                    .also { it.surfaceProvider = previewView.surfaceProvider }
+                val imageAnalysis = ImageAnalysis.Builder()
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .build()
+                    .also {
+                        it.setAnalyzer(
+                            cameraExecutor,
+                            BarcodeAnalyzer(
+                                scanner = scanner,
+                                onBarcodeDetected = { barcode ->
+                                    executor.execute { currentOnBarcodeDetected(barcode) }
+                                },
+                                onCameraAnalyzing = {
+                                    executor.execute { currentOnCameraAnalyzing() }
+                                },
+                                onScanError = {
+                                    executor.execute { currentOnScanError() }
+                                }
+                            )
+                        )
+                    }
 
-            cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(
-                lifecycleOwner,
-                CameraSelector.DEFAULT_BACK_CAMERA,
-                preview
-            )
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(
+                    lifecycleOwner,
+                    CameraSelector.DEFAULT_BACK_CAMERA,
+                    preview,
+                    imageAnalysis
+                )
+            }.onFailure { error ->
+                Log.e(ScannerLogTag, "Camera binding failed", error)
+                currentOnCameraError()
+            }
         }
 
         cameraProviderFuture.addListener(listener, executor)
@@ -148,6 +252,8 @@ private fun CameraPreview(modifier: Modifier = Modifier) {
             if (cameraProviderFuture.isDone) {
                 cameraProviderFuture.get().unbindAll()
             }
+            scanner.close()
+            cameraExecutor.shutdown()
         }
     }
 }
@@ -155,6 +261,8 @@ private fun CameraPreview(modifier: Modifier = Modifier) {
 @Composable
 private fun ScannerOverlay(
     onClose: () -> Unit,
+    scannedBarcode: String?,
+    statusMessage: String,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
@@ -191,16 +299,77 @@ private fun ScannerOverlay(
             }
 
             Text(
-                text = "Scanning ISBN...",
+                text = if (scannedBarcode == null) "Scanning barcode..." else "Scanned barcode",
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White
             )
+            if (scannedBarcode != null) {
+                Surface(
+                    color = Color.White.copy(alpha = 0.12f),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = scannedBarcode,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = Color.White,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+                    )
+                }
+            }
             Text(
-                text = "Keep the book barcode inside the frame. FeedBook will open the matching title automatically.",
+                text = statusMessage,
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White.copy(alpha = 0.85f)
             )
         }
+    }
+}
+
+private class BarcodeAnalyzer(
+    private val scanner: BarcodeScanner,
+    private val onBarcodeDetected: (String) -> Unit,
+    private val onCameraAnalyzing: () -> Unit,
+    private val onScanError: () -> Unit
+) : ImageAnalysis.Analyzer {
+    private var isProcessing = false
+    private var hasReportedFrame = false
+
+    @OptIn(ExperimentalGetImage::class)
+    override fun analyze(imageProxy: ImageProxy) {
+        if (isProcessing) {
+            imageProxy.close()
+            return
+        }
+
+        val mediaImage = imageProxy.image
+        if (mediaImage == null) {
+            imageProxy.close()
+            return
+        }
+
+        isProcessing = true
+        if (!hasReportedFrame) {
+            hasReportedFrame = true
+            onCameraAnalyzing()
+        }
+
+        val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+        scanner.process(image)
+            .addOnSuccessListener { barcodes ->
+                barcodes.asSequence()
+                    .mapNotNull { barcode -> barcode.rawValue ?: barcode.displayValue }
+                    .filter { value -> value.isNotBlank() }
+                    .firstOrNull()
+                    ?.let(onBarcodeDetected)
+            }
+            .addOnFailureListener { error ->
+                Log.e(ScannerLogTag, "Barcode processing failed", error)
+                onScanError()
+            }
+            .addOnCompleteListener {
+                isProcessing = false
+                imageProxy.close()
+            }
     }
 }
 
@@ -243,7 +412,7 @@ private fun PermissionRequiredContent(
             modifier = Modifier.padding(top = 16.dp)
         )
         Text(
-            text = "Allow camera permission to scan an ISBN and jump to the book detail screen.",
+            text = "Allow camera permission to scan a barcode and show its number.",
             style = MaterialTheme.typography.bodyMedium,
             color = Color.White.copy(alpha = 0.85f),
             modifier = Modifier.padding(top = 8.dp, bottom = 24.dp)

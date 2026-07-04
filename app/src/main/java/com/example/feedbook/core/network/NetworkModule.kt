@@ -93,6 +93,9 @@ object NetworkModule {
         override suspend fun getBookById(id: String): BookDto =
             currentServices.apiService.getBookById(id)
 
+        override suspend fun getBookByIsbn(isbn: String): BookDto =
+            currentServices.apiService.getBookByIsbn(isbn)
+
         override suspend fun getExploreUsers(): List<ExploreUserDto> =
             currentServices.apiService.getExploreUsers()
 

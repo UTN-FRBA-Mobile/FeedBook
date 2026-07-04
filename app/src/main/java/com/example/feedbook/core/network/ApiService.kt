@@ -28,6 +28,9 @@ interface ApiService {
     @GET("books/{id}")
     suspend fun getBookById(@Path("id") id: String): BookDto
 
+    @GET("books/isbn/{isbn}")
+    suspend fun getBookByIsbn(@Path("isbn") isbn: String): BookDto
+
     @GET("explore/users")
     suspend fun getExploreUsers(): List<ExploreUserDto>
 

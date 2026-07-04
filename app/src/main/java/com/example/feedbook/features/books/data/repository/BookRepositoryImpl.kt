@@ -23,6 +23,10 @@ class BookRepositoryImpl(
         return remoteDataSource.getBookById(bookId).toDomain()
     }
 
+    override suspend fun getBookByIsbn(isbn: String): Book {
+        return remoteDataSource.getBookByIsbn(isbn).toDomain()
+    }
+
     override suspend fun getReviews(bookId: String, page: Int, limit: Int): Pair<List<Review>, Int> {
         val response = remoteDataSource.getReviews(bookId, page, limit)
         return response.reviews.map { it.toDomain() } to response.total
