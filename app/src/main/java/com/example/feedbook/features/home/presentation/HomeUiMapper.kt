@@ -15,6 +15,7 @@ fun HomeFeed.toUiState(): HomeUiState {
         avatarPreset = null,
         avatarImageUri = avatar.imageUri,
         featuredBook = HomeFeaturedBookUi(
+            bookId = featuredBook.bookId,
             label = featuredBook.label,
             title = featuredBook.title,
             author = featuredBook.author,
@@ -22,6 +23,7 @@ fun HomeFeed.toUiState(): HomeUiState {
         ),
         rankedBooks = rankedBooks.map {
             HomeRankedBookUi(
+                bookId = it.bookId,
                 rankLabel = it.rankLabel,
                 title = it.title,
                 author = it.author,

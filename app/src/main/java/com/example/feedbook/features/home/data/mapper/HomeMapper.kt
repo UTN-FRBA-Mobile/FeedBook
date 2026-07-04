@@ -19,6 +19,7 @@ fun HomeDto.toDomain(): HomeFeed = HomeFeed(
         imageUri = avatar.imageUri
     ),
     featuredBook = HomeFeaturedBook(
+        bookId = featuredBook.bookId,
         label = featuredBook.label,
         title = featuredBook.title,
         author = featuredBook.author,
@@ -30,6 +31,7 @@ fun HomeDto.toDomain(): HomeFeed = HomeFeed(
 )
 
 private fun HomeRankedBookDto.toDomain(): HomeRankedBook = HomeRankedBook(
+    bookId = bookId,
     rankLabel = rankLabel,
     title = title,
     author = author,

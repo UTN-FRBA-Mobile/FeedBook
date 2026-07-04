@@ -233,6 +233,7 @@ fun AppNavigation(
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onLogoutClick = onLogout,
+                onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
                 onReadingRoomClick = { roomId -> navController.navigate(AppRoutes.readingRoom(roomId)) },
                 onSeeAllReadingRoomsClick = { navController.navigate(AppRoutes.READING_ROOMS) }
             )

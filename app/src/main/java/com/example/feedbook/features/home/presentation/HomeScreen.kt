@@ -58,6 +58,7 @@ fun HomeScreen(
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
+    onBookClick: (String) -> Unit = {},
     onReadingRoomClick: (String) -> Unit = {},
     onSeeAllReadingRoomsClick: () -> Unit = {}
 ) {
@@ -115,13 +116,15 @@ fun HomeScreen(
                 item {
                     FeaturedBookCard(
                         book = state.featuredBook,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        onBookClick = onBookClick
                     )
                 }
                 item {
                     RankedBooksSection(
                         books = state.rankedBooks,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        onBookClick = onBookClick
                     )
                 }
                 item {
@@ -168,9 +171,13 @@ private fun TrendingHeader(
 @Composable
 private fun FeaturedBookCard(
     book: HomeFeaturedBookUi,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBookClick: (String) -> Unit = {}
 ) {
-    ProfileSurfaceCard(modifier = modifier.fillMaxWidth()) {
+    ProfileSurfaceCard(
+        modifier = modifier.fillMaxWidth(),
+        onClick = { onBookClick(book.bookId) }
+    ) {
         Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
             RemoteBookCover(
                 title = book.title,
@@ -209,7 +216,8 @@ private fun FeaturedBookCard(
 @Composable
 private fun RankedBooksSection(
     books: List<HomeRankedBookUi>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBookClick: (String) -> Unit = {}
 ) {
     Column(modifier = modifier) {
         Row(
@@ -240,6 +248,7 @@ private fun RankedBooksSection(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickable(onClick = { onBookClick(book.bookId) })
                     .padding(vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
