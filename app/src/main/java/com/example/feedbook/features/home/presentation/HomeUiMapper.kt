@@ -22,6 +22,7 @@ fun HomeFeed.toUiState(): HomeUiState {
         ),
         rankedBooks = rankedBooks.map {
             HomeRankedBookUi(
+                bookId = it.bookId,
                 rankLabel = it.rankLabel,
                 title = it.title,
                 author = it.author,

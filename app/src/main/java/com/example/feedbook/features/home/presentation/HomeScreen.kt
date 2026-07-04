@@ -58,6 +58,7 @@ fun HomeScreen(
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
+    onBookClick: (String) -> Unit = {},
     onReadingRoomClick: (String) -> Unit = {},
     onSeeAllReadingRoomsClick: () -> Unit = {}
 ) {
@@ -121,7 +122,8 @@ fun HomeScreen(
                 item {
                     RankedBooksSection(
                         books = state.rankedBooks,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        onBookClick = onBookClick
                     )
                 }
                 item {
@@ -209,7 +211,8 @@ private fun FeaturedBookCard(
 @Composable
 private fun RankedBooksSection(
     books: List<HomeRankedBookUi>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBookClick: (String) -> Unit = {}
 ) {
     Column(modifier = modifier) {
         Row(
@@ -240,6 +243,7 @@ private fun RankedBooksSection(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickable(onClick = { onBookClick(book.bookId) })
                     .padding(vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {

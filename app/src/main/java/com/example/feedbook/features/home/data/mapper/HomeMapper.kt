@@ -30,6 +30,7 @@ fun HomeDto.toDomain(): HomeFeed = HomeFeed(
 )
 
 private fun HomeRankedBookDto.toDomain(): HomeRankedBook = HomeRankedBook(
+    bookId = bookId,
     rankLabel = rankLabel,
     title = title,
     author = author,

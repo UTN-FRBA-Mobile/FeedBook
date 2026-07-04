@@ -24,6 +24,7 @@ data class HomeFeaturedBookUi(
 )
 
 data class HomeRankedBookUi(
+    val bookId: String,
     val rankLabel: String,
     val title: String,
     val author: String,
@@ -54,9 +55,9 @@ fun sampleHomeUiState(): HomeUiState = HomeUiState(
         coverImageUrl = "https://covers.openlibrary.org/b/isbn/9780756404741-L.jpg"
     ),
     rankedBooks = listOf(
-        HomeRankedBookUi("01", "Circe", "Madeline Miller", "https://covers.openlibrary.org/b/isbn/9780316556323-L.jpg"),
-        HomeRankedBookUi("02", "Piranesi", "Susanna Clarke", "https://covers.openlibrary.org/b/isbn/9781635575637-L.jpg"),
-        HomeRankedBookUi("03", "Project Hail Mary", "Andy Weir", "https://covers.openlibrary.org/b/isbn/9780593135204-L.jpg")
+        HomeRankedBookUi("circe", "01", "Circe", "Madeline Miller", "https://covers.openlibrary.org/b/isbn/9780316556323-L.jpg"),
+        HomeRankedBookUi("piranesi", "02", "Piranesi", "Susanna Clarke", "https://covers.openlibrary.org/b/isbn/9781635575637-L.jpg"),
+        HomeRankedBookUi("project-hail-mary", "03", "Project Hail Mary", "Andy Weir", "https://covers.openlibrary.org/b/isbn/9780593135204-L.jpg")
     ),
     readingRooms = listOf(
         HomeReadingRoomUi(
