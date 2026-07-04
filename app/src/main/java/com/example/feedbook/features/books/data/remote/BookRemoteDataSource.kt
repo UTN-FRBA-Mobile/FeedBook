@@ -1,12 +1,14 @@
 package com.example.feedbook.features.books.data.remote
 
 import com.example.feedbook.core.network.ApiService
+import com.example.feedbook.features.books.data.mapper.toDto
 import com.example.feedbook.features.books.data.remote.dto.BookDto
 import com.example.feedbook.features.books.data.remote.dto.ExploreUserDto
 import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewsResponseDto
 import com.example.feedbook.features.books.data.remote.dto.SaveReviewRequestDto
+import com.example.feedbook.features.books.domain.model.ReviewPart
 
 class BookRemoteDataSource(
     private val apiService: ApiService
@@ -28,8 +30,11 @@ class BookRemoteDataSource(
     suspend fun getReviews(bookId: String, page: Int = 1, limit: Int = 5): ReviewsResponseDto =
         apiService.getReviews(bookId, page, limit)
 
-    suspend fun saveReview(bookId: String, rating: Float, text: String): ReviewDto =
-        apiService.saveReview(bookId, SaveReviewRequestDto(rating, text))
+    suspend fun saveReview(bookId: String, rating: Float, text: String, parts: List<ReviewPart>): ReviewDto =
+        apiService.saveReview(
+            bookId,
+            SaveReviewRequestDto(rating, text, parts.map { it.toDto() })
+        )
 
     suspend fun toggleLike(bookId: String, reviewId: String): ReviewDto =
         apiService.toggleLike(bookId, reviewId)

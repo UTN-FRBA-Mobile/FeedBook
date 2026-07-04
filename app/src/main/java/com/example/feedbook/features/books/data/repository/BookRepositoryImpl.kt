@@ -6,6 +6,7 @@ import com.example.feedbook.features.books.domain.model.Book
 import com.example.feedbook.features.books.domain.model.ExploreUser
 import com.example.feedbook.features.books.domain.model.ReadingProgress
 import com.example.feedbook.features.books.domain.model.Review
+import com.example.feedbook.features.books.domain.model.ReviewPart
 import com.example.feedbook.features.books.domain.repository.BookRepository
 
 class BookRepositoryImpl(
@@ -32,8 +33,8 @@ class BookRepositoryImpl(
         return response.reviews.map { it.toDomain() } to response.total
     }
 
-    override suspend fun saveReview(bookId: String, rating: Float, text: String): Review {
-        return remoteDataSource.saveReview(bookId, rating, text).toDomain()
+    override suspend fun saveReview(bookId: String, rating: Float, text: String, parts: List<ReviewPart>): Review {
+        return remoteDataSource.saveReview(bookId, rating, text, parts).toDomain()
     }
 
     override suspend fun getReadingProgress(bookId: String): ReadingProgress? {

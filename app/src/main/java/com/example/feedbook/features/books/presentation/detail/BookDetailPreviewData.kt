@@ -1,5 +1,7 @@
 package com.example.feedbook.features.books.presentation.detail
 
+import com.example.feedbook.features.books.domain.model.ReviewPart
+
 object BookDetailPreviewData {
 
     val sampleBook = BookUiModel(
@@ -23,7 +25,11 @@ object BookDetailPreviewData {
             reviewerAvatar = null,
             rating = 4.5f,
             ratingText = "4.5 ★",
-            text = "Excelente libro, muy recomendado.",
+            text = "Excelente libro, muy recomendado. El giro final cambia todo.",
+            parts = listOf(
+                ReviewPart(text = "Excelente libro, muy recomendado. ", spoiler = false),
+                ReviewPart(text = "El giro final cambia todo.", spoiler = true)
+            ),
             likes = 128,
             likesText = "128 likes",
             isLikedByMe = false,

@@ -7,8 +7,14 @@ data class Review(
     val reviewerAvatar: String?,
     val rating: Float,
     val text: String,
+    val parts: List<ReviewPart> = emptyList(),
     val likes: Int,
     val likedBy: List<String>,
     val isLikedByMe: Boolean,
     val createdAt: String
+)
+
+data class ReviewPart(
+    val text: String,
+    val spoiler: Boolean
 )

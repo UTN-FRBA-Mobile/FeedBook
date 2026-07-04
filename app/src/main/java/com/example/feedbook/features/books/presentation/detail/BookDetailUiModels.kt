@@ -3,6 +3,7 @@ package com.example.feedbook.features.books.presentation.detail
 import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.defaultAvatarStyle
+import com.example.feedbook.features.books.domain.model.ReviewPart
 
 data class BookDetailUiState(
     val isLoading: Boolean = false,
@@ -44,6 +45,7 @@ data class ReviewUiModel(
     val rating: Float,
     val ratingText: String,
     val text: String,
+    val parts: List<ReviewPart> = emptyList(),
     val likes: Int,
     val likesText: String,
     val isLikedByMe: Boolean,

@@ -26,6 +26,7 @@ fun Review.toUiModel() = ReviewUiModel(
     rating = rating,
     ratingText = "%.1f ★".format(rating),
     text = text,
+    parts = parts,
     likes = likes,
     likesText = if (likes == 1) "1 like" else "$likes likes",
     isLikedByMe = isLikedByMe,

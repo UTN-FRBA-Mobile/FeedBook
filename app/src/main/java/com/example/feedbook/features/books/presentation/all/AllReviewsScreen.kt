@@ -39,7 +39,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,6 +50,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.feedbook.features.books.presentation.detail.ReviewUiModel
+import com.example.feedbook.features.books.presentation.detail.ReviewSpoilerText
+import com.example.feedbook.features.books.presentation.detail.reviewHasSpoilers
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -167,6 +171,7 @@ private fun AllReviewCard(
     review: ReviewUiModel,
     onToggleLike: (String) -> Unit
 ) {
+    var showSpoilers by remember(review.id) { mutableStateOf(false) }
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -216,13 +221,15 @@ private fun AllReviewCard(
                 )
             }
             Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = review.text,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontSize = 13.sp,
-                    lineHeight = 20.sp
-                ),
-                color = ProfileColors.PrimaryText
+            ReviewSpoilerText(
+                review = review,
+                showSpoilers = showSpoilers,
+                onToggleSpoilers = if (reviewHasSpoilers(review.parts)) {
+                    { showSpoilers = !showSpoilers }
+                } else {
+                    null
+                },
+                modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(12.dp))
             HorizontalDivider(
