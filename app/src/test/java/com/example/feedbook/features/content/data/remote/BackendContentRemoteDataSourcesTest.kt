@@ -1,12 +1,15 @@
 package com.example.feedbook.features.content.data.remote
 
 import com.example.feedbook.core.network.ApiService
+import com.example.feedbook.core.network.RegisterPushTokenRequestDto
 import com.example.feedbook.features.authors.data.remote.AuthorRemoteDataSource
 import com.example.feedbook.features.authors.data.remote.dto.AuthorDto
 import com.example.feedbook.features.books.data.remote.dto.BookDto
 import com.example.feedbook.features.books.data.remote.dto.ExploreUserDto
 import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewDto
+import com.example.feedbook.features.books.data.remote.dto.ReviewsResponseDto
+import com.example.feedbook.features.books.data.remote.dto.SaveReviewRequestDto
 import com.example.feedbook.features.home.data.remote.HomeRemoteDataSource
 import com.example.feedbook.features.home.data.remote.dto.HomeCuratorDto
 import com.example.feedbook.features.home.data.remote.dto.HomeDto
@@ -149,11 +152,26 @@ private class ContentStubApiService : ApiService {
 
     override suspend fun getBookById(id: String): BookDto = error("unused")
 
+    override suspend fun getBookByIsbn(isbn: String): BookDto = error("unused")
+
     override suspend fun getExploreUsers(): List<ExploreUserDto> = error("unused")
 
     override suspend fun getReadingProgress(bookId: String): ReadingProgressDto? = error("unused")
 
-    override suspend fun getReviews(bookId: String): List<ReviewDto> = error("unused")
+    override suspend fun getReviews(bookId: String, page: Int, limit: Int): ReviewsResponseDto =
+        error("unused")
+
+    override suspend fun updateReadingProgress(
+        bookId: String,
+        body: Map<String, Int>
+    ): ReadingProgressDto = error("unused")
+
+    override suspend fun saveReview(
+        bookId: String,
+        body: SaveReviewRequestDto
+    ): ReviewDto = error("unused")
+
+    override suspend fun toggleLike(bookId: String, reviewId: String): ReviewDto = error("unused")
 
     override suspend fun getAuthors(): List<AuthorDto> = listOfNotNull(author)
 
@@ -167,6 +185,10 @@ private class ContentStubApiService : ApiService {
 
     override suspend fun getOwnLibrary(): LibraryDto = library ?: error("library not configured")
 
+    override suspend fun addBookToLibrary(body: Map<String, String>) = error("unused")
+
+    override suspend fun removeBookFromLibrary(body: Map<String, String>) = error("unused")
+
     override suspend fun getOwnProfile(): ProfileDto = error("unused")
 
     override suspend fun getOwnPublicProfilePreview(): ProfileDto = error("unused")
@@ -179,4 +201,6 @@ private class ContentStubApiService : ApiService {
         notifications ?: error("notifications not configured")
 
     override suspend fun updateOwnProfile(body: UpdateProfileRequestDto): ProfileDto = error("unused")
+
+    override suspend fun registerPushToken(body: RegisterPushTokenRequestDto) = error("unused")
 }

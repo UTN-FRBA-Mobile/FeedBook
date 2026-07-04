@@ -403,6 +403,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
 
             composable(route = AppRoutes.ISBN_SCANNER) {
                 IsbnScannerScreen(
+                    getBookByIsbnUseCase = appContainer.getBookByIsbnUseCase,
                     onClose = { navController.popBackStack() },
                     onScanComplete = { bookId ->
                         navController.navigate(AppRoutes.detail(bookId)) {
