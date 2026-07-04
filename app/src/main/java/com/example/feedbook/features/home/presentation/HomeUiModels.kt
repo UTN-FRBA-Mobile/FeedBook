@@ -1,11 +1,13 @@
 package com.example.feedbook.features.home.presentation
 
-import com.example.feedbook.features.profile.presentation.AvatarStyle
 import androidx.compose.ui.graphics.Color
+import com.example.feedbook.features.profile.presentation.AvatarPreset
+import com.example.feedbook.features.profile.presentation.AvatarStyle
 
 data class HomeUiState(
     val trendingTitle: String,
     val avatarStyle: AvatarStyle,
+    val avatarPreset: AvatarPreset?,
     val avatarImageUri: String?,
     val featuredBook: HomeFeaturedBookUi,
     val rankedBooks: List<HomeRankedBookUi>,
@@ -48,6 +50,7 @@ fun sampleHomeUiState(): HomeUiState = HomeUiState(
         topColor = Color(0xFF315A73),
         bottomColor = Color(0xFFF0C6A8)
     ),
+    avatarPreset = null,
     avatarImageUri = null,
     featuredBook = HomeFeaturedBookUi(
         label = "FEATURED",
@@ -96,6 +99,7 @@ fun emptyHomeUiState(): HomeUiState = HomeUiState(
         topColor = Color(0xFF315A73),
         bottomColor = Color(0xFFF0C6A8)
     ),
+    avatarPreset = null,
     avatarImageUri = null,
     featuredBook = HomeFeaturedBookUi("", "", "", null),
     rankedBooks = emptyList(),

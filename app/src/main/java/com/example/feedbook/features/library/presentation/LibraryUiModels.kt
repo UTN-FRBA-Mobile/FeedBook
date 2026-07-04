@@ -1,6 +1,7 @@
 package com.example.feedbook.features.library.presentation
 
 import androidx.compose.ui.graphics.Color
+import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.CurrentBook
 import com.example.feedbook.features.profile.presentation.LibraryBook
@@ -9,6 +10,7 @@ data class LibraryUiState(
     val title: String,
     val subtitle: String,
     val avatarStyle: AvatarStyle,
+    val avatarPreset: AvatarPreset?,
     val avatarImageUri: String?,
     val currentBook: CurrentBook,
     val readingBooks: List<LibraryBook>,
@@ -45,6 +47,7 @@ fun sampleLibraryUiState(): LibraryUiState = LibraryUiState(
         topColor = Color(0xFF315A73),
         bottomColor = Color(0xFFF0C6A8)
     ),
+    avatarPreset = null,
     avatarImageUri = null,
     currentBook = CurrentBook(
         id = "2",
@@ -87,6 +90,7 @@ fun emptyLibraryUiState(): LibraryUiState = LibraryUiState(
         topColor = Color(0xFF315A73),
         bottomColor = Color(0xFFF0C6A8)
     ),
+    avatarPreset = null,
     avatarImageUri = null,
     currentBook = CurrentBook("", "", "", 0, 0, 0f, null),
     readingBooks = emptyList(),

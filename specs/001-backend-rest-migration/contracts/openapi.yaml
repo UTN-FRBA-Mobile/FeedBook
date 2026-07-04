@@ -232,8 +232,88 @@ paths:
           description: Notifications payload
           content:
             application/json:
+            schema:
+              $ref: '#/components/schemas/Notifications'
+  /api/images/covers/{isbn}:
+    get:
+      summary: Proxy and cache a book cover image
+      operationId: getCoverImage
+      parameters:
+        - name: isbn
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: size
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [thumb, medium, detail]
+            default: medium
+      responses:
+        '200':
+          description: Image bytes
+          headers:
+            Cache-Control:
               schema:
-                $ref: '#/components/schemas/Notifications'
+                type: string
+            ETag:
+              schema:
+                type: string
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid image request
+        '502':
+          description: Upstream image unavailable
+  /api/images/avatars/{seed}:
+    get:
+      summary: Proxy and cache an avatar image
+      operationId: getAvatarImage
+      parameters:
+        - name: seed
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Image bytes
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid image request
+        '502':
+          description: Upstream image unavailable
+  /api/images/remote:
+    get:
+      summary: Proxy and cache an allowlisted remote image URL
+      operationId: getRemoteImage
+      parameters:
+        - name: url
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Image bytes
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Invalid or disallowed remote image URL
+        '502':
+          description: Upstream image unavailable
 components:
   parameters:
     BookId:
@@ -399,8 +479,9 @@ components:
         value: { type: string }
     LibraryBook:
       type: object
-      required: [title]
+      required: [id, title]
       properties:
+        id: { type: string }
         title: { type: string }
         coverImageUrl: { type: string, nullable: true }
     FeaturedReview:

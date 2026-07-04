@@ -208,8 +208,9 @@ private fun AvatarArtwork(
         contentAlignment = Alignment.Center
     ) {
         if (imageModel != null) {
+            val imageRequest = rememberFeedBookImageRequest(imageModel)
             AsyncImage(
-                model = imageModel,
+                model = imageRequest,
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()

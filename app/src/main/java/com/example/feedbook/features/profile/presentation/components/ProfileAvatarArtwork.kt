@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.feedbook.core.ui.components.rememberFeedBookImageRequest
 import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 
@@ -39,8 +40,9 @@ internal fun ProfileAvatarArtwork(
         contentAlignment = Alignment.Center
     ) {
         if (imageModel != null) {
+            val imageRequest = rememberFeedBookImageRequest(imageModel)
             AsyncImage(
-                model = imageModel,
+                model = imageRequest,
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize().clip(imageShape),
                 contentScale = androidx.compose.ui.layout.ContentScale.Crop

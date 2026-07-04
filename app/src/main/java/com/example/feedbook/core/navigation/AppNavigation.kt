@@ -386,7 +386,8 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     viewModelFactory = BookListViewModel.provideFactory(
                         getBooksUseCase = appContainer.getBooksUseCase,
                         getAuthorsUseCase = appContainer.getAuthorsUseCase,
-                        getExploreUsersUseCase = appContainer.getExploreUsersUseCase
+                        getExploreUsersUseCase = appContainer.getExploreUsersUseCase,
+                        observeOwnProfileUseCase = appContainer.observeOwnProfileUseCase
                     ),
                     onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
                     onAuthorClick = { authorId -> navController.navigate(AppRoutes.authorDetail(authorId)) },

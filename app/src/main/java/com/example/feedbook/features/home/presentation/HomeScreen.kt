@@ -62,6 +62,7 @@ fun HomeScreen(
         variant = ProfileVariant.OWN,
         activeTab = BottomBarTab.FEED,
         avatarStyle = state.avatarStyle,
+        avatarPreset = state.avatarPreset,
         avatarImageUri = state.avatarImageUri,
         onAvatarClick = onProfileClick,
         onFeedClick = onFeedClick,

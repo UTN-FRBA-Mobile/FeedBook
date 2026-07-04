@@ -5,37 +5,42 @@ import com.example.feedbook.features.library.domain.model.ReaderLibrary
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.CurrentBook
 import com.example.feedbook.features.profile.presentation.LibraryBook
+import com.example.feedbook.features.profile.presentation.avatarPresetFromData
 
-fun ReaderLibrary.toUiState(): LibraryUiState = LibraryUiState(
-    title = title,
-    subtitle = subtitle,
-    avatarStyle = AvatarStyle(
+fun ReaderLibrary.toUiState(): LibraryUiState {
+    val avatarStyle = AvatarStyle(
         topColor = Color(avatar.topColorHex),
         bottomColor = Color(avatar.bottomColorHex)
-    ),
-    avatarImageUri = avatar.imageUri,
-    currentBook = CurrentBook(
-        id = currentBook.id,
-        title = currentBook.title,
-        author = currentBook.author,
-        page = currentBook.page,
-        totalPages = currentBook.totalPages,
-        progress = currentBook.progress,
-        coverImageUrl = currentBook.coverImageUrl
-    ),
-    readingBooks = readingBooks.map { LibraryBook(it.id, it.title, it.coverImageUrl) },
-    shelfBooks = shelfBooks.map { LibraryBook(it.id, it.title, it.coverImageUrl) },
-    completedBooks = completedBooks,
-    readHistory = readHistory.map {
-        ReadBookItem(
-            title = it.title,
-            author = it.author,
-            startedOn = it.startedOn,
-            finishedOn = it.finishedOn,
-            personalRating = it.personalRating,
-            coverAccent = Color(it.coverAccentHex)
-        )
-    },
-    isLoading = false,
-    errorMessage = null
-)
+    )
+    return LibraryUiState(
+        title = title,
+        subtitle = subtitle,
+        avatarStyle = avatarStyle,
+        avatarPreset = avatarPresetFromData(avatar.avatarPresetId, avatarStyle, avatar.presetImageUrl),
+        avatarImageUri = avatar.imageUri,
+        currentBook = CurrentBook(
+            id = currentBook.id,
+            title = currentBook.title,
+            author = currentBook.author,
+            page = currentBook.page,
+            totalPages = currentBook.totalPages,
+            progress = currentBook.progress,
+            coverImageUrl = currentBook.coverImageUrl
+        ),
+        readingBooks = readingBooks.map { LibraryBook(it.id, it.title, it.coverImageUrl) },
+        shelfBooks = shelfBooks.map { LibraryBook(it.id, it.title, it.coverImageUrl) },
+        completedBooks = completedBooks,
+        readHistory = readHistory.map {
+            ReadBookItem(
+                title = it.title,
+                author = it.author,
+                startedOn = it.startedOn,
+                finishedOn = it.finishedOn,
+                personalRating = it.personalRating,
+                coverAccent = Color(it.coverAccentHex)
+            )
+        },
+        isLoading = false,
+        errorMessage = null
+    )
+}

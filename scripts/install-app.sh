@@ -5,6 +5,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 JAVA_HOME="${JAVA_HOME:-/usr/lib/jvm/java-17-openjdk}"
 APP_ID="com.example.feedbook"
+BACK_PORT="${BACK_PORT:-8080}"
 
 usage() {
   cat <<'EOF'
@@ -127,6 +128,21 @@ force_uninstall_app() {
   fi
 }
 
+ensure_reverse() {
+  local device_serial="$1"
+  local reverse_output
+
+  reverse_output="$(adb -s "$device_serial" reverse --list | tr -d '\r')"
+  if grep -q "tcp:${BACK_PORT} tcp:${BACK_PORT}" <<<"$reverse_output"; then
+    echo "adb reverse ya activo para tcp:${BACK_PORT}."
+    return
+  fi
+
+  echo "Configurando adb reverse tcp:${BACK_PORT} -> tcp:${BACK_PORT}..."
+  adb -s "$device_serial" reverse --remove "tcp:${BACK_PORT}" >/dev/null 2>&1 || true
+  adb -s "$device_serial" reverse "tcp:${BACK_PORT}" "tcp:${BACK_PORT}"
+}
+
 main() {
   require_cmd adb
   parse_args "$@"
@@ -146,6 +162,7 @@ main() {
 
   echo "Usando Java: $JAVA_HOME"
   echo "Usando dispositivo: $device_serial"
+  ensure_reverse "$device_serial"
 
   if [[ "$FORCE_INSTALL" -eq 1 ]]; then
     force_uninstall_app "$device_serial"
