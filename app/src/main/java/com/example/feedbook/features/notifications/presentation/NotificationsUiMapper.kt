@@ -59,6 +59,7 @@ private fun NotificationEntry.toUiItem(): NotificationItem = when (this) {
 
 private fun NotificationActor.toUi(): NotificationActorUi = NotificationActorUi(
     name = name,
+    avatarImageUri = avatarImageUrl,
     avatarTopColor = Color(avatarTopColorHex),
     avatarBottomColor = Color(avatarBottomColorHex)
 )

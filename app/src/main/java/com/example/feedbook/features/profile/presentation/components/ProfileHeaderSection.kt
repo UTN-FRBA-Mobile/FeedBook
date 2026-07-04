@@ -41,12 +41,6 @@ internal fun ProfileHeaderSection(
     onActionClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val initials = name
-        .split(" ")
-        .mapNotNull { it.firstOrNull()?.uppercaseChar() }
-        .take(2)
-        .joinToString("")
-
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -69,14 +63,7 @@ internal fun ProfileHeaderSection(
                     avatarStyle = avatarStyle,
                     avatarPreset = avatarPreset,
                     avatarImageUri = avatarImageUri,
-                    modifier = Modifier.fillMaxSize(),
-                    fallbackContent = {
-                        Text(
-                            text = initials,
-                            style = ProfileTypography.SectionTitle,
-                            color = ProfileColors.Accent
-                        )
-                    }
+                    modifier = Modifier.fillMaxSize()
                 )
             }
         }

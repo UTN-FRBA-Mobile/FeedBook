@@ -5,7 +5,6 @@ import com.example.feedbook.features.library.domain.model.ReaderLibrary
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.CurrentBook
 import com.example.feedbook.features.profile.presentation.LibraryBook
-import com.example.feedbook.features.profile.presentation.avatarPresetFromData
 
 fun ReaderLibrary.toUiState(): LibraryUiState {
     val avatarStyle = AvatarStyle(
@@ -16,7 +15,7 @@ fun ReaderLibrary.toUiState(): LibraryUiState {
         title = title,
         subtitle = subtitle,
         avatarStyle = avatarStyle,
-        avatarPreset = avatarPresetFromData(avatar.avatarPresetId, avatarStyle, avatar.presetImageUrl),
+        avatarPreset = null,
         avatarImageUri = avatar.imageUri,
         currentBook = CurrentBook(
             id = currentBook.id,
@@ -37,7 +36,8 @@ fun ReaderLibrary.toUiState(): LibraryUiState {
                 startedOn = it.startedOn,
                 finishedOn = it.finishedOn,
                 personalRating = it.personalRating,
-                coverAccent = Color(it.coverAccentHex)
+                coverAccent = Color(it.coverAccentHex),
+                coverImageUrl = it.coverImageUrl
             )
         },
         isLoading = false,

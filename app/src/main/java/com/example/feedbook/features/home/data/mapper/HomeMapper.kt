@@ -16,8 +16,6 @@ fun HomeDto.toDomain(): HomeFeed = HomeFeed(
     avatar = HomeAvatar(
         topColorHex = avatar.topColorHex,
         bottomColorHex = avatar.bottomColorHex,
-        avatarPresetId = avatar.avatarPresetId,
-        presetImageUrl = avatar.presetImageUrl,
         imageUri = avatar.imageUri
     ),
     featuredBook = HomeFeaturedBook(

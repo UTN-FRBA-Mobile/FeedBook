@@ -5,6 +5,7 @@ import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.CurrentBook
 import com.example.feedbook.features.profile.presentation.LibraryBook
+import com.example.feedbook.features.profile.presentation.defaultAvatarStyle
 
 data class LibraryUiState(
     val title: String,
@@ -37,16 +38,14 @@ data class ReadBookItem(
     val startedOn: String,
     val finishedOn: String,
     val personalRating: Int,
-    val coverAccent: Color
+    val coverAccent: Color,
+    val coverImageUrl: String?
 )
 
 fun sampleLibraryUiState(): LibraryUiState = LibraryUiState(
     title = "My Library",
     subtitle = "Your personal collection, current read, and completed shelf.",
-    avatarStyle = AvatarStyle(
-        topColor = Color(0xFF315A73),
-        bottomColor = Color(0xFFF0C6A8)
-    ),
+    avatarStyle = defaultAvatarStyle(),
     avatarPreset = null,
     avatarImageUri = null,
     currentBook = CurrentBook(
@@ -73,10 +72,10 @@ fun sampleLibraryUiState(): LibraryUiState = LibraryUiState(
     ),
     completedBooks = 142,
     readHistory = listOf(
-        ReadBookItem("Beloved", "Toni Morrison", "Jan 12, 2026", "Jan 29, 2026", 5, Color(0xFF82645A)),
-        ReadBookItem("Pale Fire", "Vladimir Nabokov", "Feb 02, 2026", "Feb 18, 2026", 4, Color(0xFF627A92)),
-        ReadBookItem("The Waves", "Virginia Woolf", "Mar 03, 2026", "Mar 21, 2026", 5, Color(0xFF6C8A80)),
-        ReadBookItem("Never Let Me Go", "Kazuo Ishiguro", "Apr 01, 2026", "Apr 14, 2026", 4, Color(0xFF536E8A))
+        ReadBookItem("Beloved", "Toni Morrison", "Jan 12, 2026", "Jan 29, 2026", 5, Color(0xFF82645A), "https://covers.openlibrary.org/b/isbn/9781400033416-L.jpg"),
+        ReadBookItem("Pale Fire", "Vladimir Nabokov", "Feb 02, 2026", "Feb 18, 2026", 4, Color(0xFF627A92), "https://covers.openlibrary.org/b/isbn/9780679723424-L.jpg"),
+        ReadBookItem("The Waves", "Virginia Woolf", "Mar 03, 2026", "Mar 21, 2026", 5, Color(0xFF6C8A80), "https://covers.openlibrary.org/b/isbn/9780156949606-L.jpg"),
+        ReadBookItem("Never Let Me Go", "Kazuo Ishiguro", "Apr 01, 2026", "Apr 14, 2026", 4, Color(0xFF536E8A), "https://covers.openlibrary.org/b/isbn/9781400078776-L.jpg")
     ),
     followedAuthors = emptyList(),
     isLoading = false,
@@ -86,10 +85,7 @@ fun sampleLibraryUiState(): LibraryUiState = LibraryUiState(
 fun emptyLibraryUiState(): LibraryUiState = LibraryUiState(
     title = "",
     subtitle = "",
-    avatarStyle = AvatarStyle(
-        topColor = Color(0xFF315A73),
-        bottomColor = Color(0xFFF0C6A8)
-    ),
+    avatarStyle = defaultAvatarStyle(),
     avatarPreset = null,
     avatarImageUri = null,
     currentBook = CurrentBook("", "", "", 0, 0, 0f, null),

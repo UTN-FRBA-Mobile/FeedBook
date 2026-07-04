@@ -12,6 +12,7 @@ import com.example.feedbook.core.network.RegisterPushTokenRequestDto
 import com.example.feedbook.features.home.data.remote.dto.HomeDto
 import com.example.feedbook.features.library.data.remote.dto.LibraryDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationsDto
+import com.example.feedbook.features.profile.data.remote.dto.AvatarUploadResponseDto
 import com.example.feedbook.features.profile.data.remote.dto.ProfileDto
 import com.example.feedbook.features.profile.data.remote.dto.UpdateProfileRequestDto
 import com.example.feedbook.features.stats.data.remote.dto.StatsDto
@@ -80,5 +81,7 @@ private open class StubApiService : ApiService {
     override suspend fun getStats(): StatsDto = error("unused")
     override suspend fun getNotifications(): NotificationsDto = error("unused")
     override suspend fun updateOwnProfile(body: UpdateProfileRequestDto): ProfileDto = error("unused")
+    override suspend fun uploadOwnAvatar(image: okhttp3.MultipartBody.Part): AvatarUploadResponseDto =
+        error("unused")
     override suspend fun registerPushToken(body: RegisterPushTokenRequestDto) = error("unused")
 }

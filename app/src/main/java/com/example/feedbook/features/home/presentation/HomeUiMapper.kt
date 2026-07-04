@@ -3,7 +3,6 @@ package com.example.feedbook.features.home.presentation
 import androidx.compose.ui.graphics.Color
 import com.example.feedbook.features.home.domain.model.HomeFeed
 import com.example.feedbook.features.profile.presentation.AvatarStyle
-import com.example.feedbook.features.profile.presentation.avatarPresetFromData
 
 fun HomeFeed.toUiState(): HomeUiState {
     val avatarStyle = AvatarStyle(
@@ -13,7 +12,7 @@ fun HomeFeed.toUiState(): HomeUiState {
     return HomeUiState(
         trendingTitle = trendingTitle,
         avatarStyle = avatarStyle,
-        avatarPreset = avatarPresetFromData(avatar.avatarPresetId, avatarStyle, avatar.presetImageUrl),
+        avatarPreset = null,
         avatarImageUri = avatar.imageUri,
         featuredBook = HomeFeaturedBookUi(
             label = featuredBook.label,

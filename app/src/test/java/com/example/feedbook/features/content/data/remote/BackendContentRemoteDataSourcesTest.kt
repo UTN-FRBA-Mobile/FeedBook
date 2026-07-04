@@ -23,6 +23,7 @@ import com.example.feedbook.features.notifications.data.remote.NotificationsRemo
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationActorDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationEntryDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationsDto
+import com.example.feedbook.features.profile.data.remote.dto.AvatarUploadResponseDto
 import com.example.feedbook.features.profile.data.remote.dto.AvatarDto
 import com.example.feedbook.features.profile.data.remote.dto.CurrentBookDto
 import com.example.feedbook.features.profile.data.remote.dto.ProfileDto
@@ -67,7 +68,7 @@ class BackendContentRemoteDataSourcesTest {
             ContentStubApiService().apply {
                 home = HomeDto(
                     trendingTitle = "Trending",
-                    avatar = AvatarDto(1L, 2L, null, null, null),
+                    avatar = AvatarDto(1L, 2L, null),
                     featuredBook = HomeFeaturedBookDto("Featured", "Piranesi", "Susanna Clarke", null),
                     rankedBooks = listOf(HomeRankedBookDto("01", "Piranesi", "Susanna Clarke", null)),
                     readingRooms = listOf(HomeReadingRoomDto("Lila", null, "Fantasy", "20 readers")),
@@ -89,7 +90,7 @@ class BackendContentRemoteDataSourcesTest {
                 library = LibraryDto(
                     title = "My Library",
                     subtitle = "Snapshot",
-                    avatar = AvatarDto(1L, 2L, null, null, null),
+                    avatar = AvatarDto(1L, 2L, null),
                     currentBook = CurrentBookDto("1", "Book", "Author", 10, 100, 0.1f, null),
                     readingBooks = emptyList(),
                     shelfBooks = emptyList(),
@@ -124,7 +125,7 @@ class BackendContentRemoteDataSourcesTest {
                         id = "notif_1",
                         type = "follow",
                         timestamp = "now",
-                        actor = NotificationActorDto("Mila", 1L, 2L),
+                        actor = NotificationActorDto("Mila", null, 1L, 2L),
                         book = null,
                         fallbackText = "Mila followed you"
                     )
@@ -201,6 +202,9 @@ private class ContentStubApiService : ApiService {
         notifications ?: error("notifications not configured")
 
     override suspend fun updateOwnProfile(body: UpdateProfileRequestDto): ProfileDto = error("unused")
+
+    override suspend fun uploadOwnAvatar(image: okhttp3.MultipartBody.Part): AvatarUploadResponseDto =
+        error("unused")
 
     override suspend fun registerPushToken(body: RegisterPushTokenRequestDto) = error("unused")
 }

@@ -12,8 +12,6 @@ data class HomeFeed(
 data class HomeAvatar(
     val topColorHex: Long,
     val bottomColorHex: Long,
-    val avatarPresetId: String?,
-    val presetImageUrl: String?,
     val imageUri: String?
 )
 

@@ -46,6 +46,8 @@ import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 import com.example.feedbook.features.books.domain.model.ReviewPart
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
+import com.example.feedbook.features.profile.presentation.components.ProfileAvatarArtwork
+import com.example.feedbook.features.profile.presentation.defaultAvatarStyle
 
 // ─── Stateful Wrapper ──────────────────────────────────────────────────────
 @Composable
@@ -727,23 +729,14 @@ private fun ReviewCard(review: ReviewUiModel, onToggleLike: (String) -> Unit = {
                     modifier = Modifier
                         .size(34.dp)
                         .clip(CircleShape)
-                        .background(ProfileColors.AccentSoft),
-                    contentAlignment = Alignment.Center
+                        .background(ProfileColors.AccentSoft)
                 ) {
-                    if (LocalInspectionMode.current || review.reviewerAvatar == null) {
-                        Text(
-                            text = review.reviewerName.first().toString(),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = ProfileColors.SurfaceStrong
-                        )
-                    } else {
-                        AsyncImage(
-                            model = review.reviewerAvatar,
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
+                    ProfileAvatarArtwork(
+                        avatarStyle = defaultAvatarStyle(),
+                        avatarPreset = null,
+                        avatarImageUri = review.reviewerAvatar,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {

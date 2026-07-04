@@ -161,6 +161,9 @@ object NetworkModule {
         override suspend fun updateOwnProfile(body: UpdateProfileRequestDto): ProfileDto =
             currentServices.apiService.updateOwnProfile(body)
 
+        override suspend fun uploadOwnAvatar(image: okhttp3.MultipartBody.Part) =
+            currentServices.apiService.uploadOwnAvatar(image)
+
         override suspend fun registerPushToken(body: RegisterPushTokenRequestDto) {
             currentServices.apiService.registerPushToken(body)
         }

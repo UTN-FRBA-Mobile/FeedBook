@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.QrCodeScanner
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -48,16 +49,15 @@ import com.example.feedbook.R
 import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.ProfileVariant
+import com.example.feedbook.features.profile.presentation.defaultAvatarStyle
+import com.example.feedbook.features.profile.presentation.components.ProfileTopBarAvatarFill
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
 import com.example.feedbook.features.profile.presentation.components.ProfileTypography
 
 @Composable
 internal fun FeedBookTopBar(
     variant: ProfileVariant,
-    avatarStyle: AvatarStyle = AvatarStyle(
-        topColor = Color(0xFF315A73),
-        bottomColor = Color(0xFFF0C6A8)
-    ),
+    avatarStyle: AvatarStyle = defaultAvatarStyle(),
     avatarPreset: AvatarPreset? = null,
     avatarImageUri: String? = null,
     title: String = stringResource(R.string.profile_topbar_title),
@@ -95,7 +95,7 @@ internal fun FeedBookTopBar(
                         .clickable(onClick = onAvatarClick),
                     contentAlignment = Alignment.Center
                 ) {
-                    TopBarAvatarFill(
+                    ProfileTopBarAvatarFill(
                         avatarStyle = avatarStyle,
                         avatarPreset = avatarPreset,
                         avatarImageUri = avatarImageUri,
@@ -163,62 +163,6 @@ private fun RowScope.DefaultTopBarActions(
                     onLogoutClick()
                 }
             )
-        }
-    }
-}
-
-@Composable
-private fun TopBarAvatarFill(
-    avatarStyle: AvatarStyle,
-    avatarPreset: AvatarPreset?,
-    avatarImageUri: String?,
-    modifier: Modifier = Modifier
-) {
-    AvatarArtwork(
-        avatarStyle = avatarStyle,
-        avatarPreset = avatarPreset,
-        avatarImageUri = avatarImageUri,
-        modifier = modifier,
-        imageShape = CircleShape
-    )
-}
-
-@Composable
-private fun AvatarArtwork(
-    avatarStyle: AvatarStyle,
-    avatarPreset: AvatarPreset?,
-    avatarImageUri: String?,
-    modifier: Modifier = Modifier,
-    imageShape: androidx.compose.ui.graphics.Shape = RoundedCornerShape(10.dp),
-    fallbackContent: @Composable BoxScope.() -> Unit = {}
-) {
-    val imageModel = avatarImageUri ?: avatarPreset?.imageUrl
-
-    Box(
-        modifier = modifier
-            .clip(imageShape)
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        avatarStyle.topColor.copy(alpha = 0.18f),
-                        avatarStyle.bottomColor.copy(alpha = 0.34f)
-                    )
-                )
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        if (imageModel != null) {
-            val imageRequest = rememberFeedBookImageRequest(imageModel)
-            AsyncImage(
-                model = imageRequest,
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(imageShape),
-                contentScale = ContentScale.Crop
-            )
-        } else {
-            fallbackContent()
         }
     }
 }

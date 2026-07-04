@@ -12,7 +12,6 @@ data class ProfileUiState(
     val avatarStyle: AvatarStyle,
     val avatarPreset: AvatarPreset?,
     val avatarImageUri: String?,
-    val availableAvatarPresets: List<AvatarPreset>,
     val readingGoal: ReadingGoal?,
     val readingStreak: ReadingStreak,
     val currentBook: CurrentBook,
@@ -124,8 +123,8 @@ fun avatarPresetFromData(
 }
 
 fun defaultAvatarStyle(): AvatarStyle = AvatarStyle(
-    topColor = Color(0xFF315A73),
-    bottomColor = Color(0xFFF0C6A8)
+    topColor = Color(0xFFE4E9EE),
+    bottomColor = Color(0xFFBCC7D1)
 )
 
 fun emptyProfileUiState(variant: ProfileVariant): ProfileUiState = ProfileUiState(
@@ -137,7 +136,6 @@ fun emptyProfileUiState(variant: ProfileVariant): ProfileUiState = ProfileUiStat
     avatarStyle = defaultAvatarStyle(),
     avatarPreset = null,
     avatarImageUri = null,
-    availableAvatarPresets = emptyList(),
     readingGoal = null,
     readingStreak = ReadingStreak(days = 0, week = emptyList()),
     currentBook = CurrentBook(

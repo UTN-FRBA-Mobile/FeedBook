@@ -28,22 +28,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.example.feedbook.core.ui.components.BottomBarTab
 import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
 import com.example.feedbook.core.ui.components.RemoteBookCover
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 import com.example.feedbook.features.profile.presentation.ProfileVariant
+import com.example.feedbook.features.profile.presentation.defaultAvatarStyle
+import com.example.feedbook.features.profile.presentation.components.ProfileAvatarArtwork
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
 import com.example.feedbook.features.profile.presentation.components.ProfileSurfaceCard
 import com.example.feedbook.features.profile.presentation.components.ProfileTypography
+import androidx.compose.material3.HorizontalDivider
 
 @Composable
 fun HomeScreen(
@@ -212,6 +213,30 @@ private fun RankedBooksSection(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    text = "Top 3 this week",
+                    style = ProfileTypography.HeroName.copy(
+                        fontSize = 22.sp,
+                        lineHeight = 26.sp,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    color = ProfileColors.PrimaryText
+                )
+                Text(
+                    text = "Most read on FeedBook",
+                    style = ProfileTypography.Body.copy(fontSize = 14.sp, lineHeight = 18.sp),
+                    color = ProfileColors.SecondaryText
+                )
+            }
+        }
         books.forEachIndexed { index, book ->
             Row(
                 modifier = Modifier
@@ -262,7 +287,7 @@ private fun RankedBooksSection(
                 }
             }
             if (index != books.lastIndex) {
-                androidx.compose.material3.HorizontalDivider(color = ProfileColors.Divider)
+                HorizontalDivider(color = ProfileColors.Divider)
             }
         }
     }
@@ -321,12 +346,12 @@ private fun ReadingRoomCard(room: HomeReadingRoomUi) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                AsyncImage(
-                    model = room.hostImageUrl,
-                    contentDescription = room.hostName,
-                    modifier = Modifier
-                        .size(46.dp)
-                        .clip(CircleShape)
+                ProfileAvatarArtwork(
+                    avatarStyle = defaultAvatarStyle(),
+                    avatarPreset = null,
+                    avatarImageUri = room.hostImageUrl,
+                    modifier = Modifier.size(46.dp),
+                    imageShape = CircleShape
                 )
                 Text(
                     text = "Hosted by ${room.hostName}",
@@ -386,12 +411,12 @@ private fun CuratorsSection(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AsyncImage(
-                    model = curator.imageUrl,
-                    contentDescription = curator.name,
-                    modifier = Modifier
-                        .size(60.dp)
-                        .clip(RoundedCornerShape(16.dp))
+                ProfileAvatarArtwork(
+                    avatarStyle = defaultAvatarStyle(),
+                    avatarPreset = null,
+                    avatarImageUri = curator.imageUrl,
+                    modifier = Modifier.size(60.dp),
+                    imageShape = RoundedCornerShape(16.dp)
                 )
                 Spacer(modifier = Modifier.width(18.dp))
                 Column(

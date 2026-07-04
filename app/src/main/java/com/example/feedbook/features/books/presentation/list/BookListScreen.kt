@@ -68,6 +68,8 @@ import com.example.feedbook.features.authors.domain.model.Author
 import com.example.feedbook.features.books.domain.model.Book
 import com.example.feedbook.features.books.domain.model.ExploreUser
 import com.example.feedbook.features.profile.presentation.ProfileVariant
+import com.example.feedbook.features.profile.presentation.AvatarStyle
+import com.example.feedbook.features.profile.presentation.components.ProfileAvatarArtwork
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
 import com.example.feedbook.features.profile.presentation.components.ProfileSurfaceCard
 import com.example.feedbook.features.profile.presentation.components.ProfileTypography
@@ -802,36 +804,16 @@ private fun ExploreUserCard(
             horizontalArrangement = Arrangement.spacedBy(14.dp),
             verticalAlignment = Alignment.Top
         ) {
-            Box(
-                modifier = Modifier
-                    .size(72.dp)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(
-                                Color(user.avatarTopColorHex),
-                                Color(user.avatarBottomColorHex)
-                            )
-                        )
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                if (!user.avatarImageUrl.isNullOrBlank()) {
-                    AsyncImage(
-                        model = user.avatarImageUrl,
-                        contentDescription = user.name,
-                        modifier = Modifier
-                            .matchParentSize()
-                            .clip(RoundedCornerShape(20.dp))
-                    )
-                } else {
-                    Text(
-                        text = user.name.take(1),
-                        style = ProfileTypography.SectionTitle,
-                        color = Color.White
-                    )
-                }
-            }
+            ProfileAvatarArtwork(
+                avatarStyle = AvatarStyle(
+                    topColor = Color(user.avatarTopColorHex),
+                    bottomColor = Color(user.avatarBottomColorHex)
+                ),
+                avatarPreset = null,
+                avatarImageUri = user.avatarImageUrl,
+                modifier = Modifier.size(72.dp),
+                imageShape = RoundedCornerShape(20.dp)
+            )
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
