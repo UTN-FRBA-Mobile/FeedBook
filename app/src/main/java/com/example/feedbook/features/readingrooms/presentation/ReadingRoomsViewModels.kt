@@ -32,7 +32,7 @@ class ReadingRoomListViewModel(
             _state.value = _state.value.copy(isLoading = true, error = null)
             runCatching { remote.listRooms() }
                 .onSuccess { _state.value = _state.value.copy(isLoading = false, rooms = it) }
-                .onFailure { _state.value = _state.value.copy(isLoading = false, error = it.message ?: "No se pudieron cargar los grupos") }
+                .onFailure { _state.value = _state.value.copy(isLoading = false, error = it.message ?: "Unable to load the groups") }
         }
     }
 
@@ -44,7 +44,7 @@ class ReadingRoomListViewModel(
         viewModelScope.launch {
             runCatching { remote.createRoom(name, description, shortDescription, isAdult) }
                 .onSuccess { onCreated(it.id) }
-                .onFailure { _state.value = _state.value.copy(error = it.message ?: "No se pudo crear el grupo") }
+                .onFailure { _state.value = _state.value.copy(error = it.message ?: "Unable to create the group") }
         }
     }
 
@@ -90,7 +90,7 @@ class ReadingRoomViewModel(
     }
 
     fun join() = updateRoom { remote.joinRoom(roomId) }
-    fun changeBook(bookId: String) = updateRoom("No se puede activar el mismo libro nuevamente") { remote.changeBook(roomId, bookId) }
+    fun changeBook(bookId: String) = updateRoom("You cannot activate the same book again") { remote.changeBook(roomId, bookId) }
     fun rate(rating: Float) = updateRoom { remote.rate(roomId, rating) }
     fun comment(text: String, parentCommentId: String? = null) = updateRoom { remote.comment(roomId, text, parentCommentId) }
     fun updateDescription(description: String) = updateRoom { remote.updateDescription(roomId, description) }
@@ -99,7 +99,7 @@ class ReadingRoomViewModel(
         viewModelScope.launch {
             runCatching { remote.kickMember(roomId, userId) }
                 .onSuccess { load() }
-                .onFailure { _state.value = _state.value.copy(feedback = it.message ?: "No se pudo expulsar al integrante") }
+                .onFailure { _state.value = _state.value.copy(feedback = it.message ?: "Unable to remove the member") }
         }
     }
 
@@ -107,7 +107,7 @@ class ReadingRoomViewModel(
         viewModelScope.launch {
             runCatching { remote.deleteRoom(roomId, confirmationName) }
                 .onSuccess { onDeleted() }
-                .onFailure { _state.value = _state.value.copy(feedback = "Escribi el nombre completo para eliminar el grupo") }
+                .onFailure { _state.value = _state.value.copy(feedback = "Type the full name to delete the group") }
         }
     }
 
@@ -115,7 +115,7 @@ class ReadingRoomViewModel(
         _state.value = _state.value.copy(feedback = null)
     }
 
-    private fun updateRoom(conflictMessage: String = "No se pudo actualizar el grupo", block: suspend () -> ReadingRoomDetailDto) {
+    private fun updateRoom(conflictMessage: String = "Unable to update the group", block: suspend () -> ReadingRoomDetailDto) {
         viewModelScope.launch {
             runCatching { block() }
                 .onSuccess { _state.value = _state.value.copy(room = it, feedback = null) }

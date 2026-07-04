@@ -65,11 +65,11 @@ data class HeatmapScale(
 }
 
 enum class HeatmapMeaning(val defaultLabel: String) {
-    NO_READING("No leiste"),
-    BELOW_TARGET("Mucho menos que el objetivo"),
-    NEAR_TARGET("Casi llegas al objetivo"),
-    GOAL_MET("Objetivo cumplido"),
-    ABOVE_TARGET("Superas el objetivo")
+    NO_READING("No reading"),
+    BELOW_TARGET("Well below target"),
+    NEAR_TARGET("Close to target"),
+    GOAL_MET("Goal met"),
+    ABOVE_TARGET("Above target")
 }
 
 data class HeatmapScaleLevel(

@@ -56,10 +56,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.example.feedbook.R
 import com.example.feedbook.core.ui.components.BottomBarTab
 import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
 import com.example.feedbook.core.ui.components.RemoteBookCover
@@ -306,8 +308,8 @@ fun BookListContent(
                     if (showingBooks && filteredBooks.isNotEmpty()) {
                         item {
                             ExploreSectionHeader(
-                                title = "Libros",
-                                actionLabel = if (activeFilter == ExploreFilter.ALL) "Ver todos" else null,
+                                title = stringResource(R.string.explore_books),
+                                actionLabel = if (activeFilter == ExploreFilter.ALL) stringResource(R.string.explore_section_view_all) else null,
                                 onActionClick = if (activeFilter == ExploreFilter.ALL) ({ activeFilter = ExploreFilter.BOOKS }) else null
                             )
                         }
@@ -321,8 +323,8 @@ fun BookListContent(
                     if (showingAuthors && filteredAuthors.isNotEmpty()) {
                         item {
                             ExploreSectionHeader(
-                                title = "Autores",
-                                actionLabel = if (activeFilter == ExploreFilter.ALL) "Ver todos" else null,
+                                title = stringResource(R.string.explore_authors),
+                                actionLabel = if (activeFilter == ExploreFilter.ALL) stringResource(R.string.explore_section_view_all) else null,
                                 onActionClick = if (activeFilter == ExploreFilter.ALL) ({ activeFilter = ExploreFilter.AUTHORS }) else null
                             )
                         }
@@ -336,8 +338,8 @@ fun BookListContent(
                     if (showingUsers && filteredUsers.isNotEmpty()) {
                         item {
                             ExploreSectionHeader(
-                                title = "Usuarios",
-                                actionLabel = if (activeFilter == ExploreFilter.ALL) "Ver todos" else null,
+                                title = stringResource(R.string.explore_users),
+                                actionLabel = if (activeFilter == ExploreFilter.ALL) stringResource(R.string.explore_section_view_all) else null,
                                 onActionClick = if (activeFilter == ExploreFilter.ALL) ({ activeFilter = ExploreFilter.USERS }) else null
                             )
                         }
@@ -372,7 +374,7 @@ private fun EmptyBookList(
         contentAlignment = Alignment.Center
     ) {
         Button(onClick = onRetry) {
-            Text("Retry", style = ProfileTypography.Body)
+            Text(stringResource(R.string.common_retry), style = ProfileTypography.Body)
         }
     }
 }
@@ -391,7 +393,7 @@ private fun ExploreSearchField(
         shape = RoundedCornerShape(8.dp),
         placeholder = {
             Text(
-                text = "Buscar libros, autores o usuarios...",
+                text = stringResource(R.string.explore_search_hint),
                 style = ProfileTypography.Body,
                 color = ProfileColors.SecondaryText
             )
@@ -439,12 +441,12 @@ private fun ActiveExploreFilters(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "FILTROS ACTIVOS",
+                text = stringResource(R.string.explore_active_filters),
                 style = ProfileTypography.LabelUppercase.copy(fontSize = 10.sp),
                 color = ProfileColors.SecondaryText
             )
             Text(
-                text = "Limpiar todo",
+                text = stringResource(R.string.explore_clear_all),
                 style = ProfileTypography.Label,
                 color = ProfileColors.Accent,
                 modifier = Modifier.clickable(onClick = onClearAll)
@@ -457,7 +459,7 @@ private fun ActiveExploreFilters(
             selectedGenres.forEach { genre ->
                 AssistChip(
                     onClick = { onClearGenre(genre) },
-                    label = { Text(text = "Genero: $genre", style = ProfileTypography.Label.copy(fontSize = 11.sp)) },
+                    label = { Text(text = stringResource(R.string.explore_genre_chip, genre), style = ProfileTypography.Label.copy(fontSize = 11.sp)) },
                     colors = AssistChipDefaults.assistChipColors(
                         containerColor = ProfileColors.AccentSoft,
                         labelColor = ProfileColors.PrimaryText
@@ -468,7 +470,7 @@ private fun ActiveExploreFilters(
             selectedAuthors.forEach { author ->
                 AssistChip(
                     onClick = { onClearAuthor(author) },
-                    label = { Text(text = "Autor: $author", style = ProfileTypography.Label.copy(fontSize = 11.sp)) },
+                    label = { Text(text = stringResource(R.string.explore_author_chip, author), style = ProfileTypography.Label.copy(fontSize = 11.sp)) },
                     colors = AssistChipDefaults.assistChipColors(
                         containerColor = ProfileColors.AccentSoft,
                         labelColor = ProfileColors.PrimaryText
@@ -508,13 +510,13 @@ private fun ExploreFilterSheet(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Filtrar resultados",
+                    text = stringResource(R.string.explore_filter_results),
                     style = ProfileTypography.SectionTitle,
                     color = ProfileColors.PrimaryText
                 )
                 TextButton(onClick = onClearFilters) {
                     Text(
-                        text = "Limpiar",
+                        text = stringResource(R.string.explore_clear),
                         style = ProfileTypography.Label,
                         color = ProfileColors.Accent
                     )
@@ -522,14 +524,14 @@ private fun ExploreFilterSheet(
             }
 
             ExploreMultiSelectFilterGroup(
-                title = "Generos",
+                title = stringResource(R.string.explore_genres),
                 options = genres,
                 selectedOptions = selectedGenres,
                 onOptionToggled = onGenreToggled
             )
 
             ExploreMultiSelectFilterGroup(
-                title = "Autores",
+                title = stringResource(R.string.explore_authors),
                 options = authors,
                 selectedOptions = selectedAuthors,
                 onOptionToggled = onAuthorToggled
@@ -543,7 +545,7 @@ private fun ExploreFilterSheet(
                     contentColor = Color.White
                 )
             ) {
-                Text("Aplicar", style = ProfileTypography.Button)
+                Text(stringResource(R.string.explore_apply), style = ProfileTypography.Button)
             }
             Spacer(modifier = Modifier.height(8.dp))
         }
@@ -565,7 +567,7 @@ private fun ExploreMultiSelectFilterGroup(
         )
         if (options.isEmpty()) {
             Text(
-                text = "Sin opciones disponibles por ahora.",
+                text = stringResource(R.string.explore_no_options),
                 style = ProfileTypography.Body.copy(fontSize = 13.sp),
                 color = ProfileColors.SecondaryText
             )
@@ -610,10 +612,10 @@ private fun ExploreFilterRow(
                 label = {
                     Text(
                         text = when (filter) {
-                            ExploreFilter.ALL -> "Todo"
-                            ExploreFilter.BOOKS -> "Libros"
-                            ExploreFilter.AUTHORS -> "Autores"
-                            ExploreFilter.USERS -> "Usuarios"
+                            ExploreFilter.ALL -> stringResource(R.string.explore_all)
+                            ExploreFilter.BOOKS -> stringResource(R.string.explore_books_label)
+                            ExploreFilter.AUTHORS -> stringResource(R.string.explore_authors_label)
+                            ExploreFilter.USERS -> stringResource(R.string.explore_users_label)
                         },
                         style = ProfileTypography.Label
                     )
@@ -852,17 +854,17 @@ private fun EmptySearchResults(
     ProfileSurfaceCard(modifier = Modifier.fillMaxWidth()) {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
-                text = "Sin resultados",
+                text = stringResource(R.string.explore_no_results),
                 style = ProfileTypography.SectionTitle,
                 color = ProfileColors.PrimaryText
             )
             Text(
                 text = when {
-                    query.isBlank() -> "Todavía no hay contenido disponible para este filtro."
-                    activeFilter == ExploreFilter.ALL -> "No encontramos coincidencias para \"$query\" en libros, autores o usuarios."
-                    activeFilter == ExploreFilter.BOOKS -> "No encontramos libros para \"$query\"."
-                    activeFilter == ExploreFilter.AUTHORS -> "No encontramos autores para \"$query\"."
-                    else -> "No encontramos usuarios para \"$query\"."
+                    query.isBlank() -> stringResource(R.string.explore_no_results_for_filter)
+                    activeFilter == ExploreFilter.ALL -> stringResource(R.string.explore_no_matches_all, query)
+                    activeFilter == ExploreFilter.BOOKS -> stringResource(R.string.explore_no_matches_books, query)
+                    activeFilter == ExploreFilter.AUTHORS -> stringResource(R.string.explore_no_matches_authors, query)
+                    else -> stringResource(R.string.explore_no_matches_users, query)
                 },
                 style = ProfileTypography.Body.copy(fontSize = 14.sp, lineHeight = 20.sp),
                 color = ProfileColors.SecondaryText

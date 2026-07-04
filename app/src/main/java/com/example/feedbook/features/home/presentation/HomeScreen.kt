@@ -35,6 +35,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.example.feedbook.R
 import com.example.feedbook.core.ui.components.BottomBarTab
 import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
 import com.example.feedbook.core.ui.components.RemoteBookCover
@@ -85,7 +87,7 @@ fun HomeScreen(
                     .padding(innerPadding),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "Loading home feed...", color = ProfileColors.PrimaryText)
+                Text(text = stringResource(R.string.home_loading_content), color = ProfileColors.PrimaryText)
             }
         } else if (state.errorMessage != null) {
             Box(
@@ -109,7 +111,7 @@ fun HomeScreen(
             ) {
                 item {
                     TrendingHeader(
-                        title = state.trendingTitle,
+                        title = stringResource(R.string.home_trending_title),
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
@@ -229,7 +231,7 @@ private fun RankedBooksSection(
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    text = "Top 3 this week",
+                text = stringResource(R.string.home_top_books_title),
                     style = ProfileTypography.HeroName.copy(
                         fontSize = 22.sp,
                         lineHeight = 26.sp,
@@ -238,7 +240,7 @@ private fun RankedBooksSection(
                     color = ProfileColors.PrimaryText
                 )
                 Text(
-                    text = "Most read on FeedBook",
+                text = stringResource(R.string.home_top_books_subtitle),
                     style = ProfileTypography.Body.copy(fontSize = 14.sp, lineHeight = 18.sp),
                     color = ProfileColors.SecondaryText
                 )
@@ -320,7 +322,7 @@ private fun ReadingRoomsSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Popular Reading Rooms",
+                text = stringResource(R.string.home_reading_rooms_title),
                 style = ProfileTypography.HeroName.copy(
                     fontSize = 28.sp,
                     lineHeight = 32.sp,
@@ -329,7 +331,7 @@ private fun ReadingRoomsSection(
                 color = ProfileColors.PrimaryText
             )
             Text(
-                text = "See all",
+                text = stringResource(R.string.home_reading_rooms_see_all),
                 style = ProfileTypography.Body.copy(fontSize = 16.sp, lineHeight = 20.sp),
                 color = ProfileColors.SecondaryText,
                 modifier = Modifier.clickable(onClick = onSeeAllClick)

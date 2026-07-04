@@ -35,7 +35,7 @@ class HomeViewModel(
                 .catch { throwable ->
                     _state.value = emptyHomeUiState().copy(
                         isLoading = false,
-                        errorMessage = throwable.message ?: "Unable to load home feed."
+                        errorMessage = throwable.message ?: "Unable to load home."
                     )
                 }
                 .collectLatest { feed ->

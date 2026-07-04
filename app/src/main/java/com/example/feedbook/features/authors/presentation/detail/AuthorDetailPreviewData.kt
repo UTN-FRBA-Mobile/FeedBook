@@ -4,17 +4,17 @@ object AuthorDetailPreviewData {
     val sampleState = AuthorDetailUiState(
         author = AuthorUiModel(
             id = "1",
-            name = "Fiódor Dostoyevski",
+            name = "Fyodor Dostoevsky",
             imageUrl = null,
             lifespan = "1821 – 1881",
-            description = "Escritor ruso, considerado uno de los grandes novelistas de la literatura universal.",
-            biography = "Nació en Moscú en 1821. Estudió ingeniería militar pero abandonó la carrera para dedicarse a la escritura...",
+            description = "Russian novelist, considered one of the great writers of world literature.",
+            biography = "Born in Moscow in 1821. He studied military engineering but left it to devote himself to writing...",
             isFollowing = false,
-            followersText = "14.2k lectores siguen a este autor",
+            followersText = "14.2k readers follow this author",
             books = listOf(
-                AuthorBookUiModel("b1", "Crimen y Castigo", null, "Novela · 1866"),
-                AuthorBookUiModel("b2", "El Idiota", null, "Novela · 1869"),
-                AuthorBookUiModel("b3", "Los Hermanos Karamazov", null, "Novela · 1880"),
+                AuthorBookUiModel("b1", "Crime and Punishment", null, "Novel · 1866"),
+                AuthorBookUiModel("b2", "The Idiot", null, "Novel · 1869"),
+                AuthorBookUiModel("b3", "The Brothers Karamazov", null, "Novel · 1880"),
             )
         )
     )

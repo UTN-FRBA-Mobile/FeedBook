@@ -9,6 +9,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -21,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.feedbook.FeedBookApplication
+import com.example.feedbook.R
 import com.example.feedbook.core.ui.components.LocalScannerClickHandler
 import com.example.feedbook.features.auth.presentation.AuthBiometricPrompt
 import com.example.feedbook.features.auth.presentation.AuthGateDestination
@@ -635,15 +637,15 @@ private fun AuthGateScreen(
         contentAlignment = Alignment.Center
     ) {
         if (state.isLoading) {
-            Text(text = "Checking session...")
+            Text(text = stringResource(R.string.app_checking_session))
         }
     }
 
     AuthBiometricPrompt(
         trigger = state.biometricPromptTrigger,
-        title = "Unlock FeedBook",
-        subtitle = "Secure login requires local authentication",
-        description = "Use your fingerprint or device credential to open your saved session",
+        title = stringResource(R.string.app_unlock_title),
+        subtitle = stringResource(R.string.app_unlock_subtitle),
+        description = stringResource(R.string.app_unlock_description),
         onSuccess = onBiometricSuccess,
         onError = { onBiometricError() }
     )

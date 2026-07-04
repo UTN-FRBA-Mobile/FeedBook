@@ -15,7 +15,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
                 avatarTopColor = Color(0xFF35566F),
                 avatarBottomColor = Color(0xFFC8A988)
             ),
-            timestamp = "HOY · 10:24",
+            timestamp = "TODAY · 10:24",
         ),
         NotificationItem.FollowedYou(
             actor = NotificationActorUi(
@@ -24,7 +24,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
                 avatarTopColor = Color(0xFFB9CBE3),
                 avatarBottomColor = Color(0xFFE7EEF7)
             ),
-            timestamp = "HOY · 07:12",
+            timestamp = "TODAY · 07:12",
         ),
         NotificationItem.ReviewedBook(
             actor = NotificationActorUi(
@@ -33,9 +33,9 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
                 avatarTopColor = Color(0xFF534D61),
                 avatarBottomColor = Color(0xFFD9B89C)
             ),
-            timestamp = "AYER · 14:30",
+            timestamp = "YESTERDAY · 14:30",
             book = NotificationBookUi(
-                title = "El Laberinto de los Espíritus",
+                title = "The Labyrinth of the Spirits",
                 author = "CARLOS RUIZ ZAFÓN",
                 coverImageUrl = previewCoverUrl("9788408163381")
             )
@@ -47,7 +47,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
                 avatarTopColor = Color(0xFF6D7FA2),
                 avatarBottomColor = Color(0xFFDAB596)
             ),
-            timestamp = "AYER · 09:18",
+            timestamp = "YESTERDAY · 09:18",
             book = NotificationBookUi(
                 title = "The Left Hand of Darkness",
                 author = "URSULA K. LE GUIN",
@@ -61,7 +61,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
                 avatarTopColor = Color(0xFF4E697F),
                 avatarBottomColor = Color(0xFFE6C7AA)
             ),
-            timestamp = "LUNES · 21:04",
+            timestamp = "MONDAY · 21:04",
         ),
         NotificationItem.SavedYourBook(
             actor = NotificationActorUi(
@@ -70,7 +70,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
                 avatarTopColor = Color(0xFF7A8B6A),
                 avatarBottomColor = Color(0xFFDCC6A7)
             ),
-            timestamp = "LUNES · 17:42",
+            timestamp = "MONDAY · 17:42",
             book = NotificationBookUi(
                 title = "Beloved",
                 author = "TONI MORRISON",
@@ -84,7 +84,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
                 avatarTopColor = Color(0xFF5A556A),
                 avatarBottomColor = Color(0xFFCDA58B)
             ),
-            timestamp = "DOMINGO · 19:26",
+            timestamp = "SUNDAY · 19:26",
         ),
         NotificationItem.ReviewedBook(
             actor = NotificationActorUi(
@@ -93,7 +93,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
                 avatarTopColor = Color(0xFF7D6B8D),
                 avatarBottomColor = Color(0xFFE2C39F)
             ),
-            timestamp = "DOMINGO · 11:03",
+            timestamp = "SUNDAY · 11:03",
             book = NotificationBookUi(
                 title = "Piranesi",
                 author = "SUSANNA CLARKE",
@@ -107,7 +107,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
                 avatarTopColor = Color(0xFF4D6B73),
                 avatarBottomColor = Color(0xFFD3B08C)
             ),
-            timestamp = "SÁBADO · 16:58",
+            timestamp = "SATURDAY · 16:58",
         ),
         NotificationItem.Generic(
             actor = NotificationActorUi(
@@ -116,8 +116,8 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
                 avatarTopColor = Color(0xFF607D8B),
                 avatarBottomColor = Color(0xFFE5CDB4)
             ),
-            timestamp = "SÁBADO · 08:41",
-            fallbackText = "A Irene le gustó tu cita destacada de \"The Waves\"."
+            timestamp = "SATURDAY · 08:41",
+            fallbackText = "Irene liked your featured quote from \"The Waves\"."
         )
     )
 )
