@@ -52,6 +52,7 @@ import com.example.feedbook.features.profile.presentation.ProfileScreen
 import com.example.feedbook.features.profile.presentation.ProfileViewModel
 import com.example.feedbook.features.profile.presentation.PublicProfilePreviewViewModel
 import com.example.feedbook.features.profile.presentation.PublicProfileViewModel
+import com.example.feedbook.features.push.PushTokenRegistrar
 import com.example.feedbook.features.readingrooms.presentation.ReadingRoomInfoScreen
 import com.example.feedbook.features.readingrooms.presentation.ReadingRoomListScreen
 import com.example.feedbook.features.readingrooms.presentation.ReadingRoomListViewModel
@@ -101,10 +102,14 @@ private fun NavHostController.navigateTopLevel(route: String) {
 }
 
 @Composable
-fun AppNavigation(modifier: Modifier = Modifier) {
+fun AppNavigation(
+    modifier: Modifier = Modifier,
+    onAuthenticated: () -> Unit = {}
+) {
     val navController = rememberNavController()
     val appContainer = (LocalContext.current.applicationContext as FeedBookApplication).container
     val onLogout = {
+        PushTokenRegistrar.unlinkCurrentToken()
         appContainer.sessionManager.clearSession()
         navController.navigate(AppRoutes.AUTH_GATE) {
             popUpTo(navController.graph.findStartDestination().id) {
@@ -139,6 +144,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 LaunchedEffect(state.destination) {
                     when (state.destination) {
                         AuthGateDestination.HOME -> {
+                            onAuthenticated()
                             navController.navigate(AppRoutes.HOME) {
                                 popUpTo(AppRoutes.AUTH_GATE) {
                                     inclusive = true
@@ -181,6 +187,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     onResetServerOrigin = viewModel::resetServerOrigin,
                     onSignInClick = {
                         viewModel.submitLogin {
+                            onAuthenticated()
                             navController.navigate(AppRoutes.HOME) {
                                 popUpTo(AppRoutes.LOGIN) {
                                     inclusive = true
@@ -199,6 +206,7 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                     trigger = state.biometricPromptTrigger,
                     onSuccess = {
                         viewModel.onSecureLoginAuthenticationSucceeded {
+                            onAuthenticated()
                             navController.navigate(AppRoutes.HOME) {
                                 popUpTo(AppRoutes.LOGIN) {
                                     inclusive = true

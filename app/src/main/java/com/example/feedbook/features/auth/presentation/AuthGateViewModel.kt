@@ -3,6 +3,7 @@ package com.example.feedbook.features.auth.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.feedbook.core.session.SessionManager
+import com.example.feedbook.features.push.PushTokenRegistrar
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,6 +27,7 @@ class AuthGateViewModel(
 
     init {
         val session = sessionManager.restorePersistedSession()
+        PushTokenRegistrar.registerCurrentToken(session?.username)
         _state.value = when {
             session == null -> AuthGateUiState(
                 isLoading = false,
@@ -46,6 +48,7 @@ class AuthGateViewModel(
 
     fun onBiometricSuccess() {
         val session = sessionManager.restorePersistedSession()
+        PushTokenRegistrar.registerCurrentToken(session?.username)
         _state.value = AuthGateUiState(
             isLoading = false,
             destination = if (session == null) AuthGateDestination.LOGIN else AuthGateDestination.HOME

@@ -116,7 +116,8 @@ fun HomeScreen(
                 item {
                     FeaturedBookCard(
                         book = state.featuredBook,
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        onBookClick = onBookClick
                     )
                 }
                 item {
@@ -170,9 +171,13 @@ private fun TrendingHeader(
 @Composable
 private fun FeaturedBookCard(
     book: HomeFeaturedBookUi,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBookClick: (String) -> Unit = {}
 ) {
-    ProfileSurfaceCard(modifier = modifier.fillMaxWidth()) {
+    ProfileSurfaceCard(
+        modifier = modifier.fillMaxWidth(),
+        onClick = { onBookClick(book.bookId) }
+    ) {
         Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
             RemoteBookCover(
                 title = book.title,

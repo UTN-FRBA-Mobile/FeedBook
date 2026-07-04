@@ -19,6 +19,7 @@ fun HomeDto.toDomain(): HomeFeed = HomeFeed(
         imageUri = avatar.imageUri
     ),
     featuredBook = HomeFeaturedBook(
+        bookId = featuredBook.bookId,
         label = featuredBook.label,
         title = featuredBook.title,
         author = featuredBook.author,

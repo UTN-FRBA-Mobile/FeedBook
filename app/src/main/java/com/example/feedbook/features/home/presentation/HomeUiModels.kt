@@ -17,6 +17,7 @@ data class HomeUiState(
 )
 
 data class HomeFeaturedBookUi(
+    val bookId: String,
     val label: String,
     val title: String,
     val author: String,
@@ -49,6 +50,7 @@ fun sampleHomeUiState(): HomeUiState = HomeUiState(
     avatarPreset = null,
     avatarImageUri = null,
     featuredBook = HomeFeaturedBookUi(
+        bookId = "the-name-of-the-wind",
         label = "FEATURED",
         title = "The Name of the Wind",
         author = "Patrick Rothfuss",
@@ -92,7 +94,7 @@ fun emptyHomeUiState(): HomeUiState = HomeUiState(
     avatarStyle = defaultAvatarStyle(),
     avatarPreset = null,
     avatarImageUri = null,
-    featuredBook = HomeFeaturedBookUi("", "", "", null),
+    featuredBook = HomeFeaturedBookUi("", "", "", "", null),
     rankedBooks = emptyList(),
     readingRooms = emptyList(),
     isLoading = false,

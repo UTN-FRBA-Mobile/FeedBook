@@ -44,7 +44,7 @@
 
 ## Important Details
 
-- Push tokens are stored in backend memory only. After restarting `go run .`, open the app again before sending.
+- Push tokens are persisted in the backend SQLite DB. A token can have `username = NULL` when the device is logged out; login re-registers the same token with the current username.
 - If `/api/push/send` returns `cloudmessaging.messages.create denied`, the service account needs the `Firebase Cloud Messaging API Admin` role (`roles/firebasecloudmessaging.admin`) and IAM may need a short propagation delay.
 - For Android emulator, `BuildConfig.BACKEND_ORIGIN` must use `http://10.0.2.2:8080/`. For physical device with `adb reverse`, `http://localhost:8080/` is fine.
 

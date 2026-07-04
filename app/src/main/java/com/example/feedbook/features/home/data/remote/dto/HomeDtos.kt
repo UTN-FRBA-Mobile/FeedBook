@@ -12,6 +12,7 @@ data class HomeDto(
 )
 
 data class HomeFeaturedBookDto(
+    val bookId: String,
     val label: String,
     val title: String,
     val author: String,

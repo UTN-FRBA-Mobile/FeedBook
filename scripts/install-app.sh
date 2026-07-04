@@ -143,6 +143,16 @@ ensure_reverse() {
   adb -s "$device_serial" reverse "tcp:${BACK_PORT}" "tcp:${BACK_PORT}"
 }
 
+run_install_debug() {
+  local device_serial="$1"
+
+  (
+    cd "$ROOT_DIR"
+    export JAVA_HOME
+    ANDROID_SERIAL="$device_serial" bash ./gradlew installDebug
+  )
+}
+
 main() {
   require_cmd adb
   parse_args "$@"
@@ -170,11 +180,23 @@ main() {
 
   echo "Compilando e instalando app debug..."
 
-  (
-    cd "$ROOT_DIR"
-    export JAVA_HOME
-    ANDROID_SERIAL="$device_serial" bash ./gradlew installDebug
-  )
+  local install_output
+  local install_status
+  set +e
+  install_output="$(run_install_debug "$device_serial" 2>&1)"
+  install_status=$?
+  set -e
+  printf '%s\n' "$install_output"
+
+  if [[ "$install_status" -ne 0 ]]; then
+    if grep -q "INSTALL_FAILED_UPDATE_INCOMPATIBLE" <<<"$install_output"; then
+      echo "La app instalada tiene otra firma. Desinstalo $APP_ID y reintento una vez..."
+      force_uninstall_app "$device_serial"
+      run_install_debug "$device_serial"
+    else
+      exit "$install_status"
+    fi
+  fi
 
   echo "App instalada en $device_serial."
 }

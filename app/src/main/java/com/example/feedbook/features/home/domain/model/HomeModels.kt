@@ -16,6 +16,7 @@ data class HomeAvatar(
 )
 
 data class HomeFeaturedBook(
+    val bookId: String,
     val label: String,
     val title: String,
     val author: String,
