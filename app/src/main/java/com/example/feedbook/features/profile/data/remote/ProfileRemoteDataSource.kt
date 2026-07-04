@@ -1,7 +1,9 @@
 package com.example.feedbook.features.profile.data.remote
 
 import com.example.feedbook.core.network.ApiService
+import okhttp3.MultipartBody
 import com.example.feedbook.features.profile.data.remote.dto.ProfileDto
+import com.example.feedbook.features.profile.data.remote.dto.AvatarUploadResponseDto
 import com.example.feedbook.features.profile.data.remote.dto.UpdateProfileRequestDto
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +31,9 @@ class ProfileRemoteDataSource(
         }
 
     suspend fun getPublicProfile(): ProfileDto = apiService.getPublicProfile()
+
+    suspend fun uploadOwnAvatar(image: MultipartBody.Part): AvatarUploadResponseDto =
+        apiService.uploadOwnAvatar(image)
 
     suspend fun updateOwnProfile(request: UpdateProfileRequestDto): ProfileDto {
         val updatedProfile = apiService.updateOwnProfile(request)

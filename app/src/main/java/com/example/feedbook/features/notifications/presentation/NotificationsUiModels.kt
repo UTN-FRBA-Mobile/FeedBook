@@ -56,6 +56,7 @@ sealed interface NotificationItem {
 
 data class NotificationActorUi(
     val name: String,
+    val avatarImageUri: String?,
     val avatarTopColor: Color,
     val avatarBottomColor: Color
 )

@@ -23,6 +23,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,7 +33,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -67,9 +67,8 @@ fun EditProfileScreen(
     var targetPagesInput by remember(state.readingGoal?.targetPagesPerDay) {
         mutableStateOf(state.readingGoal?.targetPagesPerDay?.toString().orEmpty())
     }
-    var selectedAvatarPreset by remember(state.avatarPreset) { mutableStateOf(state.avatarPreset) }
     var selectedAvatarImageUri by remember(state.avatarImageUri) { mutableStateOf(state.avatarImageUri) }
-    val selectedAvatarStyle = selectedAvatarPreset?.style ?: state.avatarStyle
+    val selectedAvatarStyle = state.avatarStyle
     val fieldColors = OutlinedTextFieldDefaults.colors(
         focusedTextColor = ProfileColors.PrimaryText,
         unfocusedTextColor = ProfileColors.PrimaryText,
@@ -105,7 +104,6 @@ fun EditProfileScreen(
             handle = handle.trim().ifEmpty { state.handle },
             quote = quote.trim().ifEmpty { state.quote },
             avatarStyle = selectedAvatarStyle,
-            avatarPreset = selectedAvatarPreset,
             avatarImageUri = selectedAvatarImageUri,
             readingGoal = readingGoal
         )
@@ -116,7 +114,6 @@ fun EditProfileScreen(
         variant = state.variant,
         activeTab = BottomBarTab.FEED,
         avatarStyle = selectedAvatarStyle,
-        avatarPreset = selectedAvatarPreset,
         avatarImageUri = selectedAvatarImageUri,
         title = stringResource(R.string.edit_profile_title),
         onAvatarClick = onProfileClick,
@@ -192,38 +189,16 @@ fun EditProfileScreen(
                             style = ProfileTypography.Body,
                             color = ProfileColors.SecondaryText
                         )
-                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            state.availableAvatarPresets.chunked(3).forEach { rowPresets ->
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                ) {
-                                    rowPresets.forEach { preset ->
-                                        AvatarPresetCard(
-                                            preset = preset,
-                                            selected = preset == selectedAvatarPreset && selectedAvatarImageUri == null,
-                                            onClick = {
-                                                selectedAvatarPreset = preset
-                                                selectedAvatarImageUri = null
-                                            },
-                                            modifier = Modifier.weight(1f)
-                                        )
-                                    }
-                                    repeat(3 - rowPresets.size) {
-                                        Box(modifier = Modifier.weight(1f))
-                                    }
-                                }
-                            }
-                        }
+                        val hasCustomPhoto = !selectedAvatarImageUri.isNullOrBlank()
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(84.dp)
+                                .height(92.dp)
                                 .clip(RoundedCornerShape(12.dp))
                                 .background(Color(0xFFF4F2F0))
                                 .border(
-                                    width = if (selectedAvatarImageUri != null) 2.dp else 1.dp,
-                                    color = if (selectedAvatarImageUri != null) ProfileColors.SurfaceStrong else ProfileColors.Border,
+                                    width = if (hasCustomPhoto) 2.dp else 1.dp,
+                                    color = if (hasCustomPhoto) ProfileColors.SurfaceStrong else ProfileColors.Border,
                                     shape = RoundedCornerShape(12.dp)
                                 )
                                 .clickable {
@@ -245,16 +220,9 @@ fun EditProfileScreen(
                                 ) {
                                     ProfileAvatarArtwork(
                                         avatarStyle = selectedAvatarStyle,
-                                        avatarPreset = selectedAvatarPreset,
+                                        avatarPreset = null,
                                         avatarImageUri = selectedAvatarImageUri,
-                                        modifier = Modifier.fillMaxSize(),
-                                        fallbackContent = {
-                                            Text(
-                                                text = stringResource(R.string.edit_profile_avatar_initials),
-                                                style = ProfileTypography.LabelUppercase,
-                                                color = ProfileColors.Accent
-                                            )
-                                        }
+                                        modifier = Modifier.fillMaxSize()
                                     )
                                 }
                                 Column(
@@ -267,7 +235,7 @@ fun EditProfileScreen(
                                         color = ProfileColors.PrimaryText
                                     )
                                     Text(
-                                        text = if (selectedAvatarImageUri == null) {
+                                        text = if (!hasCustomPhoto) {
                                             stringResource(R.string.edit_profile_avatar_custom_empty)
                                         } else {
                                             stringResource(R.string.edit_profile_avatar_custom_selected)
@@ -276,6 +244,18 @@ fun EditProfileScreen(
                                         color = ProfileColors.SecondaryText
                                     )
                                 }
+                            }
+                        }
+                        if (hasCustomPhoto) {
+                            TextButton(
+                                onClick = { selectedAvatarImageUri = "" },
+                                contentPadding = PaddingValues(0.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.edit_profile_avatar_clear),
+                                    style = ProfileTypography.Label,
+                                    color = ProfileColors.Accent
+                                )
                             }
                         }
                     }
@@ -335,52 +315,6 @@ fun EditProfileScreen(
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun AvatarPresetCard(
-    preset: AvatarPreset,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .height(96.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .background(
-                Brush.verticalGradient(
-                    listOf(preset.style.topColor, preset.style.bottomColor)
-                )
-            )
-            .border(
-                width = if (selected) 2.dp else 1.dp,
-                color = if (selected) ProfileColors.SurfaceStrong else ProfileColors.Border,
-                shape = RoundedCornerShape(14.dp)
-            )
-            .clickable(onClick = onClick)
-            .padding(horizontal = 8.dp, vertical = 10.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            ProfileAvatarArtwork(
-                avatarStyle = preset.style,
-                avatarPreset = preset,
-                avatarImageUri = null,
-                modifier = Modifier
-                    .size(42.dp)
-                    .clip(RoundedCornerShape(14.dp))
-            )
-            Text(
-                text = stringResource(preset.labelRes),
-                style = ProfileTypography.Label.copy(fontWeight = FontWeight.SemiBold),
-                color = Color.White
-            )
         }
     }
 }

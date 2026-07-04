@@ -16,7 +16,7 @@ fun ReaderProfile.toAvatarPresentation(): AvatarPresentation {
     )
     return AvatarPresentation(
         style = style,
-        preset = avatarPresetFromData(avatar.avatarPresetId, style, avatar.presetImageUrl),
+        preset = null,
         imageUri = avatar.imageUri
     )
 }

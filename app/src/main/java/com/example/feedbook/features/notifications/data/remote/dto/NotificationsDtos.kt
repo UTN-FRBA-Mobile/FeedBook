@@ -16,6 +16,7 @@ data class NotificationEntryDto(
 
 data class NotificationActorDto(
     val name: String,
+    val avatarImageUrl: String?,
     val avatarTopColorHex: Long,
     val avatarBottomColorHex: Long
 )

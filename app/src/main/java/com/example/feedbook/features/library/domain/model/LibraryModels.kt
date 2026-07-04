@@ -14,8 +14,6 @@ data class ReaderLibrary(
 data class LibraryAvatar(
     val topColorHex: Long,
     val bottomColorHex: Long,
-    val avatarPresetId: String?,
-    val presetImageUrl: String?,
     val imageUri: String?
 )
 
@@ -41,5 +39,6 @@ data class ReadBookEntry(
     val startedOn: String,
     val finishedOn: String,
     val personalRating: Int,
-    val coverAccentHex: Long
+    val coverAccentHex: Long,
+    val coverImageUrl: String?
 )

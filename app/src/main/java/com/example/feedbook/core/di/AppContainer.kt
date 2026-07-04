@@ -72,7 +72,7 @@ class AppContainer(
 
     private val authorRepository = AuthorRepositoryImpl(authorRemoteDataSource)
     private val homeRepository = HomeRepositoryImpl(homeRemoteDataSource)
-    private val profileRepository = ProfileRepositoryImpl(profileRemoteDataSource)
+    private val profileRepository = ProfileRepositoryImpl(context, profileRemoteDataSource)
     private val libraryRepository = LibraryRepositoryImpl(libraryRemoteDataSource)
     private val statsRepository = StatsRepositoryImpl(statsRemoteDataSource)
     private val notificationsRepository = NotificationsRepositoryImpl(notificationsRemoteDataSource)

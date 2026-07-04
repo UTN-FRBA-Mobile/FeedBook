@@ -1,6 +1,5 @@
 package com.example.feedbook.features.profile.presentation
 
-import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -41,9 +40,6 @@ class EditProfileViewModel(
                     name = updatedState.name,
                     handle = updatedState.handle,
                     quote = updatedState.quote,
-                    avatarTopColorHex = updatedState.avatarStyle.topColor.toArgb().toLong(),
-                    avatarBottomColorHex = updatedState.avatarStyle.bottomColor.toArgb().toLong(),
-                    avatarPresetId = updatedState.avatarPreset?.id,
                     avatarImageUri = updatedState.avatarImageUri,
                     targetPagesPerDay = updatedState.readingGoal?.targetPagesPerDay
                 )

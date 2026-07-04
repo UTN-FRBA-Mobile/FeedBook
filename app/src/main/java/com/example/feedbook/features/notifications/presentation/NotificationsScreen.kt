@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,6 +33,7 @@ import com.example.feedbook.core.ui.components.RemoteBookCover
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
+import com.example.feedbook.features.profile.presentation.components.ProfileAvatarArtwork
 import com.example.feedbook.features.profile.presentation.components.ProfileSurfaceCard
 import com.example.feedbook.features.profile.presentation.components.ProfileTypography
 
@@ -175,12 +175,17 @@ private fun NotificationCard(
                     modifier = Modifier
                         .size(34.dp)
                         .clip(androidx.compose.foundation.shape.CircleShape)
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(actor.avatarTopColor, actor.avatarBottomColor)
-                            )
-                        )
-                )
+                ) {
+                    ProfileAvatarArtwork(
+                        avatarStyle = AvatarStyle(
+                            topColor = actor.avatarTopColor,
+                            bottomColor = actor.avatarBottomColor
+                        ),
+                        avatarPreset = null,
+                        avatarImageUri = actor.avatarImageUri,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
 
                 Column(
                     modifier = Modifier.weight(1f),
