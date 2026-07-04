@@ -132,12 +132,6 @@ fun HomeScreen(
                         onSeeAllClick = onSeeAllReadingRoomsClick
                     )
                 }
-                item {
-                    CuratorsSection(
-                        curators = state.curators,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                }
             }
         }
     }
@@ -405,74 +399,6 @@ private fun ReadingRoomCard(room: HomeReadingRoomUi, onClick: () -> Unit) {
                     style = ProfileTypography.Body.copy(fontSize = 16.sp, lineHeight = 20.sp),
                     color = ProfileColors.SecondaryText
                 )
-            }
-        }
-    }
-}
-
-@Composable
-private fun CuratorsSection(
-    curators: List<HomeCuratorUi>,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        Text(
-            text = "Curators to Follow",
-            style = ProfileTypography.HeroName.copy(
-                fontSize = 28.sp,
-                lineHeight = 32.sp,
-                fontWeight = FontWeight.Normal
-            ),
-            color = ProfileColors.PrimaryText
-        )
-        curators.forEach { curator ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                ProfileAvatarArtwork(
-                    avatarStyle = defaultAvatarStyle(),
-                    avatarPreset = null,
-                    avatarImageUri = curator.imageUrl,
-                    modifier = Modifier.size(60.dp),
-                    imageShape = RoundedCornerShape(16.dp)
-                )
-                Spacer(modifier = Modifier.width(18.dp))
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(2.dp)
-                ) {
-                    Text(
-                        text = curator.name,
-                        style = ProfileTypography.Body.copy(
-                            fontSize = 18.sp,
-                            lineHeight = 24.sp,
-                            fontWeight = FontWeight.Medium
-                        ),
-                        color = ProfileColors.PrimaryText
-                    )
-                    Text(
-                        text = curator.focus,
-                        style = ProfileTypography.Body.copy(fontSize = 18.sp, lineHeight = 28.sp),
-                        color = ProfileColors.SecondaryText
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(24.dp))
-                        .border(2.dp, ProfileColors.Border, RoundedCornerShape(24.dp))
-                        .padding(horizontal = 22.dp, vertical = 12.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Follow",
-                        style = ProfileTypography.Body.copy(fontSize = 16.sp, lineHeight = 20.sp),
-                        color = ProfileColors.PrimaryText
-                    )
-                }
             }
         }
     }

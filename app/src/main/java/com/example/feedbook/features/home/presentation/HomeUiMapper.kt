@@ -41,13 +41,6 @@ fun HomeFeed.toUiState(): HomeUiState {
                 isAdult = it.isAdult
             )
         },
-        curators = curators.map {
-            HomeCuratorUi(
-                name = it.name,
-                focus = it.focus,
-                imageUrl = it.imageUrl
-            )
-        },
         isLoading = false,
         errorMessage = null
     )

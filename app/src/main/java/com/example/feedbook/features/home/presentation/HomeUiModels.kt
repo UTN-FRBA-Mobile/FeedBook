@@ -12,7 +12,6 @@ data class HomeUiState(
     val featuredBook: HomeFeaturedBookUi,
     val rankedBooks: List<HomeRankedBookUi>,
     val readingRooms: List<HomeReadingRoomUi>,
-    val curators: List<HomeCuratorUi>,
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 )
@@ -41,12 +40,6 @@ data class HomeReadingRoomUi(
     val memberCount: Int,
     val isFollowed: Boolean,
     val isAdult: Boolean
-)
-
-data class HomeCuratorUi(
-    val name: String,
-    val focus: String,
-    val imageUrl: String?
 )
 
 fun sampleHomeUiState(): HomeUiState = HomeUiState(
@@ -89,18 +82,6 @@ fun sampleHomeUiState(): HomeUiState = HomeUiState(
             isAdult = false
         )
     ),
-    curators = listOf(
-        HomeCuratorUi(
-            name = "Dr. Aris Thorne",
-            focus = "Historical Non-Fiction Focus",
-            imageUrl = null
-        ),
-        HomeCuratorUi(
-            name = "Lila Vance",
-            focus = "Contemporary Lit & Essays",
-            imageUrl = null
-        )
-    ),
     isLoading = false,
     errorMessage = null
 )
@@ -113,7 +94,6 @@ fun emptyHomeUiState(): HomeUiState = HomeUiState(
     featuredBook = HomeFeaturedBookUi("", "", "", null),
     rankedBooks = emptyList(),
     readingRooms = emptyList(),
-    curators = emptyList(),
     isLoading = false,
     errorMessage = null
 )
