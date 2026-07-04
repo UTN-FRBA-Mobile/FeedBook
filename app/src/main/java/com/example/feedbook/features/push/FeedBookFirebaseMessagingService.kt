@@ -10,6 +10,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.example.feedbook.FeedBookApplication
 import com.example.feedbook.MainActivity
 import com.example.feedbook.R
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -17,7 +18,13 @@ import com.google.firebase.messaging.RemoteMessage
 
 class FeedBookFirebaseMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
-        PushTokenRegistrar.registerToken(token)
+        val username = (applicationContext as? FeedBookApplication)
+            ?.container
+            ?.sessionManager
+            ?.session
+            ?.value
+            ?.username
+        PushTokenRegistrar.registerToken(token, username)
     }
 
     override fun onMessageReceived(message: RemoteMessage) {

@@ -11,6 +11,6 @@ class FeedBookApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         NetworkModule.initialize(this)
-        PushTokenRegistrar.registerCurrentToken()
+        PushTokenRegistrar.registerCurrentToken(container.sessionManager.session.value?.username)
     }
 }

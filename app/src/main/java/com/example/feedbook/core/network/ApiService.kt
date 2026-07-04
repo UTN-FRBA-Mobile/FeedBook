@@ -167,9 +167,17 @@ interface ApiService {
 
     @POST("push/register")
     suspend fun registerPushToken(@Body body: RegisterPushTokenRequestDto)
+
+    @POST("push/unlink")
+    suspend fun unlinkPushToken(@Body body: UnlinkPushTokenRequestDto)
 }
 
 data class RegisterPushTokenRequestDto(
     val token: String,
-    val platform: String = "android"
+    val platform: String = "android",
+    val username: String? = null
+)
+
+data class UnlinkPushTokenRequestDto(
+    val token: String
 )

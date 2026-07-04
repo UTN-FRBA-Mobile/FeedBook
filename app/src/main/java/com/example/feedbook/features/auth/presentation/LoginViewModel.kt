@@ -8,6 +8,7 @@ import com.example.feedbook.core.network.NetworkModule
 import com.example.feedbook.core.session.SessionManager
 import com.example.feedbook.features.auth.domain.usecase.LoginUseCase
 import com.example.feedbook.features.auth.domain.usecase.RegisterUseCase
+import com.example.feedbook.features.push.PushTokenRegistrar
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -191,6 +192,7 @@ class LoginViewModel(
                 )
             }.onSuccess { session ->
                 sessionManager.updateSession(session)
+                PushTokenRegistrar.registerCurrentToken(session.username)
                 _state.value = _state.value.copy(isLoading = false, errorMessage = null)
                 onSuccess()
             }.onFailure { throwable ->

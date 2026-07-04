@@ -17,14 +17,13 @@ import com.example.feedbook.features.push.PushTokenRegistrar
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestNotificationPermission()
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(
             ComposeView(this).apply {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
                     FeedBookTheme {
-                        AppNavigation()
+                        AppNavigation(onAuthenticated = ::requestNotificationPermission)
                     }
                 }
             }
@@ -33,7 +32,8 @@ class MainActivity : FragmentActivity() {
 
     override fun onResume() {
         super.onResume()
-        PushTokenRegistrar.registerCurrentToken()
+        val appContainer = (applicationContext as FeedBookApplication).container
+        PushTokenRegistrar.registerCurrentToken(appContainer.sessionManager.session.value?.username)
     }
 
     private fun requestNotificationPermission() {

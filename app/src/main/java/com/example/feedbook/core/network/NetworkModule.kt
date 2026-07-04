@@ -219,5 +219,9 @@ object NetworkModule {
         override suspend fun registerPushToken(body: RegisterPushTokenRequestDto) {
             currentServices.apiService.registerPushToken(body)
         }
+
+        override suspend fun unlinkPushToken(body: UnlinkPushTokenRequestDto) {
+            currentServices.apiService.unlinkPushToken(body)
+        }
     }
 }
