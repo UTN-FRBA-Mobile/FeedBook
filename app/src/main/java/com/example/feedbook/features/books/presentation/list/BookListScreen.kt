@@ -232,10 +232,9 @@ fun BookListContent(
             .background(ProfileColors.Background),
         variant = ProfileVariant.OWN,
         activeTab = BottomBarTab.EXPLORE,
-        avatarStyle = com.example.feedbook.features.profile.presentation.AvatarStyle(
-            topColor = Color(0xFF315A73),
-            bottomColor = Color(0xFFF0C6A8)
-        ),
+        avatarStyle = state.avatarStyle,
+        avatarPreset = state.avatarPreset,
+        avatarImageUri = state.avatarImageUri,
         onAvatarClick = onProfileClick,
         onFeedClick = onFeedClick,
         onExploreClick = onExploreClick,

@@ -35,8 +35,9 @@ fun RemoteBookCover(
         contentAlignment = Alignment.Center
     ) {
         if (!coverImageUrl.isNullOrBlank()) {
+            val imageRequest = rememberFeedBookImageRequest(coverImageUrl)
             AsyncImage(
-                model = coverImageUrl,
+                model = imageRequest,
                 contentDescription = title,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop

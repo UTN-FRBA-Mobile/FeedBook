@@ -114,7 +114,7 @@ start_backend() {
   echo "Levantando backend (SQLite)..."
   (
     cd "$BACK_DIR"
-    GOCACHE=/tmp/feedbook-go-cache GOMODCACHE=/tmp/feedbook-go-mod FEEDBOOK_STORE=sqlite nohup go run . >"$BACK_LOG_FILE" 2>&1 &
+    setsid env GOCACHE=/tmp/feedbook-go-cache GOMODCACHE=/tmp/feedbook-go-mod FEEDBOOK_STORE=sqlite go run . >"$BACK_LOG_FILE" 2>&1 < /dev/null &
     echo $! >"$BACK_PID_FILE"
   )
 
@@ -195,6 +195,7 @@ main() {
   require_cmd curl
   require_cmd go
   require_cmd nohup
+  require_cmd setsid
   require_cmd fuser
   require_cmd scrcpy
 
@@ -203,8 +204,9 @@ main() {
 
   echo "Usando dispositivo: $device_serial"
 
-  start_backend
   ensure_device_http_proxy "$device_serial"
+  ensure_reverse "$device_serial"
+  start_backend
 
   echo "Compilando e instalando app debug..."
   (

@@ -66,6 +66,7 @@ fun LibraryScreen(
         variant = ProfileVariant.OWN,
         activeTab = BottomBarTab.LIBRARY,
         avatarStyle = state.avatarStyle,
+        avatarPreset = state.avatarPreset,
         avatarImageUri = state.avatarImageUri,
         onAvatarClick = onProfileClick,
         onFeedClick = onFeedClick,
