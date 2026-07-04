@@ -52,6 +52,11 @@ import com.example.feedbook.features.profile.presentation.ProfileScreen
 import com.example.feedbook.features.profile.presentation.ProfileViewModel
 import com.example.feedbook.features.profile.presentation.PublicProfilePreviewViewModel
 import com.example.feedbook.features.profile.presentation.PublicProfileViewModel
+import com.example.feedbook.features.readingrooms.presentation.ReadingRoomInfoScreen
+import com.example.feedbook.features.readingrooms.presentation.ReadingRoomListScreen
+import com.example.feedbook.features.readingrooms.presentation.ReadingRoomListViewModel
+import com.example.feedbook.features.readingrooms.presentation.ReadingRoomScreen
+import com.example.feedbook.features.readingrooms.presentation.ReadingRoomViewModel
 import com.example.feedbook.features.stats.presentation.StatsScreen
 import com.example.feedbook.features.stats.presentation.StatsViewModel
 
@@ -70,6 +75,9 @@ object AppRoutes {
     const val ISBN_SCANNER = "isbnScanner"
     const val BOOK_DETAIL = "bookDetail/{bookId}"
     const val ALL_REVIEWS = "allReviews/{bookId}?title={title}"
+    const val READING_ROOMS = "readingRooms"
+    const val READING_ROOM = "readingRoom/{roomId}"
+    const val READING_ROOM_INFO = "readingRoom/{roomId}/info"
 
     const val AUTHOR_DETAIL = "authorDetail/{authorId}"
     const val AUTHOR_BOOKS = "authorBooks/{authorId}?name={name}"
@@ -77,6 +85,8 @@ object AppRoutes {
     fun detail(bookId: String): String = "bookDetail/$bookId"
     fun authorDetail(authorId: String): String = "authorDetail/$authorId"
     fun allReviews(bookId: String, title: String): String = "allReviews/$bookId?title=$title"
+    fun readingRoom(roomId: String): String = "readingRoom/$roomId"
+    fun readingRoomInfo(roomId: String): String = "readingRoom/$roomId/info"
     fun authorBooks(authorId: String, name: String): String = "authorBooks/$authorId?name=$name"
 }
 
@@ -214,7 +224,71 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                 onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
-                onLogoutClick = onLogout
+                onLogoutClick = onLogout,
+                onReadingRoomClick = { roomId -> navController.navigate(AppRoutes.readingRoom(roomId)) },
+                onSeeAllReadingRoomsClick = { navController.navigate(AppRoutes.READING_ROOMS) }
+            )
+        }
+
+        composable(route = AppRoutes.READING_ROOMS) {
+            val viewModel: ReadingRoomListViewModel = viewModel(
+                factory = ReadingRoomListViewModel.provideFactory(appContainer.readingRoomsRemoteDataSource)
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            ReadingRoomListScreen(
+                state = state,
+                onBackClick = { navController.popBackStack() },
+                onRoomClick = { roomId -> navController.navigate(AppRoutes.readingRoom(roomId)) },
+                onQueryChange = viewModel::updateQuery,
+                onCreateRoom = { name, description, shortDescription, isAdult ->
+                    viewModel.createRoom(name, description, shortDescription, isAdult) { roomId ->
+                        navController.navigate(AppRoutes.readingRoom(roomId))
+                    }
+                }
+            )
+        }
+
+        composable(
+            route = AppRoutes.READING_ROOM,
+            arguments = listOf(navArgument("roomId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val roomId = backStackEntry.arguments?.getString("roomId").orEmpty()
+            val viewModel: ReadingRoomViewModel = viewModel(
+                factory = ReadingRoomViewModel.provideFactory(roomId, appContainer.readingRoomsRemoteDataSource)
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            ReadingRoomScreen(
+                state = state,
+                onBackClick = { navController.popBackStack() },
+                onInfoClick = { navController.navigate(AppRoutes.readingRoomInfo(roomId)) },
+                onJoinClick = viewModel::join,
+                onChangeBook = viewModel::changeBook,
+                onRate = viewModel::rate,
+                onComment = viewModel::comment
+            )
+        }
+
+        composable(
+            route = AppRoutes.READING_ROOM_INFO,
+            arguments = listOf(navArgument("roomId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val roomId = backStackEntry.arguments?.getString("roomId").orEmpty()
+            val viewModel: ReadingRoomViewModel = viewModel(
+                factory = ReadingRoomViewModel.provideFactory(roomId, appContainer.readingRoomsRemoteDataSource)
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            ReadingRoomInfoScreen(
+                state = state,
+                onBackClick = { navController.popBackStack() },
+                onSaveDescription = viewModel::updateDescription,
+                onKick = viewModel::kick,
+                onDelete = { confirmation ->
+                    viewModel.delete(confirmation) {
+                        navController.navigate(AppRoutes.READING_ROOMS) {
+                            popUpTo(AppRoutes.READING_ROOMS) { inclusive = true }
+                        }
+                    }
+                }
             )
         }
 

@@ -8,6 +8,7 @@ APP_ID="com.example.feedbook"
 MAIN_ACTIVITY="com.example.feedbook/.MainActivity"
 BACK_HOST="127.0.0.1"
 BACK_PORT="8080"
+BACK_DB_FILE="$BACK_DIR/feedbook.db"
 BACK_PID_FILE="$ROOT_DIR/.feedbook-back.pid"
 BACK_LOG_FILE="/tmp/feedbook-back.log"
 SCRCPY_LOG_FILE="/tmp/feedbook-scrcpy.log"
@@ -110,6 +111,9 @@ stop_existing_backend() {
 start_backend() {
   stop_existing_backend
   cleanup_stale_pid
+
+  echo "Reiniciando base local SQLite desde el seeder..."
+  rm -f "$BACK_DB_FILE"
 
   echo "Levantando backend (SQLite)..."
   (

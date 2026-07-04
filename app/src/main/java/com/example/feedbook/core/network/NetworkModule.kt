@@ -14,6 +14,14 @@ import com.example.feedbook.features.library.data.remote.dto.LibraryDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationsDto
 import com.example.feedbook.features.profile.data.remote.dto.ProfileDto
 import com.example.feedbook.features.profile.data.remote.dto.UpdateProfileRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.ChangeReadingRoomBookRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.CreateReadingRoomRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.DeleteReadingRoomRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.ReadingRoomDetailDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.ReadingRoomListDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.SaveReadingRoomCommentRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.SaveReadingRoomRatingRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.UpdateReadingRoomDescriptionRequestDto
 import com.example.feedbook.features.stats.data.remote.dto.StatsDto
 import com.example.feedbook.features.auth.data.remote.dto.LoginRequestDto
 import com.example.feedbook.features.auth.data.remote.dto.LoginResponseDto
@@ -132,8 +140,55 @@ object NetworkModule {
         override suspend fun getHomeFeed(): HomeDto =
             currentServices.apiService.getHomeFeed()
 
+        override suspend fun getReadingRooms(): ReadingRoomListDto =
+            currentServices.apiService.getReadingRooms()
+
+        override suspend fun createReadingRoom(body: CreateReadingRoomRequestDto): ReadingRoomDetailDto =
+            currentServices.apiService.createReadingRoom(body)
+
+        override suspend fun getReadingRoom(id: String): ReadingRoomDetailDto =
+            currentServices.apiService.getReadingRoom(id)
+
+        override suspend fun joinReadingRoom(id: String): ReadingRoomDetailDto =
+            currentServices.apiService.joinReadingRoom(id)
+
+        override suspend fun leaveReadingRoom(id: String) {
+            currentServices.apiService.leaveReadingRoom(id)
+        }
+
+        override suspend fun updateReadingRoomDescription(
+            id: String,
+            body: UpdateReadingRoomDescriptionRequestDto
+        ): ReadingRoomDetailDto = currentServices.apiService.updateReadingRoomDescription(id, body)
+
+        override suspend fun deleteReadingRoom(id: String, body: DeleteReadingRoomRequestDto) {
+            currentServices.apiService.deleteReadingRoom(id, body)
+        }
+
+        override suspend fun kickReadingRoomMember(id: String, userId: String) {
+            currentServices.apiService.kickReadingRoomMember(id, userId)
+        }
+
+        override suspend fun changeReadingRoomBook(
+            id: String,
+            body: ChangeReadingRoomBookRequestDto
+        ): ReadingRoomDetailDto = currentServices.apiService.changeReadingRoomBook(id, body)
+
+        override suspend fun saveReadingRoomRating(
+            id: String,
+            body: SaveReadingRoomRatingRequestDto
+        ): ReadingRoomDetailDto = currentServices.apiService.saveReadingRoomRating(id, body)
+
+        override suspend fun saveReadingRoomComment(
+            id: String,
+            body: SaveReadingRoomCommentRequestDto
+        ): ReadingRoomDetailDto = currentServices.apiService.saveReadingRoomComment(id, body)
+
         override suspend fun getOwnLibrary(): LibraryDto =
             currentServices.apiService.getOwnLibrary()
+
+        override suspend fun getFollowedBooks(): List<BookDto> =
+            currentServices.apiService.getFollowedBooks()
 
         override suspend fun addBookToLibrary(body: Map<String, String>) {
             currentServices.apiService.addBookToLibrary(body)
