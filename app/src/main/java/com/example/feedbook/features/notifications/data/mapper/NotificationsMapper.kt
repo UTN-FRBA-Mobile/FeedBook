@@ -63,6 +63,7 @@ private fun NotificationEntryDto.toDomain(): NotificationEntry {
 
 private fun NotificationActorDto.toDomain(): NotificationActor = NotificationActor(
     name = name,
+    avatarImageUrl = avatarImageUrl,
     avatarTopColorHex = avatarTopColorHex,
     avatarBottomColorHex = avatarBottomColorHex
 )

@@ -52,6 +52,8 @@ import androidx.compose.ui.unit.sp
 import com.example.feedbook.features.books.presentation.detail.ReviewUiModel
 import com.example.feedbook.features.books.presentation.detail.ReviewSpoilerText
 import com.example.feedbook.features.books.presentation.detail.reviewHasSpoilers
+import com.example.feedbook.features.profile.presentation.defaultAvatarStyle
+import com.example.feedbook.features.profile.presentation.components.ProfileAvatarArtwork
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -188,17 +190,13 @@ private fun AllReviewCard(
                     modifier = Modifier
                         .size(34.dp)
                         .clip(CircleShape)
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(ProfileColors.AccentSoft, ProfileColors.Accent)
-                            )
-                        ),
-                    contentAlignment = Alignment.Center
+                        .background(ProfileColors.AccentSoft)
                 ) {
-                    Text(
-                        text = review.reviewerName.first().toString(),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = ProfileColors.SurfaceStrong
+                    ProfileAvatarArtwork(
+                        avatarStyle = defaultAvatarStyle(),
+                        avatarPreset = null,
+                        avatarImageUri = review.reviewerAvatar,
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
                 Spacer(modifier = Modifier.width(12.dp))

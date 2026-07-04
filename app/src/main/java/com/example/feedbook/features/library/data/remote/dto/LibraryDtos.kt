@@ -21,5 +21,6 @@ data class ReadBookDto(
     val startedOn: String,
     val finishedOn: String,
     val personalRating: Int,
-    val coverAccentHex: Long
+    val coverAccentHex: Long,
+    val coverImageUrl: String?
 )

@@ -12,6 +12,7 @@ import com.example.feedbook.features.books.data.remote.dto.SaveReviewRequestDto
 import com.example.feedbook.features.home.data.remote.dto.HomeDto
 import com.example.feedbook.features.library.data.remote.dto.LibraryDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationsDto
+import com.example.feedbook.features.profile.data.remote.dto.AvatarUploadResponseDto
 import com.example.feedbook.features.profile.data.remote.dto.AvatarDto
 import com.example.feedbook.features.profile.data.remote.dto.CurrentBookDto
 import com.example.feedbook.features.profile.data.remote.dto.ProfileDto
@@ -65,6 +66,8 @@ class ProfileRemoteDataSourceTest {
             override suspend fun removeBookFromLibrary(body: Map<String, String>) = error("unused")
             override suspend fun getStats(): StatsDto = error("unused")
             override suspend fun getNotifications(): NotificationsDto = error("unused")
+            override suspend fun uploadOwnAvatar(image: okhttp3.MultipartBody.Part): AvatarUploadResponseDto =
+                error("unused")
             override suspend fun registerPushToken(body: RegisterPushTokenRequestDto) =
                 error("unused")
         }
@@ -77,9 +80,6 @@ class ProfileRemoteDataSourceTest {
                 name = "After",
                 handle = "@after",
                 quote = "Updated",
-                avatarTopColorHex = 1L,
-                avatarBottomColorHex = 2L,
-                avatarPresetId = null,
                 avatarImageUri = null,
                 targetPagesPerDay = 10
             )
@@ -93,8 +93,7 @@ class ProfileRemoteDataSourceTest {
         name = name,
         handle = "@sample",
         quote = "quote",
-        avatar = AvatarDto(1L, 2L, null, null, null),
-        availableAvatarPresets = emptyList(),
+        avatar = AvatarDto(1L, 2L, null),
         readingGoal = null,
         readingStreak = com.example.feedbook.features.profile.data.remote.dto.ReadingStreakDto(0, emptyList()),
         currentBook = CurrentBookDto("1", "Book", "Author", 1, 10, 0.1f, null),

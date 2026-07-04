@@ -40,6 +40,9 @@
     <string name="profile_library_archive_completed">Books completed</string>
     <string name="profile_library_archive_view_collection">View Collection</string>
     <string name="profile_library_archive_arrow">&#8594;</string>
+    <string name="library_read_history_title">READ COLLECTION</string>
+    <string name="library_read_history_empty_title">No completed books yet</string>
+    <string name="library_read_history_empty_body">When you finish books, they will appear here with your reading dates and rating.</string>
     <string name="home_title">Home</string>
 
     <string name="edit_profile_title">Edit Profile</string>
@@ -51,12 +54,13 @@
     <string name="edit_profile_handle_placeholder">@evelynv</string>
     <string name="edit_profile_bio_label">Bio / Quote</string>
     <string name="edit_profile_bio_placeholder">Write a short line about your reading taste</string>
-    <string name="edit_profile_avatar_title">Avatar Style</string>
-    <string name="edit_profile_avatar_body">Elegí un avatar por defecto o usa una foto custom para tu perfil.</string>
+    <string name="edit_profile_avatar_title">Avatar</string>
+    <string name="edit_profile_avatar_body">Elegí una foto para tu avatar. Si no subís una, se usa el avatar genérico.</string>
     <string name="edit_profile_avatar_initials">EV</string>
     <string name="edit_profile_avatar_custom_title">Custom photo</string>
     <string name="edit_profile_avatar_custom_empty">Choose an image from your device</string>
     <string name="edit_profile_avatar_custom_selected">Photo selected. Tap to replace it.</string>
+    <string name="edit_profile_avatar_clear">Remove photo</string>
     <string name="avatar_preset_vampire">Vampiro</string>
     <string name="avatar_preset_werewolf">Hombre lobo</string>
     <string name="avatar_preset_witch">Bruja</string>

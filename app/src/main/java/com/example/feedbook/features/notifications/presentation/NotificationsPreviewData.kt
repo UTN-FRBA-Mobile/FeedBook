@@ -11,6 +11,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
         NotificationItem.LikedYourReview(
             actor = NotificationActorUi(
                 name = "Juan",
+                avatarImageUri = null,
                 avatarTopColor = Color(0xFF35566F),
                 avatarBottomColor = Color(0xFFC8A988)
             ),
@@ -19,6 +20,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
         NotificationItem.FollowedYou(
             actor = NotificationActorUi(
                 name = "Sofía",
+                avatarImageUri = null,
                 avatarTopColor = Color(0xFFB9CBE3),
                 avatarBottomColor = Color(0xFFE7EEF7)
             ),
@@ -27,6 +29,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
         NotificationItem.ReviewedBook(
             actor = NotificationActorUi(
                 name = "Elena",
+                avatarImageUri = null,
                 avatarTopColor = Color(0xFF534D61),
                 avatarBottomColor = Color(0xFFD9B89C)
             ),
@@ -40,6 +43,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
         NotificationItem.StartedReading(
             actor = NotificationActorUi(
                 name = "Martina",
+                avatarImageUri = null,
                 avatarTopColor = Color(0xFF6D7FA2),
                 avatarBottomColor = Color(0xFFDAB596)
             ),
@@ -53,6 +57,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
         NotificationItem.FollowedYou(
             actor = NotificationActorUi(
                 name = "Tomás",
+                avatarImageUri = null,
                 avatarTopColor = Color(0xFF4E697F),
                 avatarBottomColor = Color(0xFFE6C7AA)
             ),
@@ -61,6 +66,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
         NotificationItem.SavedYourBook(
             actor = NotificationActorUi(
                 name = "Lucía",
+                avatarImageUri = null,
                 avatarTopColor = Color(0xFF7A8B6A),
                 avatarBottomColor = Color(0xFFDCC6A7)
             ),
@@ -74,6 +80,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
         NotificationItem.LikedYourReview(
             actor = NotificationActorUi(
                 name = "Bruno",
+                avatarImageUri = null,
                 avatarTopColor = Color(0xFF5A556A),
                 avatarBottomColor = Color(0xFFCDA58B)
             ),
@@ -82,6 +89,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
         NotificationItem.ReviewedBook(
             actor = NotificationActorUi(
                 name = "Camila",
+                avatarImageUri = null,
                 avatarTopColor = Color(0xFF7D6B8D),
                 avatarBottomColor = Color(0xFFE2C39F)
             ),
@@ -95,6 +103,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
         NotificationItem.FollowedYou(
             actor = NotificationActorUi(
                 name = "Nicolás",
+                avatarImageUri = null,
                 avatarTopColor = Color(0xFF4D6B73),
                 avatarBottomColor = Color(0xFFD3B08C)
             ),
@@ -103,6 +112,7 @@ fun previewNotificationsUiState(): NotificationsUiState = emptyNotificationsUiSt
         NotificationItem.Generic(
             actor = NotificationActorUi(
                 name = "Irene",
+                avatarImageUri = null,
                 avatarTopColor = Color(0xFF607D8B),
                 avatarBottomColor = Color(0xFFE5CDB4)
             ),

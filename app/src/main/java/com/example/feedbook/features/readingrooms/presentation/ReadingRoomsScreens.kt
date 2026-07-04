@@ -70,6 +70,7 @@ import com.example.feedbook.features.readingrooms.data.remote.dto.ReadingRoomSum
 import com.example.feedbook.features.profile.presentation.ProfileVariant
 import com.example.feedbook.features.profile.presentation.defaultAvatarStyle
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
+import com.example.feedbook.features.profile.presentation.components.ProfileAvatarArtwork
 import com.example.feedbook.features.profile.presentation.components.ProfileSurfaceCard
 import com.example.feedbook.features.profile.presentation.components.ProfileTypography
 
@@ -454,12 +455,12 @@ private fun CommentCard(
             .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        AsyncImage(
-            model = comment.avatarUrl,
-            contentDescription = comment.userName,
-            modifier = Modifier
-                .size(34.dp)
-                .clip(CircleShape)
+        ProfileAvatarArtwork(
+            avatarStyle = defaultAvatarStyle(),
+            avatarPreset = null,
+            avatarImageUri = comment.avatarUrl,
+            modifier = Modifier.size(34.dp),
+            imageShape = CircleShape
         )
         Column(modifier = Modifier.weight(1f)) {
             Text(comment.userName, color = ProfileColors.PrimaryText, fontWeight = FontWeight.Bold)

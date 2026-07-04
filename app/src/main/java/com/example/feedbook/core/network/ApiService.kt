@@ -11,6 +11,7 @@ import com.example.feedbook.features.home.data.remote.dto.HomeDto
 import com.example.feedbook.features.library.data.remote.dto.LibraryDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationsDto
 import com.example.feedbook.features.profile.data.remote.dto.ProfileDto
+import com.example.feedbook.features.profile.data.remote.dto.AvatarUploadResponseDto
 import com.example.feedbook.features.profile.data.remote.dto.UpdateProfileRequestDto
 import com.example.feedbook.features.readingrooms.data.remote.dto.ChangeReadingRoomBookRequestDto
 import com.example.feedbook.features.readingrooms.data.remote.dto.CreateReadingRoomRequestDto
@@ -25,9 +26,12 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.HTTP
 import retrofit2.http.POST
+import retrofit2.http.Multipart
+import retrofit2.http.Part
 import retrofit2.http.Query
 import retrofit2.http.Path
 import retrofit2.http.PUT
+import okhttp3.MultipartBody
 
 interface ApiService {
     @GET("books")
@@ -164,6 +168,10 @@ interface ApiService {
 
     @PUT("profile/me")
     suspend fun updateOwnProfile(@Body body: UpdateProfileRequestDto): ProfileDto
+
+    @Multipart
+    @POST("profile/me/avatar")
+    suspend fun uploadOwnAvatar(@Part image: MultipartBody.Part): AvatarUploadResponseDto
 
     @POST("push/register")
     suspend fun registerPushToken(@Body body: RegisterPushTokenRequestDto)
