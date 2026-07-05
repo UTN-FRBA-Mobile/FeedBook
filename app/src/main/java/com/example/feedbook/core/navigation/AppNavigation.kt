@@ -71,7 +71,7 @@ object AppRoutes {
     const val EDIT_PROFILE = "editProfile"
     const val PUBLIC_PROFILE = "publicProfile"
     const val PUBLIC_PROFILE_PREVIEW = "publicProfilePreview"
-    const val LIBRARY = "library"
+    const val LIBRARY = "library?showCollection={showCollection}"
     const val STATS = "stats"
     const val NOTIFICATIONS = "notifications"
     const val BOOKS = "books"
@@ -91,6 +91,8 @@ object AppRoutes {
     fun readingRoom(roomId: String): String = "readingRoom/$roomId"
     fun readingRoomInfo(roomId: String): String = "readingRoom/$roomId/info"
     fun authorBooks(authorId: String, name: String): String = "authorBooks/$authorId?name=$name"
+    fun library(showCollection: Boolean = false): String =
+        if (showCollection) "library?showCollection=true" else "library"
 }
 
 private fun NavHostController.navigateTopLevel(route: String) {
@@ -231,7 +233,7 @@ fun AppNavigation(
                 onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
                 onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
-                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.library(true)) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onLogoutClick = onLogout,
@@ -315,7 +317,7 @@ fun AppNavigation(
                 onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
                 onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
-                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.library(true)) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onLogoutClick = onLogout,
@@ -398,7 +400,14 @@ fun AppNavigation(
             )
         }
 
-        composable(route = AppRoutes.LIBRARY) {
+        composable(
+            route = AppRoutes.LIBRARY,
+            arguments = listOf(navArgument("showCollection") {
+                type = NavType.BoolType
+                defaultValue = false
+            })
+        ) { backStackEntry ->
+            val showCollection = backStackEntry.arguments?.getBoolean("showCollection") ?: false
             val viewModel: LibraryViewModel = viewModel(
                 factory = LibraryViewModel.provideFactory(
                     observeOwnLibraryUseCase = appContainer.observeOwnLibraryUseCase,
@@ -409,10 +418,11 @@ fun AppNavigation(
 
             LibraryScreen(
                 state = state,
+                initialShowReadCollection = showCollection,
                 onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
                 onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
                 onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
-                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.library(true)) },
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onLogoutClick = onLogout,

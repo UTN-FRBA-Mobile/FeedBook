@@ -82,8 +82,11 @@ fun BookDetailScreen(
         onStatsClick = onStatsClick,
         onNotificationsClick = onNotificationsClick,
         onLogoutClick = onLogoutClick,
+        onToggleLibrary = viewModel::toggleBookInLibrary,
+        onSaveProgress = viewModel::saveProgress,
         onSaveReview = viewModel::saveReview,
         onReviewFeedbackShown = viewModel::clearReviewFeedback,
+        onProgressFeedbackShown = viewModel::clearProgressFeedback,
         onLibraryFeedbackShown = viewModel::clearLibraryFeedback,
         onToggleLike = viewModel::toggleLike,
         onShowAllReviews = onShowAllReviews,
@@ -104,6 +107,7 @@ fun BookDetailScreen(
     onSaveProgress: (Int) -> Unit = {},
     onSaveReview: (Float, String, List<ReviewPart>) -> Unit = { _, _, _ -> },
     onReviewFeedbackShown: () -> Unit = {},
+    onProgressFeedbackShown: () -> Unit = {},
     onWriteReview: () -> Unit = {},
     onFeedClick: () -> Unit = {},
     onExploreClick: () -> Unit = {},
@@ -133,6 +137,13 @@ fun BookDetailScreen(
         state.reviewFeedback?.let {
             snackbarHostState.showSnackbar(it)
             onReviewFeedbackShown()
+        }
+    }
+
+    LaunchedEffect(state.progressFeedback) {
+        state.progressFeedback?.let {
+            snackbarHostState.showSnackbar(it)
+            onProgressFeedbackShown()
         }
     }
 

@@ -98,7 +98,17 @@ class BookDetailViewModel(
             runCatching { saveReadingProgressUseCase(bookId, currentPage) }
                 .onSuccess { progress ->
                     _state.value = _state.value.copy(
-                        readingProgress = progress.toUiModel()
+                        readingProgress = progress.toUiModel(),
+                        progressFeedback = if (progress.currentPage >= progress.totalPages && progress.totalPages > 0) {
+                            "Progress saved. Book completed."
+                        } else {
+                            "Progress saved."
+                        }
+                    )
+                }
+                .onFailure {
+                    _state.value = _state.value.copy(
+                        progressFeedback = it.message ?: "Something went wrong"
                     )
                 }
         }
@@ -207,6 +217,10 @@ class BookDetailViewModel(
 
     fun clearReviewFeedback() {
         _state.value = _state.value.copy(reviewFeedback = null)
+    }
+
+    fun clearProgressFeedback() {
+        _state.value = _state.value.copy(progressFeedback = null)
     }
 
     companion object {

@@ -19,6 +19,7 @@ data class BookDetailUiState(
     val isBookInLibrary: Boolean = false,
     val isTogglingLibrary: Boolean = false,
     val libraryFeedback: String? = null,
+    val progressFeedback: String? = null,
     val reviewFeedback: String? = null,
     val isSavingReview: Boolean = false
 )

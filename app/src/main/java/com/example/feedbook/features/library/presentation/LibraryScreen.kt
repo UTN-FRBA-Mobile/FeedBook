@@ -51,6 +51,7 @@ import com.example.feedbook.features.profile.presentation.components.ProfileTypo
 fun LibraryScreen(
     modifier: Modifier = Modifier,
     state: LibraryUiState = sampleLibraryUiState(),
+    initialShowReadCollection: Boolean = false,
     onFeedClick: () -> Unit = {},
     onExploreClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
@@ -62,7 +63,9 @@ fun LibraryScreen(
     onBookClick: (String) -> Unit = {},
     onAuthorClick: (String) -> Unit = {}
 ) {
-    var showReadCollection by rememberSaveable { mutableStateOf(false) }
+    var showReadCollection by rememberSaveable(initialShowReadCollection) {
+        mutableStateOf(initialShowReadCollection)
+    }
 
     FeedBookScreenScaffold(
         modifier = modifier.fillMaxSize(),
