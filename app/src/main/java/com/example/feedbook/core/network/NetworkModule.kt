@@ -2,6 +2,7 @@ package com.example.feedbook.core.network
 
 import android.content.Context
 import com.example.feedbook.BuildConfig
+import com.example.feedbook.core.session.SessionStorage
 import com.example.feedbook.features.authors.data.remote.dto.AuthorDto
 import com.example.feedbook.features.books.data.remote.dto.BookDto
 import com.example.feedbook.features.books.data.remote.dto.ExploreUserDto
@@ -34,6 +35,9 @@ object NetworkModule {
     private var wifiNetworkSelector: WifiNetworkSelector? = null
 
     @Volatile
+    private var authToken: String? = null
+
+    @Volatile
     private var backendOrigin = BackendUrls.origin(BuildConfig.BACKEND_ORIGIN)
 
     @Volatile
@@ -41,7 +45,12 @@ object NetworkModule {
 
     fun initialize(context: Context) {
         wifiNetworkSelector = WifiNetworkSelector(context)
+        authToken = SessionStorage(context).readToken()
         updateBackendOrigin(BackendServerConfig(context).getOrigin())
+    }
+
+    fun updateAuthToken(token: String?) {
+        authToken = token
     }
 
     fun updateBackendOrigin(rawOrigin: String): String {
@@ -66,7 +75,12 @@ object NetworkModule {
 
         val retrofit = Retrofit.Builder()
             .baseUrl(BackendUrls.apiBaseUrl(origin))
-            .client(ApiClient.createOkHttpClient(socketFactory = localSocketFactory))
+            .client(
+                ApiClient.createOkHttpClient(
+                    socketFactory = localSocketFactory,
+                    authTokenProvider = { authToken }
+                )
+            )
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
