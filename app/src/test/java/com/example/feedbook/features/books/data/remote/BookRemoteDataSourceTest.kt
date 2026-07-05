@@ -6,6 +6,7 @@ import com.example.feedbook.core.network.UnlinkPushTokenRequestDto
 import com.example.feedbook.features.authors.data.remote.dto.AuthorDto
 import com.example.feedbook.features.books.data.remote.dto.BookDto
 import com.example.feedbook.features.books.data.remote.dto.ExploreUserDto
+import com.example.feedbook.features.books.data.remote.dto.FriendReadingDto
 import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewsResponseDto
@@ -80,6 +81,7 @@ private open class StubApiService : ApiService {
     override suspend fun getBookById(id: String): BookDto = error("unused")
     override suspend fun getBookByIsbn(isbn: String): BookDto = error("unused")
     override suspend fun getExploreUsers(): List<ExploreUserDto> = error("unused")
+    override suspend fun getExploreUserById(id: String): ExploreUserDto = error("unused")
     override suspend fun search(query: String): SearchResponseDto = error("unused")
     override suspend fun getReadingProgress(bookId: String): ReadingProgressDto? = error("unused")
     override suspend fun getReviews(bookId: String, page: Int, limit: Int): ReviewsResponseDto =
@@ -99,6 +101,8 @@ private open class StubApiService : ApiService {
     override suspend fun getAuthors(): List<AuthorDto> = error("unused")
     override suspend fun getAuthorById(id: String): AuthorDto = error("unused")
     override suspend fun toggleFollow(id: String) = error("unused")
+    override suspend fun toggleUserFollow(userId: String) = error("unused")
+    override suspend fun getFriendsReading(bookId: String): List<FriendReadingDto> = error("unused")
     override suspend fun getHomeFeed(): HomeDto = error("unused")
     override suspend fun getReadingRooms(): ReadingRoomListDto = error("unused")
     override suspend fun createReadingRoom(body: CreateReadingRoomRequestDto): ReadingRoomDetailDto =
@@ -131,7 +135,7 @@ private open class StubApiService : ApiService {
     override suspend fun removeBookFromLibrary(body: Map<String, String>) = error("unused")
     override suspend fun getOwnProfile(): ProfileDto = error("unused")
     override suspend fun getOwnPublicProfilePreview(): ProfileDto = error("unused")
-    override suspend fun getPublicProfile(): ProfileDto = error("unused")
+    override suspend fun getPublicProfile(userId: String): ProfileDto = error("unused")
     override suspend fun getStats(): StatsDto = error("unused")
     override suspend fun getNotifications(): NotificationsDto = error("unused")
     override suspend fun updateOwnProfile(body: UpdateProfileRequestDto): ProfileDto = error("unused")

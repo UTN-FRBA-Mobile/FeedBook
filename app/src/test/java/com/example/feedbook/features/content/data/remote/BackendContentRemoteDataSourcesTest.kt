@@ -7,6 +7,7 @@ import com.example.feedbook.features.authors.data.remote.AuthorRemoteDataSource
 import com.example.feedbook.features.authors.data.remote.dto.AuthorDto
 import com.example.feedbook.features.books.data.remote.dto.BookDto
 import com.example.feedbook.features.books.data.remote.dto.ExploreUserDto
+import com.example.feedbook.features.books.data.remote.dto.FriendReadingDto
 import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewsResponseDto
@@ -178,6 +179,7 @@ private class ContentStubApiService : ApiService {
     override suspend fun getBookByIsbn(isbn: String): BookDto = error("unused")
 
     override suspend fun getExploreUsers(): List<ExploreUserDto> = error("unused")
+    override suspend fun getExploreUserById(id: String): ExploreUserDto = error("unused")
 
     override suspend fun search(query: String): SearchResponseDto = error("unused")
 
@@ -256,7 +258,7 @@ private class ContentStubApiService : ApiService {
 
     override suspend fun getOwnPublicProfilePreview(): ProfileDto = error("unused")
 
-    override suspend fun getPublicProfile(): ProfileDto = error("unused")
+    override suspend fun getPublicProfile(userId: String): ProfileDto = error("unused")
 
     override suspend fun getStats(): StatsDto = stats ?: error("stats not configured")
 
@@ -267,6 +269,10 @@ private class ContentStubApiService : ApiService {
 
     override suspend fun uploadOwnAvatar(image: okhttp3.MultipartBody.Part): AvatarUploadResponseDto =
         error("unused")
+
+    override suspend fun toggleUserFollow(userId: String) = error("unused")
+
+    override suspend fun getFriendsReading(bookId: String): List<FriendReadingDto> = error("unused")
 
     override suspend fun registerPushToken(body: RegisterPushTokenRequestDto) = error("unused")
 

@@ -6,6 +6,7 @@ import com.example.feedbook.core.network.UnlinkPushTokenRequestDto
 import com.example.feedbook.features.authors.data.remote.dto.AuthorDto
 import com.example.feedbook.features.books.data.remote.dto.BookDto
 import com.example.feedbook.features.books.data.remote.dto.ExploreUserDto
+import com.example.feedbook.features.books.data.remote.dto.FriendReadingDto
 import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewsResponseDto
@@ -43,11 +44,12 @@ class ProfileRemoteDataSourceTest {
             override suspend fun getOwnProfile(): ProfileDto = initial
             override suspend fun getOwnPublicProfilePreview(): ProfileDto = updated
             override suspend fun updateOwnProfile(body: UpdateProfileRequestDto): ProfileDto = updated
-            override suspend fun getPublicProfile(): ProfileDto = updated
+            override suspend fun getPublicProfile(userId: String): ProfileDto = updated
             override suspend fun getBooks(): List<BookDto> = error("unused")
             override suspend fun getBookById(id: String): BookDto = error("unused")
             override suspend fun getBookByIsbn(isbn: String): BookDto = error("unused")
             override suspend fun getExploreUsers(): List<ExploreUserDto> = error("unused")
+            override suspend fun getExploreUserById(id: String): ExploreUserDto = error("unused")
             override suspend fun search(query: String): SearchResponseDto = error("unused")
             override suspend fun getReadingProgress(bookId: String): ReadingProgressDto? = error("unused")
             override suspend fun getReviews(
@@ -71,6 +73,8 @@ class ProfileRemoteDataSourceTest {
             override suspend fun getAuthors(): List<AuthorDto> = error("unused")
             override suspend fun getAuthorById(id: String): AuthorDto = error("unused")
             override suspend fun toggleFollow(id: String) = error("unused")
+            override suspend fun toggleUserFollow(userId: String) = error("unused")
+            override suspend fun getFriendsReading(bookId: String): List<FriendReadingDto> = error("unused")
             override suspend fun getHomeFeed(): HomeDto = error("unused")
             override suspend fun getReadingRooms(): ReadingRoomListDto = error("unused")
             override suspend fun createReadingRoom(body: CreateReadingRoomRequestDto): ReadingRoomDetailDto =

@@ -34,7 +34,8 @@ fun ExploreUserDto.toDomain(): ExploreUser {
         avatarTopColorHex = avatarTopColorHex,
         avatarBottomColorHex = avatarBottomColorHex,
         followersLabel = followersLabel,
-        booksReadLabel = booksReadLabel
+        booksReadLabel = booksReadLabel,
+        isFollowing = isFollowing
     )
 }
 

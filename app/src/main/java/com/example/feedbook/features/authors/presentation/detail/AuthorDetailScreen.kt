@@ -36,9 +36,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.feedbook.core.ui.components.BottomBarTab
 import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
+import com.example.feedbook.core.ui.components.UsersBottomSheet
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
+import com.example.feedbook.features.profile.presentation.components.ProfileAvatarArtwork
+import com.example.feedbook.features.profile.presentation.defaultAvatarStyle
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
 
 // ─── Stateful Wrapper ──────────────────────────────────────────────────────
 @Composable
@@ -55,6 +59,7 @@ fun AuthorDetailScreen(
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
+    onUserClick: (String) -> Unit = {},
 ) {
     val viewModel: AuthorDetailViewModel = viewModel(factory = viewModelFactory)
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -73,6 +78,7 @@ fun AuthorDetailScreen(
         onStatsClick = onStatsClick,
         onNotificationsClick = onNotificationsClick,
         onLogoutClick = onLogoutClick,
+        onUserClick = onUserClick,
         modifier = modifier
     )
 }
@@ -94,7 +100,21 @@ fun AuthorDetailScreen(
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
+    onUserClick: (String) -> Unit = {},
 ) {
+    var showAuthorUsers by remember { mutableStateOf(false) }
+    if (showAuthorUsers) {
+        UsersBottomSheet(
+            title = "Readers following this author",
+            users = state.authorUsers,
+            onUserClick = { userId ->
+                showAuthorUsers = false
+                onUserClick(userId)
+            },
+            onDismiss = { showAuthorUsers = false }
+        )
+    }
+
     FeedBookScreenScaffold(
         modifier = modifier.fillMaxSize(),
         variant = com.example.feedbook.features.profile.presentation.ProfileVariant.OWN,
@@ -126,10 +146,12 @@ fun AuthorDetailScreen(
                 )
                 state.author != null -> AuthorDetailContent(
                     author = state.author,
+                    authorUsers = state.authorUsers,
                     listState = listState,
                     onBookClick = onBookClick,
                     onFollowClick = onFollowClick,
-                    onSeeAllBooks = onSeeAllBooks
+                    onSeeAllBooks = onSeeAllBooks,
+                    onShowAllUsers = { showAuthorUsers = true }
                 )
             }
             Row(
@@ -168,10 +190,12 @@ fun AuthorDetailScreen(
 private fun AuthorDetailContent(
     modifier: Modifier = Modifier,
     author: AuthorUiModel,
+    authorUsers: List<com.example.feedbook.features.books.domain.model.ExploreUser>,
     listState: LazyListState,
     onBookClick: (String) -> Unit,
     onFollowClick: () -> Unit,
     onSeeAllBooks: () -> Unit = {},
+    onShowAllUsers: () -> Unit = {},
 ) {
     var showFullBio by remember { mutableStateOf(false) }
 
@@ -205,7 +229,7 @@ private fun AuthorDetailContent(
         }
 
         // Lectores que siguen
-        item { FollowersSection(followersText = author.followersText) }
+        item { FollowersSection(users = authorUsers, followersText = author.followersText, onClick = onShowAllUsers) }
     }
 }
 
@@ -473,10 +497,15 @@ private fun BookRow(book: AuthorBookUiModel, onClick: () -> Unit) {
 
 // ─── Followers Section ─────────────────────────────────────────────────────
 @Composable
-private fun FollowersSection(followersText: String) {
+private fun FollowersSection(
+    users: List<com.example.feedbook.features.books.domain.model.ExploreUser>,
+    followersText: String,
+    onClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(onClick = onClick)
             .padding(horizontal = 20.dp, vertical = 16.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
@@ -499,26 +528,35 @@ private fun FollowersSection(followersText: String) {
                 color = ProfileColors.SecondaryText
             )
             Spacer(modifier = Modifier.height(10.dp))
-            // Avatares decorativos
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                val avatarColors = listOf(
-                    Color(0xFF7B9EA8), Color(0xFFB8956A), Color(0xFF8FA882),
-                    Color(0xFF9B7EB8), Color(0xFFB87E7E)
-                )
-                avatarColors.forEachIndexed { index, color ->
-                    Box(
-                        modifier = Modifier
-                            .offset(x = (-index * 10).dp)
-                            .size(32.dp)
-                            .clip(CircleShape)
-                            .background(color)
-                    )
+            if (users.isNotEmpty()) {
+                val displayUsers = users.take(5)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    displayUsers.forEachIndexed { index, user ->
+                        Box(
+                            modifier = Modifier
+                                .offset(x = (-index * 10).dp)
+                                .size(32.dp)
+                                .clip(CircleShape)
+                                .background(Color(user.avatarTopColorHex))
+                        ) {
+                            if (user.avatarImageUrl != null) {
+                                ProfileAvatarArtwork(
+                                    avatarStyle = defaultAvatarStyle(),
+                                    avatarPreset = null,
+                                    avatarImageUri = user.avatarImageUrl,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(4.dp))
+                    if (users.size > 5) {
+                        Text(
+                            text = "+${users.size - 5}",
+                            style = MaterialTheme.typography.labelSmall,
+                        )
+                    }
                 }
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "+99",
-                    style = MaterialTheme.typography.labelSmall,
-                )
             }
         }
     }

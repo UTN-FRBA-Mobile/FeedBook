@@ -46,6 +46,7 @@ fun ProfileScreen(
     onEditProfileClick: () -> Unit = {},
     onPreviewPublicProfileClick: () -> Unit = {},
     onBookClick: (String) -> Unit = {},
+    onFollowClick: () -> Unit = {},
     onRetry: () -> Unit = {}
 ) {
     when {
@@ -101,8 +102,12 @@ fun ProfileScreen(
                         avatarStyle = state.avatarStyle,
                         avatarPreset = state.avatarPreset,
                         avatarImageUri = state.avatarImageUri,
+                        isFollowing = state.isFollowing,
                         onActionClick = {
-                            if (state.variant == ProfileVariant.OWN) onEditProfileClick()
+                            when (state.variant) {
+                                ProfileVariant.OWN -> onEditProfileClick()
+                                ProfileVariant.PUBLIC -> onFollowClick()
+                            }
                         },
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )

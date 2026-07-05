@@ -38,6 +38,7 @@ internal fun ProfileHeaderSection(
     avatarStyle: AvatarStyle,
     avatarPreset: AvatarPreset?,
     avatarImageUri: String?,
+    isFollowing: Boolean = false,
     onActionClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -90,13 +91,16 @@ internal fun ProfileHeaderSection(
             shape = RoundedCornerShape(12.dp),
             contentPadding = PaddingValues(horizontal = 25.dp, vertical = 9.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = ProfileColors.SecondaryText
+                containerColor = if (isFollowing) ProfileColors.Accent else Color.Transparent,
+                contentColor = if (isFollowing) ProfileColors.Surface else ProfileColors.SecondaryText
             ),
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
             modifier = Modifier
                 .height(36.dp)
-                .border(1.dp, Color(0xFF74777D), RoundedCornerShape(12.dp))
+                .then(
+                    if (!isFollowing) Modifier.border(1.dp, Color(0xFF74777D), RoundedCornerShape(12.dp))
+                    else Modifier
+                )
         ) {
             Text(
                 text = stringResource(actionLabelRes),

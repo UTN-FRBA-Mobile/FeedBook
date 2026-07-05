@@ -9,5 +9,6 @@ data class ExploreUserDto(
     val avatarTopColorHex: Long,
     val avatarBottomColorHex: Long,
     val followersLabel: String,
-    val booksReadLabel: String
+    val booksReadLabel: String,
+    val isFollowing: Boolean = false
 )
