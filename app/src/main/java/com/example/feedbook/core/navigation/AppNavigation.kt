@@ -72,7 +72,9 @@ object AppRoutes {
     const val HOME = "home"
     const val PROFILE = "profile"
     const val EDIT_PROFILE = "editProfile"
-    const val PUBLIC_PROFILE = "publicProfile"
+    const val PUBLIC_PROFILE = "publicProfile/{userId}"
+
+    fun publicProfile(userId: String): String = "publicProfile/$userId"
     const val PUBLIC_PROFILE_PREVIEW = "publicProfilePreview"
     const val USER_PROFILE = "userProfile/{userId}"
     const val LIBRARY = "library?showCollection={showCollection}"
@@ -372,9 +374,17 @@ fun AppNavigation(
             )
         }
 
-        composable(route = AppRoutes.PUBLIC_PROFILE) {
+        composable(
+            route = AppRoutes.PUBLIC_PROFILE,
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId").orEmpty()
             val viewModel: PublicProfileViewModel = viewModel(
-                factory = PublicProfileViewModel.provideFactory(appContainer.getPublicProfileUseCase)
+                factory = PublicProfileViewModel.provideFactory(
+                    userId = userId,
+                    getPublicProfileUseCase = appContainer.getPublicProfileUseCase,
+                    toggleUserFollowUseCase = appContainer.toggleUserFollowUseCase
+                )
             )
             val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -389,6 +399,7 @@ fun AppNavigation(
                 onLogoutClick = onLogout,
                 onRefreshClick = viewModel::retry,
                 onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
+                onFollowClick = viewModel::toggleFollow,
                 onRetry = viewModel::retry
             )
         }
@@ -533,6 +544,7 @@ fun AppNavigation(
                         getBooksUseCase = appContainer.getBooksUseCase,
                         getAuthorsUseCase = appContainer.getAuthorsUseCase,
                         getExploreUsersUseCase = appContainer.getExploreUsersUseCase,
+                        searchExploreUseCase = appContainer.searchExploreUseCase,
                         observeOwnProfileUseCase = appContainer.observeOwnProfileUseCase
                     ),
                     onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
@@ -571,6 +583,7 @@ fun AppNavigation(
                 factory = BookDetailViewModel.provideFactory(
                     bookId = bookId,
                     getBookByIdUseCase = appContainer.getBookByIdUseCase,
+                    getBookUsersUseCase = appContainer.getBookUsersUseCase,
                     getReviewsUseCase = appContainer.getReviewsUseCase,
                     getReadingProgressUseCase = appContainer.getReadingProgress,
                     saveReadingProgressUseCase = appContainer.saveReadingProgressUseCase,
@@ -607,7 +620,8 @@ fun AppNavigation(
                 },
                 onAuthorClick = { authorId ->
                     navController.navigate(AppRoutes.authorDetail(authorId))
-                }
+                },
+                onUserClick = { userId -> navController.navigate(AppRoutes.userProfile(userId)) }
             )
         }
 
@@ -645,6 +659,7 @@ fun AppNavigation(
                 viewModelFactory = AuthorDetailViewModel.provideFactory(
                     authorId = backStackEntry.arguments?.getString("authorId").orEmpty(),
                     getAuthorByIdUseCase = appContainer.getAuthorByIdUseCase,
+                    getAuthorUsersUseCase = appContainer.getAuthorUsersUseCase,
                     toggleFollowUseCase = appContainer.toggleAuthorFollowUseCase,
                     observeOwnProfileUseCase = appContainer.observeOwnProfileUseCase
                 ),
@@ -660,7 +675,8 @@ fun AppNavigation(
                 onSeeAllBooks = {
                     val id = backStackEntry.arguments?.getString("authorId").orEmpty()
                     navController.navigate(AppRoutes.authorBooks(id, ""))
-                }
+                },
+                onUserClick = { userId -> navController.navigate(AppRoutes.userProfile(userId)) }
             )
         }
 

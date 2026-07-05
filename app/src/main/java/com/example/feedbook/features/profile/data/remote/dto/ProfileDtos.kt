@@ -12,7 +12,8 @@ data class ProfileDto(
     val completedBooks: Int,
     val profileStats: List<ProfileStatDto>?,
     val publicLibrary: List<LibraryBookDto>?,
-    val featuredReviews: List<FeaturedReviewDto>?
+    val featuredReviews: List<FeaturedReviewDto>?,
+    val isFollowing: Boolean = false
 )
 
 data class AvatarDto(

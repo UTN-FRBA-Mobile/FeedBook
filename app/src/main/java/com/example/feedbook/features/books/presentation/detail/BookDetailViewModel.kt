@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.feedbook.features.books.domain.usecase.GetBookByIdUseCase
+import com.example.feedbook.features.books.domain.usecase.GetBookUsersUseCase
 import com.example.feedbook.features.books.domain.usecase.GetReadingProgressUseCase
 import com.example.feedbook.features.books.domain.usecase.GetReviewsUseCase
 import com.example.feedbook.features.books.domain.usecase.SaveReadingProgressUseCase
@@ -28,6 +29,7 @@ import kotlinx.coroutines.launch
 class BookDetailViewModel(
     private val bookId: String,
     private val getBookByIdUseCase: GetBookByIdUseCase,
+    private val getBookUsersUseCase: GetBookUsersUseCase,
     private val getReviewsUseCase: GetReviewsUseCase,
     private val getReadingProgressUseCase: GetReadingProgressUseCase,
     private val saveReadingProgressUseCase: SaveReadingProgressUseCase,
@@ -134,10 +136,12 @@ class BookDetailViewModel(
             val bookDeferred = async { runCatching { getBookByIdUseCase(bookId) } }
             val reviewsDeferred = async { runCatching { getReviewsUseCase(bookId) } }
             val progressDeferred = async { runCatching { getReadingProgressUseCase(bookId) } }
+            val usersDeferred = async { runCatching { getBookUsersUseCase(bookId) } }
 
             val bookResult = bookDeferred.await()
             val reviewsResult = reviewsDeferred.await()
             val progressResult = progressDeferred.await()
+            val usersResult = usersDeferred.await()
 
             val reviewsData = reviewsResult.getOrDefault(Pair(emptyList(), 0))
             val reviews = reviewsData.first.map { it.toUiModel() }
@@ -153,6 +157,7 @@ class BookDetailViewModel(
                 userReview = userReview,
                 allReviewsTotal = reviewsData.second,
                 readingProgress = progressResult.getOrNull()?.toUiModel(),
+                bookUsers = usersResult.getOrDefault(emptyList()),
                 error = bookResult.exceptionOrNull()?.message
                     ?: if (bookResult.isSuccess && bookResult.getOrNull() == null) "Book not found" else null
             )
@@ -227,6 +232,7 @@ class BookDetailViewModel(
         fun provideFactory(
             bookId: String,
             getBookByIdUseCase: GetBookByIdUseCase,
+            getBookUsersUseCase: GetBookUsersUseCase,
             getReviewsUseCase: GetReviewsUseCase,
             getReadingProgressUseCase: GetReadingProgressUseCase,
             saveReadingProgressUseCase: SaveReadingProgressUseCase,
@@ -242,6 +248,7 @@ class BookDetailViewModel(
                 BookDetailViewModel(
                     bookId,
                     getBookByIdUseCase,
+                    getBookUsersUseCase,
                     getReviewsUseCase,
                     getReadingProgressUseCase,
                     saveReadingProgressUseCase,

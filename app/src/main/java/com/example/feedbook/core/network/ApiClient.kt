@@ -1,7 +1,6 @@
 package com.example.feedbook.core.network
 
 import okhttp3.OkHttpClient
-import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
 import java.net.Proxy
 import javax.net.SocketFactory
@@ -18,20 +17,21 @@ object ApiClient {
         }
 
         val builder = OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val token = authTokenProvider?.invoke()?.takeIf { it.isNotBlank() }
+                val request = if (token == null) {
+                    chain.request()
+                } else {
+                    chain.request().newBuilder()
+                        .header("Authorization", "Bearer $token")
+                        .build()
+                }
+                chain.proceed(request)
+            }
             .addInterceptor(loggingInterceptor)
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(15, TimeUnit.SECONDS)
             .writeTimeout(15, TimeUnit.SECONDS)
-
-        if (authTokenProvider != null) {
-            builder.addInterceptor(Interceptor { chain ->
-                val requestBuilder = chain.request().newBuilder()
-                authTokenProvider()?.trim()?.takeIf { it.isNotEmpty() }?.let { token ->
-                    requestBuilder.header("Authorization", "Bearer $token")
-                }
-                chain.proceed(requestBuilder.build())
-            })
-        }
 
         if (!useSystemProxy) {
             builder.proxy(Proxy.NO_PROXY)

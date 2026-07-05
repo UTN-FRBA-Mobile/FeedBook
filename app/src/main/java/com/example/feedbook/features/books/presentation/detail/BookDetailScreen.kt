@@ -46,6 +46,7 @@ import coil.compose.AsyncImage
 import com.example.feedbook.R
 import com.example.feedbook.core.ui.components.BottomBarTab
 import com.example.feedbook.core.ui.components.FeedBookScreenScaffold
+import com.example.feedbook.core.ui.components.UsersBottomSheet
 import com.example.feedbook.core.ui.theme.FeedBookTheme
 import com.example.feedbook.features.books.domain.model.ReviewPart
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
@@ -67,6 +68,7 @@ fun BookDetailScreen(
     onLogoutClick: () -> Unit = {},
     onShowAllReviews: () -> Unit = {},
     onAuthorClick: (String) -> Unit = {},
+    onUserClick: (String) -> Unit = {},
 ) {
     val viewModel: BookDetailViewModel = viewModel(factory = viewModelFactory)
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -91,6 +93,7 @@ fun BookDetailScreen(
         onToggleLike = viewModel::toggleLike,
         onShowAllReviews = onShowAllReviews,
         onAuthorClick = onAuthorClick,
+        onUserClick = onUserClick,
         modifier = modifier
     )
 }
@@ -121,10 +124,12 @@ fun BookDetailScreen(
     onToggleLike: (String) -> Unit = {},
     onShowAllReviews: () -> Unit = {},
     onAuthorClick: (String) -> Unit = {},
+    onUserClick: (String) -> Unit = {},
 ) {
 
     val snackbarHostState = remember { SnackbarHostState() }
     var showReviewDialog by remember { mutableStateOf(false) }
+    var showBookUsers by remember { mutableStateOf(false) }
 
     LaunchedEffect(state.libraryFeedback) {
         state.libraryFeedback?.let {
@@ -156,6 +161,18 @@ fun BookDetailScreen(
                 showReviewDialog = false
             },
             onDismiss = { showReviewDialog = false }
+        )
+    }
+
+    if (showBookUsers) {
+        UsersBottomSheet(
+            title = "Readers of this book",
+            users = state.bookUsers,
+            onUserClick = { userId ->
+                showBookUsers = false
+                onUserClick(userId)
+            },
+            onDismiss = { showBookUsers = false }
         )
     }
 
@@ -205,7 +222,8 @@ fun BookDetailScreen(
                         onWriteReview = { showReviewDialog = true },
                         onToggleLike = onToggleLike,
                         onShowAllReviews = onShowAllReviews,
-                        onAuthorClick = onAuthorClick
+                        onAuthorClick = onAuthorClick,
+                        onShowAllUsers = { showBookUsers = true }
                     )
                 }
                 Row(
@@ -251,6 +269,7 @@ private fun BookDetailContent(
     onToggleLike: (String) -> Unit = {},
     onShowAllReviews: () -> Unit = {},
     onAuthorClick: (String) -> Unit = {},
+    onShowAllUsers: () -> Unit = {},
 ) {
     val book = state.book!!
     val totalPages = state.readingProgress?.totalPages ?: book.pages
@@ -289,7 +308,7 @@ private fun BookDetailContent(
                 )
             }
         }
-        item { FriendsSection() }
+        item { UsersSection(users = state.bookUsers, onClick = onShowAllUsers) }
         item { ReviewsHeader(onWriteReview = onWriteReview) }
         items(state.reviews, key = { it.id }) { review -> ReviewCard(review = review, onToggleLike = onToggleLike) }
         if (state.allReviewsTotal > 5) {
@@ -668,16 +687,17 @@ private fun ProgressCard(
     }
 }
 
-// ─── Friends Section ───────────────────────────────────────────────────────
+// ─── Users Section ──────────────────────────────────────────────────────────
 @Composable
-private fun FriendsSection() {
+private fun UsersSection(users: List<com.example.feedbook.features.books.domain.model.ExploreUser>, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(onClick = onClick)
             .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
         Text(
-            text = stringResource(R.string.book_detail_friends_who_read_this),
+            text = stringResource(R.string.book_detail_users_who_read),
             style = MaterialTheme.typography.labelSmall.copy(
                 letterSpacing = 1.3.sp,
                 fontWeight = FontWeight.Bold
@@ -685,29 +705,47 @@ private fun FriendsSection() {
             color = ProfileColors.SecondaryText.copy(alpha = 0.85f)
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            repeat(3) { index ->
-                Box(
-                    modifier = Modifier
-                        .offset(x = (-index * 8).dp)
-                        .size(28.dp)
-                        .clip(CircleShape)
-                        .border(1.dp, Color.White, CircleShape)
-                        .background(
-                            listOf(
-                                Color(0xFF7B9EA8),
-                                Color(0xFFB8956A),
-                                Color(0xFF8FA882)
-                            )[index]
-                        )
-                )
-            }
-            Spacer(modifier = Modifier.width(2.dp))
+        if (users.isEmpty()) {
             Text(
-                text = stringResource(R.string.book_detail_friends_text),
-                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp, lineHeight = 17.sp),
+                text = "Be the first one!",
+                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
                 color = ProfileColors.SecondaryText
             )
+        } else {
+            val displayUsers = users.take(3)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                displayUsers.forEachIndexed { index, user ->
+                    Box(
+                        modifier = Modifier
+                            .offset(x = (-index * 8).dp)
+                            .size(28.dp)
+                            .clip(CircleShape)
+                            .border(1.dp, Color.White, CircleShape)
+                            .background(Color(user.avatarTopColorHex))
+                    ) {
+                        if (user.avatarImageUrl != null) {
+                            ProfileAvatarArtwork(
+                                avatarStyle = defaultAvatarStyle(),
+                                avatarPreset = null,
+                                avatarImageUri = user.avatarImageUrl,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.width(2.dp))
+                val text = if (users.size <= 3) {
+                    users.joinToString(", ") { it.name } + if (users.size == 1) " reads this book" else " read this book"
+                } else {
+                    val names = displayUsers.map { it.name }
+                    "${names.joinToString(", ")} and ${users.size - 3} others read this book"
+                }
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp, lineHeight = 17.sp),
+                    color = ProfileColors.SecondaryText
+                )
+            }
         }
     }
 }

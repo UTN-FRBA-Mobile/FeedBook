@@ -12,7 +12,8 @@ data class ReaderProfile(
     val completedBooks: Int,
     val profileStats: List<ProfileStat>,
     val publicLibrary: List<LibraryBook>,
-    val featuredReviews: List<FeaturedReview>
+    val featuredReviews: List<FeaturedReview>,
+    val isFollowing: Boolean = false
 )
 
 data class AvatarInfo(

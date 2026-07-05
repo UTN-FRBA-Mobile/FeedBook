@@ -2,14 +2,17 @@ package com.example.feedbook.features.content.data.remote
 
 import com.example.feedbook.core.network.ApiService
 import com.example.feedbook.core.network.RegisterPushTokenRequestDto
+import com.example.feedbook.core.network.UnlinkPushTokenRequestDto
 import com.example.feedbook.features.authors.data.remote.AuthorRemoteDataSource
 import com.example.feedbook.features.authors.data.remote.dto.AuthorDto
 import com.example.feedbook.features.books.data.remote.dto.BookDto
 import com.example.feedbook.features.books.data.remote.dto.ExploreUserDto
+import com.example.feedbook.features.books.data.remote.dto.FriendReadingDto
 import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewsResponseDto
 import com.example.feedbook.features.books.data.remote.dto.SaveReviewRequestDto
+import com.example.feedbook.features.books.data.remote.dto.SearchResponseDto
 import com.example.feedbook.features.home.data.remote.HomeRemoteDataSource
 import com.example.feedbook.features.home.data.remote.dto.HomeCuratorDto
 import com.example.feedbook.features.home.data.remote.dto.HomeDto
@@ -28,6 +31,14 @@ import com.example.feedbook.features.profile.data.remote.dto.AvatarDto
 import com.example.feedbook.features.profile.data.remote.dto.CurrentBookDto
 import com.example.feedbook.features.profile.data.remote.dto.ProfileDto
 import com.example.feedbook.features.profile.data.remote.dto.UpdateProfileRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.ChangeReadingRoomBookRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.CreateReadingRoomRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.DeleteReadingRoomRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.ReadingRoomDetailDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.ReadingRoomListDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.SaveReadingRoomCommentRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.SaveReadingRoomRatingRequestDto
+import com.example.feedbook.features.readingrooms.data.remote.dto.UpdateReadingRoomDescriptionRequestDto
 import com.example.feedbook.features.stats.data.remote.StatsRemoteDataSource
 import com.example.feedbook.features.stats.data.remote.dto.RadarSectionDto
 import com.example.feedbook.features.stats.data.remote.dto.StatsDto
@@ -69,9 +80,21 @@ class BackendContentRemoteDataSourcesTest {
                 home = HomeDto(
                     trendingTitle = "Trending",
                     avatar = AvatarDto(1L, 2L, null),
-                    featuredBook = HomeFeaturedBookDto("Featured", "Piranesi", "Susanna Clarke", null),
-                    rankedBooks = listOf(HomeRankedBookDto("01", "Piranesi", "Susanna Clarke", null)),
-                    readingRooms = listOf(HomeReadingRoomDto("Lila", null, "Fantasy", "20 readers")),
+                    featuredBook = HomeFeaturedBookDto("book_1", "Featured", "Piranesi", "Susanna Clarke", null),
+                    rankedBooks = listOf(HomeRankedBookDto("book_1", "01", "Piranesi", "Susanna Clarke", null)),
+                    readingRooms = listOf(
+                        HomeReadingRoomDto(
+                            id = "room_1",
+                            hostName = "Lila",
+                            hostImageUrl = null,
+                            title = "Fantasy",
+                            shortDescription = "Shared reads",
+                            readerCountLabel = "20 readers",
+                            memberCount = 20,
+                            isFollowed = false,
+                            isAdult = false
+                        )
+                    ),
                     curators = listOf(HomeCuratorDto("Noah", "Speculative fiction", null))
                 )
             }
@@ -95,7 +118,7 @@ class BackendContentRemoteDataSourcesTest {
                     readingBooks = emptyList(),
                     shelfBooks = emptyList(),
                     completedBooks = 3,
-                    readHistory = listOf(ReadBookDto("Read", "Author", "Jan", "Feb", 5, 0xFF0000))
+                    readHistory = listOf(ReadBookDto("Read", "Author", "Jan", "Feb", 5, 0xFF0000, null))
                 )
             }
         )
@@ -156,6 +179,9 @@ private class ContentStubApiService : ApiService {
     override suspend fun getBookByIsbn(isbn: String): BookDto = error("unused")
 
     override suspend fun getExploreUsers(): List<ExploreUserDto> = error("unused")
+    override suspend fun getExploreUserById(id: String): ExploreUserDto = error("unused")
+
+    override suspend fun search(query: String): SearchResponseDto = error("unused")
 
     override suspend fun getReadingProgress(bookId: String): ReadingProgressDto? = error("unused")
 
@@ -184,7 +210,45 @@ private class ContentStubApiService : ApiService {
 
     override suspend fun getHomeFeed(): HomeDto = home ?: error("home not configured")
 
+    override suspend fun getReadingRooms(): ReadingRoomListDto = error("unused")
+
+    override suspend fun createReadingRoom(body: CreateReadingRoomRequestDto): ReadingRoomDetailDto =
+        error("unused")
+
+    override suspend fun getReadingRoom(id: String): ReadingRoomDetailDto = error("unused")
+
+    override suspend fun joinReadingRoom(id: String): ReadingRoomDetailDto = error("unused")
+
+    override suspend fun leaveReadingRoom(id: String) = error("unused")
+
+    override suspend fun updateReadingRoomDescription(
+        id: String,
+        body: UpdateReadingRoomDescriptionRequestDto
+    ): ReadingRoomDetailDto = error("unused")
+
+    override suspend fun deleteReadingRoom(id: String, body: DeleteReadingRoomRequestDto) =
+        error("unused")
+
+    override suspend fun kickReadingRoomMember(id: String, userId: String) = error("unused")
+
+    override suspend fun changeReadingRoomBook(
+        id: String,
+        body: ChangeReadingRoomBookRequestDto
+    ): ReadingRoomDetailDto = error("unused")
+
+    override suspend fun saveReadingRoomRating(
+        id: String,
+        body: SaveReadingRoomRatingRequestDto
+    ): ReadingRoomDetailDto = error("unused")
+
+    override suspend fun saveReadingRoomComment(
+        id: String,
+        body: SaveReadingRoomCommentRequestDto
+    ): ReadingRoomDetailDto = error("unused")
+
     override suspend fun getOwnLibrary(): LibraryDto = library ?: error("library not configured")
+
+    override suspend fun getFollowedBooks(): List<BookDto> = error("unused")
 
     override suspend fun addBookToLibrary(body: Map<String, String>) = error("unused")
 
@@ -194,7 +258,7 @@ private class ContentStubApiService : ApiService {
 
     override suspend fun getOwnPublicProfilePreview(): ProfileDto = error("unused")
 
-    override suspend fun getPublicProfile(): ProfileDto = error("unused")
+    override suspend fun getPublicProfile(userId: String): ProfileDto = error("unused")
 
     override suspend fun getStats(): StatsDto = stats ?: error("stats not configured")
 
@@ -206,5 +270,11 @@ private class ContentStubApiService : ApiService {
     override suspend fun uploadOwnAvatar(image: okhttp3.MultipartBody.Part): AvatarUploadResponseDto =
         error("unused")
 
+    override suspend fun toggleUserFollow(userId: String) = error("unused")
+
+    override suspend fun getFriendsReading(bookId: String): List<FriendReadingDto> = error("unused")
+
     override suspend fun registerPushToken(body: RegisterPushTokenRequestDto) = error("unused")
+
+    override suspend fun unlinkPushToken(body: UnlinkPushTokenRequestDto) = error("unused")
 }

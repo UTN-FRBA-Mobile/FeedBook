@@ -6,5 +6,5 @@ import com.example.feedbook.features.profile.domain.repository.ProfileRepository
 class GetPublicProfileUseCase(
     private val repository: ProfileRepository
 ) {
-    suspend operator fun invoke(): ReaderProfile = repository.getPublicProfile()
+    suspend operator fun invoke(userId: String): ReaderProfile = repository.getPublicProfile(userId)
 }

@@ -45,7 +45,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -119,6 +118,7 @@ fun BookListScreen(
         onNotificationsClick = onNotificationsClick,
         onLogoutClick = onLogoutClick,
         onRetry = viewModel::loadBooks,
+        onSearchChange = viewModel::updateSearch,
         modifier = modifier
     )
 }
@@ -137,14 +137,15 @@ fun BookListContent(
     onNotificationsClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onRetry: () -> Unit,
+    onSearchChange: (String, Set<String>, Set<String>) -> Unit = { _, _, _ -> },
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    var query by rememberSaveable { mutableStateOf("") }
-    var activeFilter by rememberSaveable { mutableStateOf(ExploreFilter.ALL) }
-    var showFilterSheet by rememberSaveable { mutableStateOf(false) }
-    var selectedGenres by rememberSaveable { mutableStateOf(setOf<String>()) }
-    var selectedAuthors by rememberSaveable { mutableStateOf(setOf<String>()) }
+    var activeFilter by remember { mutableStateOf(ExploreFilter.ALL) }
+    var showFilterSheet by remember { mutableStateOf(false) }
+    val query = state.query
+    val selectedGenres = state.selectedGenres
+    val selectedAuthors = state.selectedAuthors
 
     val availableGenres = remember(state.books) {
         buildGenreFacetOptions(state.books)
@@ -154,46 +155,17 @@ fun BookListContent(
         buildAuthorFacetOptions(state.books, state.authors)
     }
 
-    val filteredBooks = remember(state.books, query, selectedGenres, selectedAuthors) {
-        state.books.filter { book ->
-            val search = query.trim().lowercase()
-            val matchesSearch = if (search.isBlank()) {
-                true
-            } else {
-                listOf(book.title, book.author, book.genre, book.description)
-                    .any { candidate -> candidate.lowercase().contains(search) }
-            }
-            val matchesGenre = selectedGenres.isEmpty() || selectedGenres.contains(book.genre)
-            val matchesAuthor = selectedAuthors.isEmpty() || selectedAuthors.contains(book.author)
-            matchesSearch && matchesGenre && matchesAuthor
+    val filteredBooks = state.books
+
+    val filteredAuthors = remember(state.authors, selectedAuthors) {
+        if (selectedAuthors.isEmpty()) {
+            state.authors
+        } else {
+            state.authors.filter { author -> selectedAuthors.contains(author.name) }
         }
     }
 
-    val filteredAuthors = remember(state.authors, query, selectedAuthors) {
-        state.authors.filter { author ->
-            val search = query.trim().lowercase()
-            val matchesSearch = if (search.isBlank()) {
-                true
-            } else {
-                listOf(author.name, author.nationality, author.description)
-                    .any { candidate -> candidate.lowercase().contains(search) }
-            }
-            val matchesAuthor = selectedAuthors.isEmpty() || selectedAuthors.contains(author.name)
-            matchesSearch && matchesAuthor
-        }
-    }
-
-    val filteredUsers = remember(state.users, query) {
-        state.users.filter { user ->
-            val search = query.trim().lowercase()
-            if (search.isBlank()) {
-                true
-            } else {
-                listOf(user.name, user.handle, user.bio, user.followersLabel, user.booksReadLabel)
-                    .any { candidate -> candidate.lowercase().contains(search) }
-            }
-        }
-    }
+    val filteredUsers = state.users
 
     val showingBooks = activeFilter == ExploreFilter.ALL || activeFilter == ExploreFilter.BOOKS
     val showingAuthors = activeFilter == ExploreFilter.ALL || activeFilter == ExploreFilter.AUTHORS
@@ -213,18 +185,19 @@ fun BookListContent(
             selectedGenres = selectedGenres,
             selectedAuthors = selectedAuthors,
             onGenreToggled = { genre ->
-                selectedGenres = selectedGenres.toMutableSet().apply {
+                val updatedGenres = selectedGenres.toMutableSet().apply {
                     if (contains(genre)) remove(genre) else add(genre)
                 }
+                onSearchChange(query, updatedGenres, selectedAuthors)
             },
             onAuthorToggled = { author ->
-                selectedAuthors = selectedAuthors.toMutableSet().apply {
+                val updatedAuthors = selectedAuthors.toMutableSet().apply {
                     if (contains(author)) remove(author) else add(author)
                 }
+                onSearchChange(query, selectedGenres, updatedAuthors)
             },
             onClearFilters = {
-                selectedGenres = emptySet()
-                selectedAuthors = emptySet()
+                onSearchChange(query, emptySet(), emptySet())
             },
             onDismiss = { showFilterSheet = false }
         )
@@ -281,9 +254,25 @@ fun BookListContent(
                     item {
                         ExploreSearchField(
                             query = query,
-                            onQueryChange = { query = it },
+                            onQueryChange = { updatedQuery ->
+                                onSearchChange(updatedQuery, selectedGenres, selectedAuthors)
+                            },
                             onFilterClick = { showFilterSheet = true }
                         )
+                    }
+                    if (state.isRefreshing) {
+                        item {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    color = ProfileColors.SurfaceStrong,
+                                    modifier = Modifier.size(22.dp),
+                                    strokeWidth = 2.dp
+                                )
+                            }
+                        }
                     }
                     item {
                         ExploreFilterRow(
@@ -296,11 +285,14 @@ fun BookListContent(
                             ActiveExploreFilters(
                                 selectedGenres = selectedGenres,
                                 selectedAuthors = selectedAuthors,
-                                onClearGenre = { genre -> selectedGenres = selectedGenres - genre },
-                                onClearAuthor = { author -> selectedAuthors = selectedAuthors - author },
+                                onClearGenre = { genre ->
+                                    onSearchChange(query, selectedGenres - genre, selectedAuthors)
+                                },
+                                onClearAuthor = { author ->
+                                    onSearchChange(query, selectedGenres, selectedAuthors - author)
+                                },
                                 onClearAll = {
-                                    selectedGenres = emptySet()
-                                    selectedAuthors = emptySet()
+                                    onSearchChange(query, emptySet(), emptySet())
                                 }
                             )
                         }
