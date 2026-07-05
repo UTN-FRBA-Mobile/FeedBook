@@ -3,6 +3,7 @@ package com.example.feedbook.core.di
 import android.content.Context
 import com.example.feedbook.core.network.BackendServerConfig
 import com.example.feedbook.core.network.NetworkModule
+import com.example.feedbook.core.state.UserContentRefreshBus
 import com.example.feedbook.features.authors.data.remote.AuthorRemoteDataSource
 import com.example.feedbook.features.authors.data.repository.AuthorRepositoryImpl
 import com.example.feedbook.features.authors.domain.usecase.GetAuthorsUseCase
@@ -51,29 +52,33 @@ class AppContainer(
     context: Context
 ) {
     val backendServerConfig = BackendServerConfig(context)
+    val userContentRefreshBus = UserContentRefreshBus()
     private val apiService = NetworkModule.apiService
     private val authApiService = NetworkModule.authApiService
     private val sessionStorage = SessionStorage(context)
     val sessionManager = SessionManager(sessionStorage)
+    init {
+        NetworkModule.setAuthTokenProvider { sessionManager.session.value?.token }
+    }
 
     private val bookRemoteDataSource = BookRemoteDataSource(apiService)
 
     private val authorRemoteDataSource = AuthorRemoteDataSource(apiService)
     private val authRemoteDataSource = AuthRemoteDataSource(authApiService)
     private val homeRemoteDataSource = HomeRemoteDataSource(apiService)
-    private val profileRemoteDataSource = ProfileRemoteDataSource(apiService)
-    private val libraryRemoteDataSource = LibraryRemoteDataSource(apiService)
+    private val profileRemoteDataSource = ProfileRemoteDataSource(apiService, userContentRefreshBus)
+    private val libraryRemoteDataSource = LibraryRemoteDataSource(apiService, userContentRefreshBus)
     private val statsRemoteDataSource = StatsRemoteDataSource(apiService)
     private val notificationsRemoteDataSource = NotificationsRemoteDataSource(apiService)
     val readingRoomsRemoteDataSource = ReadingRoomsRemoteDataSource(apiService)
 
     private val authRepository = AuthRepositoryImpl(authRemoteDataSource)
-    private val bookRepository = BookRepositoryImpl(bookRemoteDataSource)
+    private val bookRepository = BookRepositoryImpl(bookRemoteDataSource, userContentRefreshBus)
 
     private val authorRepository = AuthorRepositoryImpl(authorRemoteDataSource)
     private val homeRepository = HomeRepositoryImpl(homeRemoteDataSource)
     private val profileRepository = ProfileRepositoryImpl(context, profileRemoteDataSource)
-    private val libraryRepository = LibraryRepositoryImpl(libraryRemoteDataSource)
+    private val libraryRepository = LibraryRepositoryImpl(libraryRemoteDataSource, userContentRefreshBus)
     private val statsRepository = StatsRepositoryImpl(statsRemoteDataSource)
     private val notificationsRepository = NotificationsRepositoryImpl(notificationsRemoteDataSource)
 

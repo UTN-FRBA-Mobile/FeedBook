@@ -32,6 +32,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 object NetworkModule {
     @Volatile
     private var wifiNetworkSelector: WifiNetworkSelector? = null
+    @Volatile
+    private var authTokenProvider: (() -> String?)? = null
 
     @Volatile
     private var backendOrigin = BackendUrls.origin(BuildConfig.BACKEND_ORIGIN)
@@ -42,6 +44,10 @@ object NetworkModule {
     fun initialize(context: Context) {
         wifiNetworkSelector = WifiNetworkSelector(context)
         updateBackendOrigin(BackendServerConfig(context).getOrigin())
+    }
+
+    fun setAuthTokenProvider(provider: (() -> String?)?) {
+        authTokenProvider = provider
     }
 
     fun updateBackendOrigin(rawOrigin: String): String {
@@ -66,7 +72,12 @@ object NetworkModule {
 
         val retrofit = Retrofit.Builder()
             .baseUrl(BackendUrls.apiBaseUrl(origin))
-            .client(ApiClient.createOkHttpClient(socketFactory = localSocketFactory))
+            .client(
+                ApiClient.createOkHttpClient(
+                    socketFactory = localSocketFactory,
+                    authTokenProvider = { authTokenProvider?.invoke() }
+                )
+            )
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
