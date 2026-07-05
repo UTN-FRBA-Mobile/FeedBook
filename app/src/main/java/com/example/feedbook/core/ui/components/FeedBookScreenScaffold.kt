@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.ProfileVariant
+import com.example.feedbook.features.profile.presentation.LocalFeedBookTopBarAvatar
 import com.example.feedbook.features.profile.presentation.components.ProfileColors
 
 @Composable
@@ -30,15 +31,16 @@ internal fun FeedBookScreenScaffold(
     snackbarHost: @Composable (() -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit
 ) {
+    val topBarAvatar = LocalFeedBookTopBarAvatar.current
     Scaffold(
         modifier = modifier,
         containerColor = ProfileColors.Background,
         topBar = {
             FeedBookTopBar(
                 variant = variant,
-                avatarStyle = avatarStyle,
-                avatarPreset = avatarPreset,
-                avatarImageUri = avatarImageUri,
+                avatarStyle = topBarAvatar?.style ?: avatarStyle,
+                avatarPreset = topBarAvatar?.preset ?: avatarPreset,
+                avatarImageUri = topBarAvatar?.imageUri ?: avatarImageUri,
                 title = title,
                 onAvatarClick = onAvatarClick,
                 onRefreshClick = onRefreshClick,

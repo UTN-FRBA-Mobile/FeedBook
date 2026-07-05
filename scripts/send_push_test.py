@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 DEFAULT_TITLE = "FeedBook"
-DEFAULT_BODY = "Juanma134 comenzó a seguirte"
+DEFAULT_BODY = "Pepito comenzó a seguirte"
 
 
 @dataclass(frozen=True)
