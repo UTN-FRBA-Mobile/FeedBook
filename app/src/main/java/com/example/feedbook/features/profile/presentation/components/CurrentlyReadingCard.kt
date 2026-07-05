@@ -1,6 +1,5 @@
 package com.example.feedbook.features.profile.presentation.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,14 +34,16 @@ import com.example.feedbook.features.profile.presentation.CurrentBook
 internal fun CurrentlyReadingCard(
     modifier: Modifier = Modifier,
     currentBook: CurrentBook,
-    onBookClick: (String) -> Unit = {},
+    onBookClick: ((String) -> Unit)? = null,
     emphasized: Boolean = false
 ) {
+    val hasCurrentBook = currentBook.id.isNotBlank() && currentBook.title.isNotBlank()
     ProfileSurfaceCard(
         modifier = modifier.fillMaxWidth(),
-        onClick = {
-            Log.d("Nav", "Book id: ${currentBook.id}")
-            onBookClick(currentBook.id)
+        onClick = if (hasCurrentBook && onBookClick != null) {
+            { onBookClick(currentBook.id) }
+        } else {
+            null
         }
     ) {
         Box(
@@ -54,97 +55,125 @@ internal fun CurrentlyReadingCard(
                     )
                 )
         )
-        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-            val spacing = if (emphasized) 28.dp else 24.dp
-            val coverWidth = if (emphasized) 122.dp else 96.dp
-            val detailsWidth = maxWidth - coverWidth - spacing
-
-            Row(horizontalArrangement = Arrangement.spacedBy(spacing)) {
-                BookCover(
-                    title = currentBook.title,
-                    coverImageUrl = currentBook.coverImageUrl,
-                    emphasized = emphasized
+        if (!hasCurrentBook) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    text = stringResource(R.string.profile_currently_reading_label),
+                    style = ProfileTypography.LabelUppercase,
+                    color = ProfileColors.Accent
                 )
-                Column(
-                    modifier = Modifier.width(detailsWidth),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Text(
-                            text = "\u25A4",
-                            style = ProfileTypography.LabelUppercase,
-                            color = ProfileColors.Accent
-                        )
-                        Text(
-                            text = stringResource(R.string.profile_currently_reading_label),
-                            style = ProfileTypography.LabelUppercase,
-                            color = ProfileColors.Accent
-                        )
-                    }
-                    Text(
-                        text = currentBook.title,
-                        style = if (emphasized) {
-                            ProfileTypography.LargeBookTitle.copy(fontSize = 36.sp, lineHeight = 44.sp)
-                        } else {
-                            ProfileTypography.LargeBookTitle
-                        },
-                        color = ProfileColors.PrimaryText,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                Text(
+                    text = stringResource(R.string.profile_currently_reading_empty_title),
+                    style = if (emphasized) {
+                        ProfileTypography.LargeBookTitle.copy(fontSize = 34.sp, lineHeight = 42.sp)
+                    } else {
+                        ProfileTypography.SectionTitle
+                    },
+                    color = ProfileColors.PrimaryText
+                )
+                Text(
+                    text = stringResource(R.string.profile_currently_reading_empty_body),
+                    style = ProfileTypography.Body,
+                    color = ProfileColors.SecondaryText
+                )
+            }
+        } else {
+            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                val spacing = if (emphasized) 28.dp else 24.dp
+                val coverWidth = if (emphasized) 122.dp else 96.dp
+                val detailsWidth = maxWidth - coverWidth - spacing
+
+                Row(horizontalArrangement = Arrangement.spacedBy(spacing)) {
+                    BookCover(
+                        title = currentBook.title,
+                        coverImageUrl = currentBook.coverImageUrl,
+                        emphasized = emphasized
                     )
-                    Text(
-                        text = currentBook.author,
-                        style = ProfileTypography.Body,
-                        color = ProfileColors.SecondaryText,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                    Column(
+                        modifier = Modifier.width(detailsWidth),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = "\u25A4",
+                                style = ProfileTypography.LabelUppercase,
+                                color = ProfileColors.Accent
+                            )
+                            Text(
+                                text = stringResource(R.string.profile_currently_reading_label),
+                                style = ProfileTypography.LabelUppercase,
+                                color = ProfileColors.Accent
+                            )
+                        }
                         Text(
-                            text = "Page ${currentBook.page} of ${currentBook.totalPages}",
+                            text = currentBook.title,
                             style = if (emphasized) {
-                                ProfileTypography.Body.copy(fontSize = 14.sp, lineHeight = 20.sp)
+                                ProfileTypography.LargeBookTitle.copy(fontSize = 36.sp, lineHeight = 44.sp)
                             } else {
-                                ProfileTypography.Label
+                                ProfileTypography.LargeBookTitle
                             },
-                            color = ProfileColors.SecondaryText
+                            color = ProfileColors.PrimaryText,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = "${(currentBook.progress * 100).toInt()}%",
-                            style = if (emphasized) {
-                                ProfileTypography.Body.copy(
-                                    fontSize = 15.sp,
-                                    lineHeight = 20.sp,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            } else {
-                                ProfileTypography.Label.copy(fontWeight = FontWeight.SemiBold)
-                            },
-                            color = ProfileColors.SurfaceStrong
+                            text = currentBook.author,
+                            style = ProfileTypography.Body,
+                            color = ProfileColors.SecondaryText,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(if (emphasized) 8.dp else 6.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(ProfileColors.AccentSoft)
-                    ) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(
+                                    R.string.profile_currently_reading_progress,
+                                    currentBook.page,
+                                    currentBook.totalPages
+                                ),
+                                style = if (emphasized) {
+                                    ProfileTypography.Body.copy(fontSize = 14.sp, lineHeight = 20.sp)
+                                } else {
+                                    ProfileTypography.Label
+                                },
+                                color = ProfileColors.SecondaryText
+                            )
+                            Text(
+                                text = "${(currentBook.progress * 100).toInt()}%",
+                                style = if (emphasized) {
+                                    ProfileTypography.Body.copy(
+                                        fontSize = 15.sp,
+                                        lineHeight = 20.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                } else {
+                                    ProfileTypography.Label.copy(fontWeight = FontWeight.SemiBold)
+                                },
+                                color = ProfileColors.SurfaceStrong
+                            )
+                        }
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth(currentBook.progress.coerceIn(0f, 1f))
+                                .fillMaxWidth()
                                 .height(if (emphasized) 8.dp else 6.dp)
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(ProfileColors.Accent)
-                        )
+                                .background(ProfileColors.AccentSoft)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(currentBook.progress.coerceIn(0f, 1f))
+                                    .height(if (emphasized) 8.dp else 6.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(ProfileColors.Accent)
+                            )
+                        }
                     }
                 }
             }

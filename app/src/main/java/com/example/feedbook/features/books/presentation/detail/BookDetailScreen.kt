@@ -1,5 +1,6 @@
 package com.example.feedbook.features.books.presentation.detail
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -542,7 +543,8 @@ private fun ProgressCard(
     onSliderChange: (Float) -> Unit,
     onSave: () -> Unit
 ) {
-    val cardBg = ProfileColors.SurfaceStrong
+    val isCompleted = percentage >= 100
+    val cardBg = if (isCompleted) Color(0xFF0F766E) else ProfileColors.SurfaceStrong
     val trackBg = Color.White.copy(alpha = 0.2f)
     val saveBg = Color.White.copy(alpha = 0.1f)
     val accentColor = Color.White
@@ -572,6 +574,23 @@ private fun ProgressCard(
                     ),
                     color = Color.White.copy(alpha = 0.7f)
                 )
+                AnimatedVisibility(visible = isCompleted) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.book_detail_completed_badge),
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                letterSpacing = 1.4.sp,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = Color.White,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(999.dp))
+                                .background(Color.White.copy(alpha = 0.16f))
+                                .padding(horizontal = 10.dp, vertical = 4.dp)
+                        )
+                    }
+                }
             }
             Spacer(modifier = Modifier.height(16.dp))
             Row(
@@ -624,7 +643,11 @@ private fun ProgressCard(
                 colors = ButtonDefaults.buttonColors(containerColor = saveBg)
             ) {
                 Text(
-                    text = stringResource(R.string.book_detail_save_progress),
+                    text = if (isCompleted) {
+                        stringResource(R.string.book_detail_save_completed)
+                    } else {
+                        stringResource(R.string.book_detail_save_progress)
+                    },
                     style = MaterialTheme.typography.titleLarge.copy(fontSize = 15.sp),
                     color = Color.White
                 )

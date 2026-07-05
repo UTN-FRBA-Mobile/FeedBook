@@ -30,7 +30,6 @@ import com.example.feedbook.features.profile.presentation.components.PublicLibra
 import com.example.feedbook.features.profile.presentation.components.PublicProfileStatsCard
 import com.example.feedbook.features.profile.presentation.components.ReadingGoalCard
 import com.example.feedbook.features.profile.presentation.components.ReadingStreakCard
-import com.example.feedbook.features.profile.presentation.components.UpNextCard
 
 @Composable
 fun ProfileScreen(
@@ -135,19 +134,14 @@ fun ProfileScreen(
                     item {
                         CurrentlyReadingCard(
                             currentBook = state.currentBook,
-                            onBookClick = { onBookClick(state.currentBook.id) },
-                            modifier = Modifier.padding(horizontal = 16.dp)
-                        )
-                    }
-                    item {
-                        UpNextCard(
-                            books = state.upNextBooks,
+                            onBookClick = onBookClick,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
                     }
                     item {
                         LibraryArchiveCard(
                             completedBooks = state.completedBooks,
+                            onViewCollectionClick = onLibraryClick,
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
                                 .fillMaxWidth()
