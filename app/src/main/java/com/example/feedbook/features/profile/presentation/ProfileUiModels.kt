@@ -21,7 +21,8 @@ data class ProfileUiState(
     val publicLibrary: List<LibraryBook>,
     val featuredReviews: List<FeaturedReview>,
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val isFollowing: Boolean = false
 )
 
 enum class ProfileVariant {
@@ -151,5 +152,6 @@ fun emptyProfileUiState(variant: ProfileVariant): ProfileUiState = ProfileUiStat
     completedBooks = 0,
     profileStats = emptyList(),
     publicLibrary = emptyList(),
-    featuredReviews = emptyList()
+    featuredReviews = emptyList(),
+    isFollowing = false
 )

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.feedbook.features.authors.domain.usecase.GetAuthorByIdUseCase
 import com.example.feedbook.features.authors.domain.usecase.ToggleAuthorFollowUseCase
+import com.example.feedbook.features.books.domain.usecase.GetAuthorUsersUseCase
 import com.example.feedbook.features.profile.domain.usecase.ObserveOwnProfileUseCase
 import com.example.feedbook.features.profile.presentation.AvatarPresentation
 import com.example.feedbook.features.profile.presentation.defaultAvatarStyle
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.update
 class AuthorDetailViewModel (
     private val authorId: String,
     private val getAuthorByIdUseCase: GetAuthorByIdUseCase,
+    private val getAuthorUsersUseCase: GetAuthorUsersUseCase,
     private val toggleFollowUseCase: ToggleAuthorFollowUseCase,
     observeOwnProfileUseCase: ObserveOwnProfileUseCase
 ) : ViewModel() {
@@ -54,17 +56,18 @@ class AuthorDetailViewModel (
             _state.value = _state.value.copy(isLoading = true)
 
             val authorDeferred = async { runCatching { getAuthorByIdUseCase(authorId) } }
+            val usersDeferred = async { runCatching { getAuthorUsersUseCase(authorId) } }
 
             val authorResult = authorDeferred.await()
+            val usersResult = usersDeferred.await()
 
             _state.value = AuthorDetailUiState(
                 isLoading = false,
                 avatarStyle = avatarPresentation.style,
                 avatarPreset = avatarPresentation.preset,
                 avatarImageUri = avatarPresentation.imageUri,
-
                 author = authorResult.getOrNull()?.toUiModel(),
-
+                authorUsers = usersResult.getOrDefault(emptyList()),
                 error = authorResult.exceptionOrNull()?.message
                     ?: if (authorResult.isSuccess && authorResult.getOrNull() == null) "Autor no encontrado" else null
             )
@@ -89,6 +92,7 @@ class AuthorDetailViewModel (
         fun provideFactory(
             authorId: String,
             getAuthorByIdUseCase: GetAuthorByIdUseCase,
+            getAuthorUsersUseCase: GetAuthorUsersUseCase,
             toggleFollowUseCase: ToggleAuthorFollowUseCase,
             observeOwnProfileUseCase: ObserveOwnProfileUseCase
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
@@ -97,6 +101,7 @@ class AuthorDetailViewModel (
                 AuthorDetailViewModel(
                     authorId,
                     getAuthorByIdUseCase,
+                    getAuthorUsersUseCase,
                     toggleFollowUseCase,
                     observeOwnProfileUseCase
                 ) as T

@@ -26,8 +26,12 @@ class ProfileRepositoryImpl(
     override fun observeOwnPublicPreview(): Flow<ReaderProfile> =
         remoteDataSource.observeOwnPublicPreview().map { it.toDomain() }
 
-    override suspend fun getPublicProfile(): ReaderProfile =
-        remoteDataSource.getPublicProfile().toDomain()
+    override suspend fun getPublicProfile(userId: String): ReaderProfile =
+        remoteDataSource.getPublicProfile(userId).toDomain()
+
+    override suspend fun toggleUserFollow(userId: String) {
+        remoteDataSource.toggleUserFollow(userId)
+    }
 
     override suspend fun updateOwnProfile(command: UpdateProfileCommand) {
         val avatarImageUri = command.avatarImageUri

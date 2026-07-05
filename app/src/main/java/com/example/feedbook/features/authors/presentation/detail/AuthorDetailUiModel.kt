@@ -1,5 +1,6 @@
 package com.example.feedbook.features.authors.presentation.detail
 
+import com.example.feedbook.features.books.domain.model.ExploreUser
 import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.defaultAvatarStyle
@@ -10,7 +11,8 @@ data class AuthorDetailUiState(
     val author: AuthorUiModel? = null,
     val avatarStyle: AvatarStyle = defaultAvatarStyle(),
     val avatarPreset: AvatarPreset? = null,
-    val avatarImageUri: String? = null
+    val avatarImageUri: String? = null,
+    val authorUsers: List<ExploreUser> = emptyList()
 )
 data class AuthorUiModel(
     val id: String,

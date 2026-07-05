@@ -3,6 +3,7 @@ package com.example.feedbook.features.books.presentation.detail
 import com.example.feedbook.features.profile.presentation.AvatarPreset
 import com.example.feedbook.features.profile.presentation.AvatarStyle
 import com.example.feedbook.features.profile.presentation.defaultAvatarStyle
+import com.example.feedbook.features.books.domain.model.ExploreUser
 import com.example.feedbook.features.books.domain.model.ReviewPart
 
 data class BookDetailUiState(
@@ -21,7 +22,8 @@ data class BookDetailUiState(
     val libraryFeedback: String? = null,
     val progressFeedback: String? = null,
     val reviewFeedback: String? = null,
-    val isSavingReview: Boolean = false
+    val isSavingReview: Boolean = false,
+    val bookUsers: List<ExploreUser> = emptyList()
 )
 
 data class BookUiModel(

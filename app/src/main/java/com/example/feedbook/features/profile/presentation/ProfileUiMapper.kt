@@ -6,19 +6,22 @@ import com.example.feedbook.features.profile.domain.model.ReaderProfile
 fun ReaderProfile.toOwnProfileUiState(): ProfileUiState = toUiState(
     variant = ProfileVariant.OWN,
     actionLabelRes = R.string.profile_action_edit,
-    profileStats = profileStats.map { ProfileStat(it.label, it.value) }
+    profileStats = profileStats.map { ProfileStat(it.label, it.value) },
+    isFollowing = isFollowing
 )
 
 fun ReaderProfile.toPublicProfileUiState(): ProfileUiState = toUiState(
     variant = ProfileVariant.PUBLIC,
-    actionLabelRes = R.string.profile_action_follow,
-    profileStats = profileStats.map { ProfileStat(it.label, it.value) }
+    actionLabelRes = if (isFollowing) R.string.profile_action_following else R.string.profile_action_follow,
+    profileStats = profileStats.map { ProfileStat(it.label, it.value) },
+    isFollowing = isFollowing
 )
 
 private fun ReaderProfile.toUiState(
     variant: ProfileVariant,
     actionLabelRes: Int,
-    profileStats: List<ProfileStat>
+    profileStats: List<ProfileStat>,
+    isFollowing: Boolean
 ): ProfileUiState {
     val avatarPresentation = toAvatarPresentation()
     return ProfileUiState(
@@ -68,6 +71,7 @@ private fun ReaderProfile.toUiState(
                 excerpt = it.excerpt,
                 coverImageUrl = it.coverImageUrl
             )
-        }
+        },
+        isFollowing = isFollowing
     )
 }

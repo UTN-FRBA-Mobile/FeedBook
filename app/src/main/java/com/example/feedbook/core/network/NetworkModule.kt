@@ -2,13 +2,16 @@ package com.example.feedbook.core.network
 
 import android.content.Context
 import com.example.feedbook.BuildConfig
+import com.example.feedbook.core.session.SessionStorage
 import com.example.feedbook.features.authors.data.remote.dto.AuthorDto
 import com.example.feedbook.features.books.data.remote.dto.BookDto
 import com.example.feedbook.features.books.data.remote.dto.ExploreUserDto
+import com.example.feedbook.features.books.data.remote.dto.FriendReadingDto
 import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewsResponseDto
 import com.example.feedbook.features.books.data.remote.dto.SaveReviewRequestDto
+import com.example.feedbook.features.books.data.remote.dto.SearchResponseDto
 import com.example.feedbook.features.home.data.remote.dto.HomeDto
 import com.example.feedbook.features.library.data.remote.dto.LibraryDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationsDto
@@ -36,6 +39,9 @@ object NetworkModule {
     private var authTokenProvider: (() -> String?)? = null
 
     @Volatile
+    private var authToken: String? = null
+
+    @Volatile
     private var backendOrigin = BackendUrls.origin(BuildConfig.BACKEND_ORIGIN)
 
     @Volatile
@@ -43,11 +49,16 @@ object NetworkModule {
 
     fun initialize(context: Context) {
         wifiNetworkSelector = WifiNetworkSelector(context)
+        authToken = SessionStorage(context).readToken()
         updateBackendOrigin(BackendServerConfig(context).getOrigin())
     }
 
     fun setAuthTokenProvider(provider: (() -> String?)?) {
         authTokenProvider = provider
+    }
+
+    fun updateAuthToken(token: String?) {
+        authToken = token
     }
 
     fun updateBackendOrigin(rawOrigin: String): String {
@@ -75,7 +86,9 @@ object NetworkModule {
             .client(
                 ApiClient.createOkHttpClient(
                     socketFactory = localSocketFactory,
-                    authTokenProvider = { authTokenProvider?.invoke() }
+                    authTokenProvider = {
+                        authTokenProvider?.invoke() ?: authToken
+                    }
                 )
             )
             .addConverterFactory(GsonConverterFactory.create())
@@ -117,6 +130,12 @@ object NetworkModule {
 
         override suspend fun getExploreUsers(): List<ExploreUserDto> =
             currentServices.apiService.getExploreUsers()
+
+        override suspend fun getExploreUserById(id: String): ExploreUserDto =
+            currentServices.apiService.getExploreUserById(id)
+
+        override suspend fun search(query: String): SearchResponseDto =
+            currentServices.apiService.search(query)
 
         override suspend fun getReadingProgress(bookId: String): ReadingProgressDto? =
             currentServices.apiService.getReadingProgress(bookId)
@@ -215,8 +234,8 @@ object NetworkModule {
         override suspend fun getOwnPublicProfilePreview(): ProfileDto =
             currentServices.apiService.getOwnPublicProfilePreview()
 
-        override suspend fun getPublicProfile(): ProfileDto =
-            currentServices.apiService.getPublicProfile()
+        override suspend fun getPublicProfile(userId: String): ProfileDto =
+            currentServices.apiService.getPublicProfile(userId)
 
         override suspend fun getStats(): StatsDto =
             currentServices.apiService.getStats()
@@ -230,6 +249,13 @@ object NetworkModule {
         override suspend fun uploadOwnAvatar(image: okhttp3.MultipartBody.Part) =
             currentServices.apiService.uploadOwnAvatar(image)
 
+        override suspend fun toggleUserFollow(userId: String) {
+            currentServices.apiService.toggleUserFollow(userId)
+        }
+
+        override suspend fun getFriendsReading(bookId: String): List<FriendReadingDto> =
+            currentServices.apiService.getFriendsReading(bookId)
+
         override suspend fun registerPushToken(body: RegisterPushTokenRequestDto) {
             currentServices.apiService.registerPushToken(body)
         }
@@ -237,5 +263,11 @@ object NetworkModule {
         override suspend fun unlinkPushToken(body: UnlinkPushTokenRequestDto) {
             currentServices.apiService.unlinkPushToken(body)
         }
+
+        override suspend fun getBookUsers(bookId: String): List<ExploreUserDto> =
+            currentServices.apiService.getBookUsers(bookId)
+
+        override suspend fun getAuthorUsers(authorId: String): List<ExploreUserDto> =
+            currentServices.apiService.getAuthorUsers(authorId)
     }
 }

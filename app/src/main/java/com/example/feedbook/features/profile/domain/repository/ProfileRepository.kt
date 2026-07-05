@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface ProfileRepository {
     fun observeOwnProfile(): Flow<ReaderProfile>
     fun observeOwnPublicPreview(): Flow<ReaderProfile>
-    suspend fun getPublicProfile(): ReaderProfile
+    suspend fun getPublicProfile(userId: String): ReaderProfile
     suspend fun updateOwnProfile(command: UpdateProfileCommand)
+    suspend fun toggleUserFollow(userId: String)
 }

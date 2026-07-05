@@ -49,3 +49,5 @@ firebase-service-account.json
 
 tmp/
 AGENTS.md
+.feedbook-back.pid
+/back

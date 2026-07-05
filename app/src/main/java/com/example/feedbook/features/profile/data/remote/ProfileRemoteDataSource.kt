@@ -20,7 +20,7 @@ class ProfileRemoteDataSource(
     fun observeOwnPublicPreview(): Flow<ProfileDto> =
         refreshBus.version.flatMapLatest { flowOf(apiService.getOwnPublicProfilePreview()) }
 
-    suspend fun getPublicProfile(): ProfileDto = apiService.getPublicProfile()
+    suspend fun getPublicProfile(userId: String): ProfileDto = apiService.getPublicProfile(userId)
 
     suspend fun uploadOwnAvatar(image: MultipartBody.Part): AvatarUploadResponseDto =
         apiService.uploadOwnAvatar(image)
@@ -29,5 +29,9 @@ class ProfileRemoteDataSource(
         val updatedProfile = apiService.updateOwnProfile(request)
         refreshBus.refresh()
         return updatedProfile
+    }
+
+    suspend fun toggleUserFollow(userId: String) {
+        apiService.toggleUserFollow(userId)
     }
 }

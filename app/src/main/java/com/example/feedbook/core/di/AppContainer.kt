@@ -25,7 +25,10 @@ import com.example.feedbook.features.books.domain.usecase.GetReadingProgressUseC
 import com.example.feedbook.features.books.domain.usecase.SaveReadingProgressUseCase
 import com.example.feedbook.features.books.domain.usecase.GetReviewsUseCase
 import com.example.feedbook.features.books.domain.usecase.SaveReviewUseCase
+import com.example.feedbook.features.books.domain.usecase.SearchExploreUseCase
 import com.example.feedbook.features.books.domain.usecase.ToggleLikeUseCase
+import com.example.feedbook.features.books.domain.usecase.GetBookUsersUseCase
+import com.example.feedbook.features.books.domain.usecase.GetAuthorUsersUseCase
 import com.example.feedbook.features.home.data.remote.HomeRemoteDataSource
 import com.example.feedbook.features.home.data.repository.HomeRepositoryImpl
 import com.example.feedbook.features.home.domain.usecase.ObserveHomeFeedUseCase
@@ -42,6 +45,7 @@ import com.example.feedbook.features.profile.data.repository.ProfileRepositoryIm
 import com.example.feedbook.features.profile.domain.usecase.GetPublicProfileUseCase
 import com.example.feedbook.features.profile.domain.usecase.ObserveOwnProfileUseCase
 import com.example.feedbook.features.profile.domain.usecase.ObserveOwnPublicProfilePreviewUseCase
+import com.example.feedbook.features.profile.domain.usecase.ToggleUserFollowUseCase
 import com.example.feedbook.features.profile.domain.usecase.UpdateProfileUseCase
 import com.example.feedbook.features.readingrooms.data.remote.ReadingRoomsRemoteDataSource
 import com.example.feedbook.features.stats.data.remote.StatsRemoteDataSource
@@ -86,6 +90,7 @@ class AppContainer(
     val registerUseCase = RegisterUseCase(authRepository)
     val getBooksUseCase = GetBooksUseCase(bookRepository)
     val getExploreUsersUseCase = GetExploreUsersUseCase(bookRepository)
+    val searchExploreUseCase = SearchExploreUseCase(bookRepository)
     val getBookByIdUseCase = GetBookByIdUseCase(bookRepository)
     val getBookByIsbnUseCase = GetBookByIsbnUseCase(bookRepository)
 
@@ -101,12 +106,15 @@ class AppContainer(
     val getReviewsUseCase = GetReviewsUseCase(bookRepository)
     val saveReviewUseCase = SaveReviewUseCase(bookRepository)
     val toggleLikeUseCase = ToggleLikeUseCase(bookRepository)
+    val getBookUsersUseCase = GetBookUsersUseCase(bookRepository)
+    val getAuthorUsersUseCase = GetAuthorUsersUseCase(bookRepository)
 
     val observeHomeFeedUseCase = ObserveHomeFeedUseCase(homeRepository)
     val observeOwnProfileUseCase = ObserveOwnProfileUseCase(profileRepository)
     val observeOwnPublicProfilePreviewUseCase =
         ObserveOwnPublicProfilePreviewUseCase(profileRepository)
     val getPublicProfileUseCase = GetPublicProfileUseCase(profileRepository)
+    val toggleUserFollowUseCase = ToggleUserFollowUseCase(profileRepository)
     val updateProfileUseCase = UpdateProfileUseCase(profileRepository)
     val observeOwnLibraryUseCase = ObserveOwnLibraryUseCase(libraryRepository)
     val addBookToLibraryUseCase = AddBookToLibraryUseCase(libraryRepository)
