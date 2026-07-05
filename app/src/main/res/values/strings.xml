@@ -18,6 +18,8 @@
     <string name="profile_topbar_settings">Settings</string>
     <string name="profile_topbar_direct_message">Direct message</string>
     <string name="profile_topbar_more_options">More options</string>
+    <string name="profile_topbar_refresh">Refresh</string>
+    <string name="profile_topbar_scan">Scan ISBN</string>
     <string name="profile_bottom_nav_feed">Feed</string>
     <string name="profile_bottom_nav_explore">Explore</string>
     <string name="profile_bottom_nav_library">Library</string>
@@ -25,6 +27,8 @@
     <string name="profile_bottom_nav_notifications">Notifications</string>
     <string name="profile_currently_reading_label">CURRENTLY READING</string>
     <string name="profile_currently_reading_progress">Page %1$d of %2$d</string>
+    <string name="profile_currently_reading_empty_title">Nothing in progress</string>
+    <string name="profile_currently_reading_empty_body">Start a book and it will show up here instead of sending you into a dead end.</string>
     <string name="profile_reading_goal_title">Reading Goal</string>
     <string name="profile_reading_goal_empty_body">Create a daily target to keep your reading pace visible in your profile.</string>
     <string name="profile_reading_goal_create">CREATE GOAL</string>
@@ -186,8 +190,12 @@
     <string name="book_detail_remove_from_library_message">Are you sure you want to remove this book from your list?</string>
     <string name="book_detail_remove">Remove</string>
     <string name="book_detail_update_progress">UPDATE PROGRESS</string>
+    <string name="book_detail_completed_badge">COMPLETED</string>
     <string name="book_detail_pages_of">%1$d of %2$d pages</string>
     <string name="book_detail_save_progress">Save progress</string>
+    <string name="book_detail_save_completed">Completed</string>
+    <string name="book_detail_friends_who_read_this">FRIENDS WHO READ THIS</string>
+    <string name="book_detail_friends_text">Marcus, Elena and 12 others\nhave read this volume.</string>
     <string name="book_detail_users_who_read">USERS WHO READ THIS</string>
     <string name="book_detail_community_reviews">Community reviews</string>
     <string name="book_detail_write_review">Write a review</string>

@@ -19,6 +19,7 @@ internal fun FeedBookScreenScaffold(
     avatarImageUri: String? = null,
     title: String = "FeedBook",
     onAvatarClick: () -> Unit = {},
+    onRefreshClick: (() -> Unit)? = null,
     onFeedClick: () -> Unit = {},
     onExploreClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
@@ -40,6 +41,7 @@ internal fun FeedBookScreenScaffold(
                 avatarImageUri = avatarImageUri,
                 title = title,
                 onAvatarClick = onAvatarClick,
+                onRefreshClick = onRefreshClick,
                 onLogoutClick = onLogoutClick
             )
         },

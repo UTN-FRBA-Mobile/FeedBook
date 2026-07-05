@@ -48,6 +48,7 @@ fun NotificationsScreen(
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
+    onRefreshClick: () -> Unit = {},
     onRetry: () -> Unit = {}
 ) {
     when {
@@ -74,6 +75,7 @@ fun NotificationsScreen(
         avatarPreset = state.avatarPreset,
         avatarImageUri = state.avatarImageUri,
         onAvatarClick = onProfileClick,
+        onRefreshClick = onRefreshClick,
         onFeedClick = onFeedClick,
         onExploreClick = onExploreClick,
         onLibraryClick = onLibraryClick,

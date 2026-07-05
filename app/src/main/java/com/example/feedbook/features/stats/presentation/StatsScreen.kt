@@ -42,6 +42,7 @@ fun StatsScreen(
     onNotificationsClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
     onModeSelected: (String) -> Unit = {},
+    onRefreshClick: () -> Unit = {},
     onRetry: () -> Unit = {}
 ) {
     val currentRadarSection = state.radarSections.firstOrNull { it.mode == state.selectedRadarMode }
@@ -71,6 +72,7 @@ fun StatsScreen(
         avatarPreset = state.avatarPreset,
         avatarImageUri = state.avatarImageUri,
         onAvatarClick = onProfileClick,
+        onRefreshClick = onRefreshClick,
         onFeedClick = onFeedClick,
         onExploreClick = onExploreClick,
         onLibraryClick = onLibraryClick,

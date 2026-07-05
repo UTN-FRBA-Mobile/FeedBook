@@ -2,6 +2,7 @@ package com.example.feedbook.features.books.data.repository
 
 import com.example.feedbook.features.books.data.mapper.toDomain
 import com.example.feedbook.features.books.data.remote.BookRemoteDataSource
+import com.example.feedbook.core.state.UserContentRefreshBus
 import com.example.feedbook.features.books.domain.model.Book
 import com.example.feedbook.features.books.domain.model.ExploreUser
 import com.example.feedbook.features.books.domain.model.ExploreSearchResults
@@ -13,6 +14,7 @@ import com.example.feedbook.features.books.domain.repository.BookRepository
 
 class BookRepositoryImpl(
     private val remoteDataSource: BookRemoteDataSource,
+    private val refreshBus: UserContentRefreshBus,
 ) : BookRepository {
     override suspend fun getBooks(): List<Book> {
         return remoteDataSource.getBooks().map { dto -> dto.toDomain() }
@@ -44,7 +46,9 @@ class BookRepositoryImpl(
     }
 
     override suspend fun saveReview(bookId: String, rating: Float, text: String, parts: List<ReviewPart>): Review {
-        return remoteDataSource.saveReview(bookId, rating, text, parts).toDomain()
+        return remoteDataSource.saveReview(bookId, rating, text, parts).toDomain().also {
+            refreshBus.refresh()
+        }
     }
 
     override suspend fun getReadingProgress(bookId: String): ReadingProgress? {
@@ -52,7 +56,9 @@ class BookRepositoryImpl(
     }
 
     override suspend fun saveReadingProgress(bookId: String, currentPage: Int): ReadingProgress {
-        return remoteDataSource.saveReadingProgress(bookId, currentPage).toDomain()
+        return remoteDataSource.saveReadingProgress(bookId, currentPage).toDomain().also {
+            refreshBus.refresh()
+        }
     }
 
     override suspend fun toggleLike(bookId: String, reviewId: String): Review {

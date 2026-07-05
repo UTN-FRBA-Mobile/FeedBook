@@ -31,6 +31,7 @@ private fun CurrentBookDto.toDomain(): LibraryCurrentBook =
 private fun LibraryBookDto.toDomain(): LibraryShelfBook = LibraryShelfBook(id, title, coverImageUrl)
 
 private fun ReadBookDto.toDomain(): ReadBookEntry = ReadBookEntry(
+    id = id,
     title = title,
     author = author,
     startedOn = startedOn,

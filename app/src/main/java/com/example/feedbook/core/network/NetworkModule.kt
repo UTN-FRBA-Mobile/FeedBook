@@ -35,6 +35,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 object NetworkModule {
     @Volatile
     private var wifiNetworkSelector: WifiNetworkSelector? = null
+    @Volatile
+    private var authTokenProvider: (() -> String?)? = null
 
     @Volatile
     private var authToken: String? = null
@@ -49,6 +51,10 @@ object NetworkModule {
         wifiNetworkSelector = WifiNetworkSelector(context)
         authToken = SessionStorage(context).readToken()
         updateBackendOrigin(BackendServerConfig(context).getOrigin())
+    }
+
+    fun setAuthTokenProvider(provider: (() -> String?)?) {
+        authTokenProvider = provider
     }
 
     fun updateAuthToken(token: String?) {
@@ -80,7 +86,9 @@ object NetworkModule {
             .client(
                 ApiClient.createOkHttpClient(
                     socketFactory = localSocketFactory,
-                    authTokenProvider = { authToken }
+                    authTokenProvider = {
+                        authTokenProvider?.invoke() ?: authToken
+                    }
                 )
             )
             .addConverterFactory(GsonConverterFactory.create())

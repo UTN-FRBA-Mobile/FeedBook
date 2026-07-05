@@ -10,7 +10,7 @@ object ApiClient {
     fun createOkHttpClient(
         useSystemProxy: Boolean = true,
         socketFactory: SocketFactory? = null,
-        authTokenProvider: () -> String? = { null }
+        authTokenProvider: (() -> String?)? = null
     ): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
@@ -18,7 +18,7 @@ object ApiClient {
 
         val builder = OkHttpClient.Builder()
             .addInterceptor { chain ->
-                val token = authTokenProvider()?.takeIf { it.isNotBlank() }
+                val token = authTokenProvider?.invoke()?.takeIf { it.isNotBlank() }
                 val request = if (token == null) {
                     chain.request()
                 } else {
