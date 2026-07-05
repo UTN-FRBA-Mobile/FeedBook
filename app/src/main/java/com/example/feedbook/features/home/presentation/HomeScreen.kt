@@ -60,6 +60,7 @@ fun HomeScreen(
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
+    onRefreshClick: () -> Unit = {},
     onBookClick: (String) -> Unit = {},
     onReadingRoomClick: (String) -> Unit = {},
     onSeeAllReadingRoomsClick: () -> Unit = {}
@@ -72,6 +73,7 @@ fun HomeScreen(
         avatarPreset = state.avatarPreset,
         avatarImageUri = state.avatarImageUri,
         onAvatarClick = onProfileClick,
+        onRefreshClick = onRefreshClick,
         onFeedClick = onFeedClick,
         onExploreClick = onExploreClick,
         onLibraryClick = onLibraryClick,

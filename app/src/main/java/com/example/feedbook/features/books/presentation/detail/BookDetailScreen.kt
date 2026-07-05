@@ -156,6 +156,7 @@ fun BookDetailScreen(
         avatarPreset = state.avatarPreset,
         avatarImageUri = state.avatarImageUri,
         onAvatarClick = onProfileClick,
+        onRefreshClick = onRetry,
         onFeedClick = onFeedClick,
         onExploreClick = onExploreClick,
         onLibraryClick = onLibraryClick,

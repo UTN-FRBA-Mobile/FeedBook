@@ -235,6 +235,7 @@ fun AppNavigation(
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onLogoutClick = onLogout,
+                onRefreshClick = viewModel::retry,
                 onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
                 onReadingRoomClick = { roomId -> navController.navigate(AppRoutes.readingRoom(roomId)) },
                 onSeeAllReadingRoomsClick = { navController.navigate(AppRoutes.READING_ROOMS) }
@@ -318,6 +319,7 @@ fun AppNavigation(
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onLogoutClick = onLogout,
+                onRefreshClick = viewModel::retry,
                 onEditProfileClick = { navController.navigate(AppRoutes.EDIT_PROFILE) },
                 onPreviewPublicProfileClick = { navController.navigate(AppRoutes.PUBLIC_PROFILE_PREVIEW) },
                 onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
@@ -367,6 +369,7 @@ fun AppNavigation(
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onLogoutClick = onLogout,
+                onRefreshClick = viewModel::retry,
                 onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
                 onRetry = viewModel::retry
             )
@@ -389,6 +392,7 @@ fun AppNavigation(
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onLogoutClick = onLogout,
+                onRefreshClick = viewModel::retry,
                 onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
                 onRetry = viewModel::retry
             )
@@ -412,6 +416,7 @@ fun AppNavigation(
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onLogoutClick = onLogout,
+                onRefreshClick = viewModel::retry,
                 onBookClick = { bookId ->
                     navController.navigate(AppRoutes.detail(bookId))
                 },
@@ -439,6 +444,7 @@ fun AppNavigation(
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onLogoutClick = onLogout,
+                onRefreshClick = viewModel::retry,
                 onModeSelected = viewModel::selectMode,
                 onRetry = viewModel::retry
             )
@@ -462,6 +468,7 @@ fun AppNavigation(
                 onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onLogoutClick = onLogout,
+                onRefreshClick = viewModel::retry,
                 onRetry = viewModel::retry
             )
         }

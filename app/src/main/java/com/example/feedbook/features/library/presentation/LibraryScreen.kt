@@ -58,6 +58,7 @@ fun LibraryScreen(
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
+    onRefreshClick: () -> Unit = {},
     onBookClick: (String) -> Unit = {},
     onAuthorClick: (String) -> Unit = {}
 ) {
@@ -71,6 +72,7 @@ fun LibraryScreen(
         avatarPreset = state.avatarPreset,
         avatarImageUri = state.avatarImageUri,
         onAvatarClick = onProfileClick,
+        onRefreshClick = onRefreshClick,
         onFeedClick = onFeedClick,
         onExploreClick = onExploreClick,
         onLibraryClick = onLibraryClick,

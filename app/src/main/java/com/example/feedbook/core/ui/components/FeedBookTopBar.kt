@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.QrCodeScanner
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.DropdownMenu
@@ -62,6 +63,7 @@ internal fun FeedBookTopBar(
     avatarImageUri: String? = null,
     title: String = stringResource(R.string.profile_topbar_title),
     onAvatarClick: () -> Unit = {},
+    onRefreshClick: (() -> Unit)? = null,
     onLogoutClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -117,6 +119,7 @@ internal fun FeedBookTopBar(
                 ) {
                     DefaultTopBarActions(
                         iconSize = iconSize,
+                        onRefreshClick = onRefreshClick,
                         onLogoutClick = onLogoutClick
                     )
                 }
@@ -130,14 +133,26 @@ internal fun FeedBookTopBar(
 @Composable
 private fun RowScope.DefaultTopBarActions(
     iconSize: Dp,
+    onRefreshClick: (() -> Unit)?,
     onLogoutClick: () -> Unit
 ) {
     var showSettingsMenu by remember { mutableStateOf(false) }
     val onScannerClick = LocalScannerClickHandler.current
 
+    if (onRefreshClick != null) {
+        Icon(
+            imageVector = Icons.Outlined.Refresh,
+            contentDescription = stringResource(R.string.profile_topbar_refresh),
+            tint = ProfileColors.SecondaryText,
+            modifier = Modifier
+                .size(iconSize)
+                .clickable(onClick = onRefreshClick)
+        )
+    }
+
     Icon(
         imageVector = Icons.Outlined.QrCodeScanner,
-        contentDescription = null,
+        contentDescription = stringResource(R.string.profile_topbar_scan),
         tint = ProfileColors.SecondaryText,
         modifier = Modifier
             .size(iconSize)
@@ -146,7 +161,7 @@ private fun RowScope.DefaultTopBarActions(
     Box {
         Icon(
             imageVector = Icons.Outlined.Settings,
-            contentDescription = null,
+            contentDescription = stringResource(R.string.profile_topbar_settings),
             tint = ProfileColors.SecondaryText,
             modifier = Modifier
                 .size(iconSize)
