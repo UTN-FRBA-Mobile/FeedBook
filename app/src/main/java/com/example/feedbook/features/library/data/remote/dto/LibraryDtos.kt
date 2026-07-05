@@ -16,11 +16,12 @@ data class LibraryDto(
 )
 
 data class ReadBookDto(
+    val id: String,
     val title: String,
     val author: String,
     val startedOn: String,
     val finishedOn: String,
-    val personalRating: Int,
+    val personalRating: Float,
     val coverAccentHex: Long,
     val coverImageUrl: String?
 )

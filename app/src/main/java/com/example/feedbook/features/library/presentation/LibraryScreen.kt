@@ -182,7 +182,8 @@ fun LibraryScreen(
                     item {
                         ReadHistoryCard(
                             books = state.readHistory,
-                            modifier = Modifier.padding(horizontal = 16.dp)
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            onBookClick = onBookClick
                         )
                     }
                 }

@@ -31,6 +31,7 @@ fun ReaderLibrary.toUiState(): LibraryUiState {
         completedBooks = completedBooks,
         readHistory = readHistory.map {
             ReadBookItem(
+                id = it.id,
                 title = it.title,
                 author = it.author,
                 startedOn = it.startedOn,

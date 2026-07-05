@@ -33,11 +33,12 @@ data class FollowedAuthorUiModel(
 )
 
 data class ReadBookItem(
+    val id: String,
     val title: String,
     val author: String,
     val startedOn: String,
     val finishedOn: String,
-    val personalRating: Int,
+    val personalRating: Float,
     val coverAccent: Color,
     val coverImageUrl: String?
 )
@@ -72,10 +73,10 @@ fun sampleLibraryUiState(): LibraryUiState = LibraryUiState(
     ),
     completedBooks = 142,
     readHistory = listOf(
-        ReadBookItem("Beloved", "Toni Morrison", "Jan 12, 2026", "Jan 29, 2026", 5, Color(0xFF82645A), "https://covers.openlibrary.org/b/isbn/9781400033416-L.jpg"),
-        ReadBookItem("Pale Fire", "Vladimir Nabokov", "Feb 02, 2026", "Feb 18, 2026", 4, Color(0xFF627A92), "https://covers.openlibrary.org/b/isbn/9780679723424-L.jpg"),
-        ReadBookItem("The Waves", "Virginia Woolf", "Mar 03, 2026", "Mar 21, 2026", 5, Color(0xFF6C8A80), "https://covers.openlibrary.org/b/isbn/9780156949606-L.jpg"),
-        ReadBookItem("Never Let Me Go", "Kazuo Ishiguro", "Apr 01, 2026", "Apr 14, 2026", 4, Color(0xFF536E8A), "https://covers.openlibrary.org/b/isbn/9781400078776-L.jpg")
+        ReadBookItem("3", "Beloved", "Toni Morrison", "Jan 12, 2026", "Jan 29, 2026", 5f, Color(0xFF82645A), "https://covers.openlibrary.org/b/isbn/9781400033416-L.jpg"),
+        ReadBookItem("pale-fire", "Pale Fire", "Vladimir Nabokov", "Feb 02, 2026", "Feb 18, 2026", 4f, Color(0xFF627A92), "https://covers.openlibrary.org/b/isbn/9780679723424-L.jpg"),
+        ReadBookItem("the-waves", "The Waves", "Virginia Woolf", "Mar 03, 2026", "Mar 21, 2026", 5f, Color(0xFF6C8A80), "https://covers.openlibrary.org/b/isbn/9780156949606-L.jpg"),
+        ReadBookItem("never-let-me-go", "Never Let Me Go", "Kazuo Ishiguro", "Apr 01, 2026", "Apr 14, 2026", 4f, Color(0xFF536E8A), "https://covers.openlibrary.org/b/isbn/9781400078776-L.jpg")
     ),
     followedAuthors = emptyList(),
     isLoading = false,
