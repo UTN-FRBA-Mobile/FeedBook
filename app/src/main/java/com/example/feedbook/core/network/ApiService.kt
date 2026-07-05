@@ -7,6 +7,7 @@ import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewsResponseDto
 import com.example.feedbook.features.books.data.remote.dto.SaveReviewRequestDto
+import com.example.feedbook.features.books.data.remote.dto.SearchResponseDto
 import com.example.feedbook.features.home.data.remote.dto.HomeDto
 import com.example.feedbook.features.library.data.remote.dto.LibraryDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationsDto
@@ -45,6 +46,9 @@ interface ApiService {
 
     @GET("explore/users")
     suspend fun getExploreUsers(): List<ExploreUserDto>
+
+    @GET("search")
+    suspend fun search(@Query("q") query: String): SearchResponseDto
 
     @GET("books/{bookId}/progress")
     suspend fun getReadingProgress(

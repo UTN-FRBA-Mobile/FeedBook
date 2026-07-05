@@ -472,6 +472,7 @@ fun AppNavigation(
                         getBooksUseCase = appContainer.getBooksUseCase,
                         getAuthorsUseCase = appContainer.getAuthorsUseCase,
                         getExploreUsersUseCase = appContainer.getExploreUsersUseCase,
+                        searchExploreUseCase = appContainer.searchExploreUseCase,
                         observeOwnProfileUseCase = appContainer.observeOwnProfileUseCase
                     ),
                     onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },

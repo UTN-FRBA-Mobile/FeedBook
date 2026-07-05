@@ -2,8 +2,11 @@ package com.example.feedbook.features.books.data.mapper
 
 import com.example.feedbook.features.books.data.remote.dto.BookDto
 import com.example.feedbook.features.books.data.remote.dto.ExploreUserDto
+import com.example.feedbook.features.books.data.remote.dto.SearchResponseDto
+import com.example.feedbook.features.authors.data.mapper.toDomain
 import com.example.feedbook.features.books.domain.model.Book
 import com.example.feedbook.features.books.domain.model.ExploreUser
+import com.example.feedbook.features.books.domain.model.ExploreSearchResults
 
 fun BookDto.toDomain(): Book {
     return Book(
@@ -34,3 +37,10 @@ fun ExploreUserDto.toDomain(): ExploreUser {
         booksReadLabel = booksReadLabel
     )
 }
+
+fun SearchResponseDto.toDomain(): ExploreSearchResults =
+    ExploreSearchResults(
+        books = books.map { it.toDomain() },
+        authors = authors.map { it.toDomain() },
+        users = users.map { it.toDomain() }
+    )

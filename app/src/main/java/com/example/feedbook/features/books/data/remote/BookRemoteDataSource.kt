@@ -8,6 +8,7 @@ import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewsResponseDto
 import com.example.feedbook.features.books.data.remote.dto.SaveReviewRequestDto
+import com.example.feedbook.features.books.data.remote.dto.SearchResponseDto
 import com.example.feedbook.features.books.domain.model.ReviewPart
 
 class BookRemoteDataSource(
@@ -20,6 +21,9 @@ class BookRemoteDataSource(
     suspend fun getBookByIsbn(isbn: String): BookDto = apiService.getBookByIsbn(isbn)
 
     suspend fun getExploreUsers(): List<ExploreUserDto> = apiService.getExploreUsers()
+
+    suspend fun search(query: String): SearchResponseDto =
+        apiService.search(query.trim())
 
     suspend fun getReadingProgress(bookId: String): ReadingProgressDto? =
         apiService.getReadingProgress(bookId)
@@ -38,4 +42,5 @@ class BookRemoteDataSource(
 
     suspend fun toggleLike(bookId: String, reviewId: String): ReviewDto =
         apiService.toggleLike(bookId, reviewId)
+
 }

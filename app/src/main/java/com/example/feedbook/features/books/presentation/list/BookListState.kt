@@ -9,6 +9,10 @@ import com.example.feedbook.features.profile.presentation.defaultAvatarStyle
 
 data class BookListState(
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
+    val query: String = "",
+    val selectedGenres: Set<String> = emptySet(),
+    val selectedAuthors: Set<String> = emptySet(),
     val avatarStyle: AvatarStyle = defaultAvatarStyle(),
     val avatarPreset: AvatarPreset? = null,
     val avatarImageUri: String? = null,

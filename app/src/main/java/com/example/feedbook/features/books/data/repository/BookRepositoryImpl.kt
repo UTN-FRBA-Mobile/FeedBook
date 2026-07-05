@@ -4,6 +4,7 @@ import com.example.feedbook.features.books.data.mapper.toDomain
 import com.example.feedbook.features.books.data.remote.BookRemoteDataSource
 import com.example.feedbook.features.books.domain.model.Book
 import com.example.feedbook.features.books.domain.model.ExploreUser
+import com.example.feedbook.features.books.domain.model.ExploreSearchResults
 import com.example.feedbook.features.books.domain.model.ReadingProgress
 import com.example.feedbook.features.books.domain.model.Review
 import com.example.feedbook.features.books.domain.model.ReviewPart
@@ -18,6 +19,10 @@ class BookRepositoryImpl(
 
     override suspend fun getExploreUsers(): List<ExploreUser> {
         return remoteDataSource.getExploreUsers().map { dto -> dto.toDomain() }
+    }
+
+    override suspend fun search(query: String): ExploreSearchResults {
+        return remoteDataSource.search(query).toDomain()
     }
 
     override suspend fun getBookById(bookId: String): Book {

@@ -10,6 +10,7 @@ import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewsResponseDto
 import com.example.feedbook.features.books.data.remote.dto.SaveReviewRequestDto
+import com.example.feedbook.features.books.data.remote.dto.SearchResponseDto
 import com.example.feedbook.features.home.data.remote.dto.HomeDto
 import com.example.feedbook.features.library.data.remote.dto.LibraryDto
 import com.example.feedbook.features.notifications.data.remote.dto.NotificationsDto
@@ -120,6 +121,9 @@ object NetworkModule {
 
         override suspend fun getExploreUsers(): List<ExploreUserDto> =
             currentServices.apiService.getExploreUsers()
+
+        override suspend fun search(query: String): SearchResponseDto =
+            currentServices.apiService.search(query)
 
         override suspend fun getReadingProgress(bookId: String): ReadingProgressDto? =
             currentServices.apiService.getReadingProgress(bookId)
