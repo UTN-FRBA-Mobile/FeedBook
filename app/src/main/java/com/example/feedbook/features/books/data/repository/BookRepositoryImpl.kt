@@ -76,4 +76,8 @@ class BookRepositoryImpl(
     override suspend fun getAuthorUsers(authorId: String): List<ExploreUser> {
         return remoteDataSource.getAuthorUsers(authorId).map { it.toDomain() }
     }
+
+    override suspend fun getUserFollowers(userId: String): List<ExploreUser> {
+        return remoteDataSource.getUserFollowers(userId).map { it.toDomain() }
+    }
 }

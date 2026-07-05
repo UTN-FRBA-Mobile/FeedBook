@@ -48,6 +48,7 @@ fun ProfileScreen(
     onLogoutClick: () -> Unit = {},
     onRefreshClick: () -> Unit = {},
     onEditProfileClick: () -> Unit = {},
+    onFollowersClick: () -> Unit = {},
     onPreviewPublicProfileClick: () -> Unit = {},
     onBookClick: (String) -> Unit = {},
     onFollowClick: () -> Unit = {},
@@ -164,6 +165,7 @@ fun ProfileScreen(
                     item {
                         PublicProfileStatsCard(
                             stats = state.profileStats,
+                            onFollowersClick = onFollowersClick,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
                     }

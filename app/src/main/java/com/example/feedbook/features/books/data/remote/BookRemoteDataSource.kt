@@ -55,4 +55,7 @@ class BookRemoteDataSource(
 
     suspend fun getAuthorUsers(authorId: String): List<ExploreUserDto> =
         apiService.getAuthorUsers(authorId)
+
+    suspend fun getUserFollowers(userId: String): List<ExploreUserDto> =
+        apiService.getUserFollowers(userId)
 }

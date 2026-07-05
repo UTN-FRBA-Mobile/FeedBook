@@ -29,9 +29,8 @@ class ProfileRepositoryImpl(
     override suspend fun getPublicProfile(userId: String): ReaderProfile =
         remoteDataSource.getPublicProfile(userId).toDomain()
 
-    override suspend fun toggleUserFollow(userId: String) {
+    override suspend fun toggleUserFollow(userId: String) =
         remoteDataSource.toggleUserFollow(userId)
-    }
 
     override suspend fun updateOwnProfile(command: UpdateProfileCommand) {
         val avatarImageUri = command.avatarImageUri

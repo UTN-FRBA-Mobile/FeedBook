@@ -168,6 +168,9 @@ interface ApiService {
     @GET("profile/{userId}")
     suspend fun getPublicProfile(@Path("userId") userId: String): ProfileDto
 
+    @GET("profile/{userId}/followers")
+    suspend fun getUserFollowers(@Path("userId") userId: String): List<ExploreUserDto>
+
     @GET("stats")
     suspend fun getStats(): StatsDto
 
@@ -185,7 +188,7 @@ interface ApiService {
     suspend fun registerPushToken(@Body body: RegisterPushTokenRequestDto)
 
     @POST("profile/{userId}/follow")
-    suspend fun toggleUserFollow(@Path("userId") userId: String)
+    suspend fun toggleUserFollow(@Path("userId") userId: String): FollowToggleResponseDto
 
     @GET("books/{bookId}/friends-reading")
     suspend fun getFriendsReading(@Path("bookId") bookId: String): List<FriendReadingDto>
@@ -208,4 +211,9 @@ data class RegisterPushTokenRequestDto(
 
 data class UnlinkPushTokenRequestDto(
     val token: String
+)
+
+data class FollowToggleResponseDto(
+    val isFollowing: Boolean,
+    val followerCount: Int
 )
