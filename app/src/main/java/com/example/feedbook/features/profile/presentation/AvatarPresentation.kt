@@ -1,6 +1,7 @@
 package com.example.feedbook.features.profile.presentation
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.compositionLocalOf
 import com.example.feedbook.features.profile.domain.model.ReaderProfile
 
 data class AvatarPresentation(
@@ -8,6 +9,14 @@ data class AvatarPresentation(
     val preset: AvatarPreset?,
     val imageUri: String?
 )
+
+data class TopBarAvatarState(
+    val style: AvatarStyle,
+    val preset: AvatarPreset?,
+    val imageUri: String?
+)
+
+val LocalFeedBookTopBarAvatar = compositionLocalOf<TopBarAvatarState?> { null }
 
 fun ReaderProfile.toAvatarPresentation(): AvatarPresentation {
     val style = AvatarStyle(

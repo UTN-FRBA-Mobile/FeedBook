@@ -5,7 +5,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BACK_DIR="$ROOT_DIR/back"
 APP_ID="com.example.feedbook"
-MAIN_ACTIVITY="com.example.feedbook/.MainActivity"
+TARGET_USER_ID="${TARGET_USER_ID:-0}"
 BACK_HOST="127.0.0.1"
 BACK_PORT="8080"
 BACK_DB_FILE="$BACK_DIR/feedbook.db"
@@ -112,9 +112,6 @@ start_backend() {
   stop_existing_backend
   cleanup_stale_pid
 
-  echo "Reiniciando base local SQLite desde el seeder..."
-  rm -f "$BACK_DB_FILE"
-
   echo "Levantando backend (SQLite)..."
   (
     cd "$BACK_DIR"
@@ -123,6 +120,15 @@ start_backend() {
   )
 
   for _ in {1..120}; do
+    if [[ -f "$BACK_PID_FILE" ]]; then
+      local pid
+      pid="$(cat "$BACK_PID_FILE")"
+      if [[ -n "$pid" ]] && ! kill -0 "$pid" >/dev/null 2>&1; then
+        echo "El backend se detuvo al arrancar. Revisar log: $BACK_LOG_FILE" >&2
+        tail -n 40 "$BACK_LOG_FILE" >&2 || true
+        exit 1
+      fi
+    fi
     if is_backend_up; then
       echo "Backend listo. Log: $BACK_LOG_FILE"
       return
@@ -188,10 +194,43 @@ ensure_reverse() {
 
 launch_app() {
   local device_serial="$1"
+  local start_output
 
   echo "Relanzando app..."
   adb -s "$device_serial" shell am force-stop "$APP_ID"
-  adb -s "$device_serial" shell am start -n "$MAIN_ACTIVITY" >/dev/null
+  if start_output="$(
+    adb -s "$device_serial" shell am start -W \
+      --user "$TARGET_USER_ID" \
+      -n "$APP_ID/.MainActivity" 2>&1
+  )"; then
+    printf '%s\n' "$start_output"
+    return
+  fi
+
+  if start_output="$(
+    adb -s "$device_serial" shell am start -W \
+      --user "$TARGET_USER_ID" \
+      -n "$APP_ID/$APP_ID.MainActivity" 2>&1
+  )"; then
+    printf '%s\n' "$start_output"
+    return
+  fi
+
+  if start_output="$(
+    adb -s "$device_serial" shell am start -W \
+      --user "$TARGET_USER_ID" \
+      -a android.intent.action.MAIN \
+      -c android.intent.category.LAUNCHER \
+      -p "$APP_ID" 2>&1
+  )"; then
+    printf '%s\n' "$start_output"
+    return
+  fi
+
+  echo "No se pudo abrir con am start. Ultimo error:" >&2
+  printf '%s\n' "$start_output" >&2
+  echo "Usando fallback con monkey..." >&2
+  adb -s "$device_serial" shell monkey -p "$APP_ID" -c android.intent.category.LAUNCHER 1
 }
 
 main() {
@@ -212,13 +251,51 @@ main() {
   ensure_reverse "$device_serial"
   start_backend
 
-  echo "Compilando e instalando app debug..."
+  echo "Compilando app debug..."
   (
     cd "$ROOT_DIR"
     export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
     bash ./gradlew --stop 2>/dev/null || true
-    ANDROID_SERIAL="$device_serial" bash ./gradlew installDebug
+    bash ./gradlew assembleDebug
   )
+
+  echo "Instalando APK en ${device_serial}..."
+  if ! install_output="$(
+    adb -s "$device_serial" install -r --user "$TARGET_USER_ID" "$ROOT_DIR/app/build/outputs/apk/debug/app-debug.apk" 2>&1
+  )"; then
+    echo "Fallo la instalacion del APK:" >&2
+    printf '%s\n' "$install_output" >&2
+    if grep -q "INSTALL_FAILED_UPDATE_INCOMPATIBLE\|INSTALL_FAILED_VERSION_DOWNGRADE" <<<"$install_output"; then
+      echo "Desinstalando la version previa e intentando de nuevo..." >&2
+      adb -s "$device_serial" shell pm uninstall --user "$TARGET_USER_ID" "$APP_ID" >/dev/null 2>&1 || true
+      if ! install_output="$(
+        adb -s "$device_serial" install --user "$TARGET_USER_ID" "$ROOT_DIR/app/build/outputs/apk/debug/app-debug.apk" 2>&1
+      )"; then
+        echo "La reinstalacion tambien fallo:" >&2
+        printf '%s\n' "$install_output" >&2
+        exit 1
+      fi
+    else
+      exit 1
+    fi
+  fi
+  printf '%s\n' "$install_output"
+
+  local package_seen=0
+  for _ in {1..5}; do
+    if adb -s "$device_serial" shell pm path --user "$TARGET_USER_ID" "$APP_ID" >/dev/null 2>&1; then
+      package_seen=1
+      break
+    fi
+    sleep 1
+  done
+
+  if [[ "$package_seen" -ne 1 ]]; then
+    echo "El paquete ${APP_ID} no quedo visible en ${device_serial} segun pm path." >&2
+    echo "Paquetes que matchean feedbook en el dispositivo:" >&2
+    adb -s "$device_serial" shell pm list packages --user "$TARGET_USER_ID" | grep 'feedbook' >&2 || true
+    exit 1
+  fi
 
   ensure_reverse "$device_serial"
   launch_app "$device_serial"

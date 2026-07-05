@@ -50,8 +50,11 @@ import com.example.feedbook.features.notifications.presentation.NotificationsScr
 import com.example.feedbook.features.notifications.presentation.NotificationsViewModel
 import com.example.feedbook.features.profile.presentation.EditProfileScreen
 import com.example.feedbook.features.profile.presentation.EditProfileViewModel
+import com.example.feedbook.features.profile.presentation.LocalFeedBookTopBarAvatar
+import com.example.feedbook.features.profile.presentation.toAvatarPresentation
 import com.example.feedbook.features.profile.presentation.ProfileScreen
 import com.example.feedbook.features.profile.presentation.ProfileViewModel
+import com.example.feedbook.features.profile.presentation.UserProfileDetailViewModel
 import com.example.feedbook.features.profile.presentation.PublicProfilePreviewViewModel
 import com.example.feedbook.features.profile.presentation.PublicProfileViewModel
 import com.example.feedbook.features.push.PushTokenRegistrar
@@ -73,6 +76,7 @@ object AppRoutes {
 
     fun publicProfile(userId: String): String = "publicProfile/$userId"
     const val PUBLIC_PROFILE_PREVIEW = "publicProfilePreview"
+    const val USER_PROFILE = "userProfile/{userId}"
     const val LIBRARY = "library?showCollection={showCollection}"
     const val STATS = "stats"
     const val NOTIFICATIONS = "notifications"
@@ -93,6 +97,7 @@ object AppRoutes {
     fun readingRoom(roomId: String): String = "readingRoom/$roomId"
     fun readingRoomInfo(roomId: String): String = "readingRoom/$roomId/info"
     fun authorBooks(authorId: String, name: String): String = "authorBooks/$authorId?name=$name"
+    fun userProfile(userId: String): String = "userProfile/$userId"
     fun library(showCollection: Boolean = false): String =
         if (showCollection) "library?showCollection=true" else "library"
 }
@@ -114,6 +119,9 @@ fun AppNavigation(
 ) {
     val navController = rememberNavController()
     val appContainer = (LocalContext.current.applicationContext as FeedBookApplication).container
+    val ownProfile by appContainer.observeOwnProfileUseCase()
+        .collectAsStateWithLifecycle(initialValue = null)
+    val topBarAvatar = ownProfile?.toAvatarPresentation()
     val onLogout = {
         PushTokenRegistrar.unlinkCurrentToken()
         appContainer.sessionManager.clearSession()
@@ -126,6 +134,13 @@ fun AppNavigation(
     }
 
     CompositionLocalProvider(
+        LocalFeedBookTopBarAvatar provides topBarAvatar?.let {
+            com.example.feedbook.features.profile.presentation.TopBarAvatarState(
+                style = it.style,
+                preset = it.preset,
+                imageUri = it.imageUri
+            )
+        },
         LocalScannerClickHandler provides {
             navController.navigate(AppRoutes.ISBN_SCANNER)
         }
@@ -413,6 +428,33 @@ fun AppNavigation(
         }
 
         composable(
+            route = AppRoutes.USER_PROFILE,
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId").orEmpty()
+            val viewModel: UserProfileDetailViewModel = viewModel(
+                factory = UserProfileDetailViewModel.provideFactory(
+                    userId = userId,
+                    getExploreUsersUseCase = appContainer.getExploreUsersUseCase
+                )
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            ProfileScreen(
+                state = state,
+                onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
+                onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
+                onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
+                onLibraryClick = { navController.navigateTopLevel(AppRoutes.LIBRARY) },
+                onStatsClick = { navController.navigateTopLevel(AppRoutes.STATS) },
+                onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
+                onLogoutClick = onLogout,
+                onRefreshClick = viewModel::retry,
+                onRetry = viewModel::retry
+            )
+        }
+
+        composable(
             route = AppRoutes.LIBRARY,
             arguments = listOf(navArgument("showCollection") {
                 type = NavType.BoolType
@@ -476,6 +518,7 @@ fun AppNavigation(
             val viewModel: NotificationsViewModel = viewModel(
                 factory = NotificationsViewModel.provideFactory(
                     getNotificationsUseCase = appContainer.getNotificationsUseCase,
+                    refreshBus = appContainer.userContentRefreshBus,
                     observeOwnProfileUseCase = appContainer.observeOwnProfileUseCase
                 )
             )
@@ -506,7 +549,7 @@ fun AppNavigation(
                     ),
                     onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
                     onAuthorClick = { authorId -> navController.navigate(AppRoutes.authorDetail(authorId)) },
-                    onUserClick = { userId -> navController.navigate(AppRoutes.publicProfile(userId)) },
+                    onUserClick = { userId -> navController.navigate(AppRoutes.userProfile(userId)) },
                     onFeedClick = { navController.navigateTopLevel(AppRoutes.HOME) },
                     onExploreClick = { navController.navigateTopLevel(AppRoutes.BOOKS) },
                     onProfileClick = { navController.navigateTopLevel(AppRoutes.PROFILE) },
@@ -578,7 +621,7 @@ fun AppNavigation(
                 onAuthorClick = { authorId ->
                     navController.navigate(AppRoutes.authorDetail(authorId))
                 },
-                onUserClick = { userId -> navController.navigate(AppRoutes.publicProfile(userId)) }
+                onUserClick = { userId -> navController.navigate(AppRoutes.userProfile(userId)) }
             )
         }
 
@@ -633,7 +676,7 @@ fun AppNavigation(
                     val id = backStackEntry.arguments?.getString("authorId").orEmpty()
                     navController.navigate(AppRoutes.authorBooks(id, ""))
                 },
-                onUserClick = { userId -> navController.navigate(AppRoutes.publicProfile(userId)) }
+                onUserClick = { userId -> navController.navigate(AppRoutes.userProfile(userId)) }
             )
         }
 

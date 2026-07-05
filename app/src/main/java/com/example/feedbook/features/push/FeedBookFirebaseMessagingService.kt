@@ -36,6 +36,7 @@ class FeedBookFirebaseMessagingService : FirebaseMessagingService() {
             ?: return
 
         showNotification(title, body)
+        refreshOpenContent()
     }
 
     private fun showNotification(title: String, body: String) {
@@ -69,6 +70,11 @@ class FeedBookFirebaseMessagingService : FirebaseMessagingService() {
             return
         }
         NotificationManagerCompat.from(this).notify(System.currentTimeMillis().toInt(), notification)
+    }
+
+    private fun refreshOpenContent() {
+        val container = (applicationContext as? FeedBookApplication)?.container ?: return
+        container.userContentRefreshBus.refresh()
     }
 
     private fun createNotificationChannel() {

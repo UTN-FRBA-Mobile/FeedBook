@@ -3,12 +3,14 @@ package com.example.feedbook.features.notifications.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.feedbook.core.state.UserContentRefreshBus
 import com.example.feedbook.features.notifications.domain.model.NotificationsFeed
 import com.example.feedbook.features.notifications.domain.usecase.GetNotificationsUseCase
 import com.example.feedbook.features.profile.domain.usecase.ObserveOwnProfileUseCase
 import com.example.feedbook.features.profile.presentation.AvatarPresentation
 import com.example.feedbook.features.profile.presentation.toAvatarPresentation
 import com.example.feedbook.features.profile.presentation.defaultAvatarStyle
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,6 +20,7 @@ import kotlinx.coroutines.launch
 
 class NotificationsViewModel(
     private val getNotificationsUseCase: GetNotificationsUseCase,
+    private val refreshBus: UserContentRefreshBus,
     observeOwnProfileUseCase: ObserveOwnProfileUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(
@@ -33,7 +36,11 @@ class NotificationsViewModel(
     )
 
     init {
-        loadNotifications()
+        viewModelScope.launch {
+            refreshBus.version.collectLatest {
+                loadNotifications()
+            }
+        }
 
         viewModelScope.launch {
             observeOwnProfileUseCase()
@@ -46,26 +53,25 @@ class NotificationsViewModel(
     }
 
     fun retry() {
-        loadNotifications()
+        refreshBus.refresh()
     }
 
-    private fun loadNotifications() {
+    private suspend fun loadNotifications() {
         _state.value = _state.value.copy(isLoading = true, errorMessage = null)
-        viewModelScope.launch {
-            runCatching { getNotificationsUseCase() }
-                .onSuccess {
-                    baseFeed = it
-                    emitNotifications()
-                }
-                .onFailure { throwable ->
-                    _state.value = emptyNotificationsUiState().copy(
-                        avatarStyle = avatarPresentation.style,
-                        avatarPreset = avatarPresentation.preset,
-                        avatarImageUri = avatarPresentation.imageUri,
-                        isLoading = false,
-                        errorMessage = throwable.message
-                    )
-                }
+        try {
+            baseFeed = getNotificationsUseCase()
+            emitNotifications()
+        } catch (throwable: Throwable) {
+            if (throwable is CancellationException) {
+                throw throwable
+            }
+            _state.value = emptyNotificationsUiState().copy(
+                avatarStyle = avatarPresentation.style,
+                avatarPreset = avatarPresentation.preset,
+                avatarImageUri = avatarPresentation.imageUri,
+                isLoading = false,
+                errorMessage = throwable.message
+            )
         }
     }
 
@@ -82,12 +88,14 @@ class NotificationsViewModel(
     companion object {
         fun provideFactory(
             getNotificationsUseCase: GetNotificationsUseCase,
+            refreshBus: UserContentRefreshBus,
             observeOwnProfileUseCase: ObserveOwnProfileUseCase
         ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return NotificationsViewModel(
                     getNotificationsUseCase = getNotificationsUseCase,
+                    refreshBus = refreshBus,
                     observeOwnProfileUseCase = observeOwnProfileUseCase
                 ) as T
             }
