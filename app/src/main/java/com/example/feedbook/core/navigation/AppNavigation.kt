@@ -54,6 +54,8 @@ import com.example.feedbook.features.profile.presentation.LocalFeedBookTopBarAva
 import com.example.feedbook.features.profile.presentation.toAvatarPresentation
 import com.example.feedbook.features.profile.presentation.ProfileScreen
 import com.example.feedbook.features.profile.presentation.ProfileViewModel
+import com.example.feedbook.features.profile.presentation.UserFollowersScreen
+import com.example.feedbook.features.profile.presentation.UserFollowersViewModel
 import com.example.feedbook.features.profile.presentation.UserProfileDetailViewModel
 import com.example.feedbook.features.profile.presentation.PublicProfilePreviewViewModel
 import com.example.feedbook.features.profile.presentation.PublicProfileViewModel
@@ -77,6 +79,7 @@ object AppRoutes {
     fun publicProfile(userId: String): String = "publicProfile/$userId"
     const val PUBLIC_PROFILE_PREVIEW = "publicProfilePreview"
     const val USER_PROFILE = "userProfile/{userId}"
+    const val USER_FOLLOWERS = "userProfile/{userId}/followers"
     const val LIBRARY = "library?showCollection={showCollection}"
     const val STATS = "stats"
     const val NOTIFICATIONS = "notifications"
@@ -398,6 +401,7 @@ fun AppNavigation(
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onLogoutClick = onLogout,
                 onRefreshClick = viewModel::retry,
+                onFollowersClick = { navController.navigate(AppRoutes.USER_FOLLOWERS.replace("{userId}", userId)) },
                 onBookClick = { bookId -> navController.navigate(AppRoutes.detail(bookId)) },
                 onFollowClick = viewModel::toggleFollow,
                 onRetry = viewModel::retry
@@ -435,7 +439,8 @@ fun AppNavigation(
             val viewModel: UserProfileDetailViewModel = viewModel(
                 factory = UserProfileDetailViewModel.provideFactory(
                     userId = userId,
-                    getExploreUsersUseCase = appContainer.getExploreUsersUseCase
+                    getExploreUsersUseCase = appContainer.getExploreUsersUseCase,
+                    toggleUserFollowUseCase = appContainer.toggleUserFollowUseCase
                 )
             )
             val state by viewModel.state.collectAsStateWithLifecycle()
@@ -450,7 +455,28 @@ fun AppNavigation(
                 onNotificationsClick = { navController.navigateTopLevel(AppRoutes.NOTIFICATIONS) },
                 onLogoutClick = onLogout,
                 onRefreshClick = viewModel::retry,
+                onFollowClick = viewModel::toggleFollow,
+                onFollowersClick = { navController.navigate(AppRoutes.USER_FOLLOWERS.replace("{userId}", userId)) },
                 onRetry = viewModel::retry
+            )
+        }
+
+        composable(
+            route = AppRoutes.USER_FOLLOWERS,
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId").orEmpty()
+            val viewModel: UserFollowersViewModel = viewModel(
+                factory = UserFollowersViewModel.provideFactory(
+                    userId = userId,
+                    getUserFollowersUseCase = appContainer.getUserFollowersUseCase
+                )
+            )
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            UserFollowersScreen(
+                state = state,
+                onBackClick = { navController.popBackStack() },
+                onUserClick = { targetId -> navController.navigate(AppRoutes.userProfile(targetId)) }
             )
         }
 

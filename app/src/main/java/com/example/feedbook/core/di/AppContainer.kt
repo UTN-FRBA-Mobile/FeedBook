@@ -29,6 +29,7 @@ import com.example.feedbook.features.books.domain.usecase.SearchExploreUseCase
 import com.example.feedbook.features.books.domain.usecase.ToggleLikeUseCase
 import com.example.feedbook.features.books.domain.usecase.GetBookUsersUseCase
 import com.example.feedbook.features.books.domain.usecase.GetAuthorUsersUseCase
+import com.example.feedbook.features.books.domain.usecase.GetUserFollowersUseCase
 import com.example.feedbook.features.home.data.remote.HomeRemoteDataSource
 import com.example.feedbook.features.home.data.repository.HomeRepositoryImpl
 import com.example.feedbook.features.home.domain.usecase.ObserveHomeFeedUseCase
@@ -108,6 +109,7 @@ class AppContainer(
     val toggleLikeUseCase = ToggleLikeUseCase(bookRepository)
     val getBookUsersUseCase = GetBookUsersUseCase(bookRepository)
     val getAuthorUsersUseCase = GetAuthorUsersUseCase(bookRepository)
+    val getUserFollowersUseCase = GetUserFollowersUseCase(bookRepository)
 
     val observeHomeFeedUseCase = ObserveHomeFeedUseCase(homeRepository)
     val observeOwnProfileUseCase = ObserveOwnProfileUseCase(profileRepository)

@@ -12,7 +12,11 @@ fun ExploreUser.toProfileUiState(): ProfileUiState {
         name = name,
         handle = handle,
         quote = bio,
-        actionLabelRes = com.example.feedbook.R.string.profile_action_follow,
+        actionLabelRes = if (isFollowing) {
+            com.example.feedbook.R.string.profile_action_following
+        } else {
+            com.example.feedbook.R.string.profile_action_follow
+        },
         avatarStyle = avatarStyle,
         avatarPreset = null,
         avatarImageUri = null,
@@ -35,5 +39,5 @@ fun ExploreUser.toProfileUiState(): ProfileUiState {
         ),
         publicLibrary = emptyList(),
         featuredReviews = emptyList()
-    )
+    ).copy(isFollowing = isFollowing)
 }

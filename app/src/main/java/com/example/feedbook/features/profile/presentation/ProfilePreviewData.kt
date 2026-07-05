@@ -16,7 +16,7 @@ fun previewOwnProfileUiState(): ProfileUiState = emptyProfileUiState(ProfileVari
     avatarImageUri = null,
     readingGoal = ReadingGoal(
         targetPagesPerDay = 40,
-        currentAveragePagesPerDay = 28
+        currentAveragePagesPerDay = 0
     ),
     readingStreak = ReadingStreak(
         days = 5,

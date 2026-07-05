@@ -23,4 +23,5 @@ interface BookRepository {
     suspend fun getFriendsReading(bookId: String): List<FriendReading>
     suspend fun getBookUsers(bookId: String): List<ExploreUser>
     suspend fun getAuthorUsers(authorId: String): List<ExploreUser>
+    suspend fun getUserFollowers(userId: String): List<ExploreUser>
 }

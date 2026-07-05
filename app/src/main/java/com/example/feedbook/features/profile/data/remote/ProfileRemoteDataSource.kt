@@ -1,6 +1,7 @@
 package com.example.feedbook.features.profile.data.remote
 
 import com.example.feedbook.core.network.ApiService
+import com.example.feedbook.core.network.FollowToggleResponseDto
 import com.example.feedbook.core.state.UserContentRefreshBus
 import okhttp3.MultipartBody
 import com.example.feedbook.features.profile.data.remote.dto.ProfileDto
@@ -31,7 +32,6 @@ class ProfileRemoteDataSource(
         return updatedProfile
     }
 
-    suspend fun toggleUserFollow(userId: String) {
+    suspend fun toggleUserFollow(userId: String): FollowToggleResponseDto =
         apiService.toggleUserFollow(userId)
-    }
 }

@@ -2,6 +2,7 @@ package com.example.feedbook.features.profile.domain.repository
 
 import com.example.feedbook.features.profile.domain.model.ReaderProfile
 import com.example.feedbook.features.profile.domain.model.UpdateProfileCommand
+import com.example.feedbook.core.network.FollowToggleResponseDto
 import kotlinx.coroutines.flow.Flow
 
 interface ProfileRepository {
@@ -9,5 +10,5 @@ interface ProfileRepository {
     fun observeOwnPublicPreview(): Flow<ReaderProfile>
     suspend fun getPublicProfile(userId: String): ReaderProfile
     suspend fun updateOwnProfile(command: UpdateProfileCommand)
-    suspend fun toggleUserFollow(userId: String)
+    suspend fun toggleUserFollow(userId: String): FollowToggleResponseDto
 }

@@ -249,9 +249,8 @@ object NetworkModule {
         override suspend fun uploadOwnAvatar(image: okhttp3.MultipartBody.Part) =
             currentServices.apiService.uploadOwnAvatar(image)
 
-        override suspend fun toggleUserFollow(userId: String) {
+        override suspend fun toggleUserFollow(userId: String): FollowToggleResponseDto =
             currentServices.apiService.toggleUserFollow(userId)
-        }
 
         override suspend fun getFriendsReading(bookId: String): List<FriendReadingDto> =
             currentServices.apiService.getFriendsReading(bookId)
@@ -269,5 +268,8 @@ object NetworkModule {
 
         override suspend fun getAuthorUsers(authorId: String): List<ExploreUserDto> =
             currentServices.apiService.getAuthorUsers(authorId)
+
+        override suspend fun getUserFollowers(userId: String): List<ExploreUserDto> =
+            currentServices.apiService.getUserFollowers(userId)
     }
 }

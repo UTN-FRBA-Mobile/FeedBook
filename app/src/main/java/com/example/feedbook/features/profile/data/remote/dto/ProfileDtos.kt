@@ -81,6 +81,11 @@ data class FeaturedReviewDto(
     val coverImageUrl: String?
 )
 
+data class FollowToggleResponseDto(
+    val isFollowing: Boolean,
+    val followerCount: Int
+)
+
 data class UpdateProfileRequestDto(
     val name: String,
     val handle: String,

@@ -38,6 +38,7 @@ class PublicProfileViewModel(
                     R.string.profile_action_following else R.string.profile_action_follow
             )
             runCatching { toggleUserFollowUseCase(userId) }
+                .onSuccess { loadProfile() }
                 .onFailure { _state.value = currentState }
         }
     }
