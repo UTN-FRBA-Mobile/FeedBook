@@ -39,6 +39,7 @@ fun ProfileScreen(
     onExploreClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
     onLibraryClick: () -> Unit = {},
+    onCollectionClick: () -> Unit = {},
     onStatsClick: () -> Unit = {},
     onNotificationsClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {},
@@ -143,7 +144,7 @@ fun ProfileScreen(
                     item {
                         LibraryArchiveCard(
                             completedBooks = state.completedBooks,
-                            onViewCollectionClick = onLibraryClick,
+                            onViewCollectionClick = onCollectionClick,
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
                                 .fillMaxWidth()
