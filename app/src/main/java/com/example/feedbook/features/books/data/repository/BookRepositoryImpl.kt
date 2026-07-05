@@ -5,6 +5,7 @@ import com.example.feedbook.features.books.data.remote.BookRemoteDataSource
 import com.example.feedbook.features.books.domain.model.Book
 import com.example.feedbook.features.books.domain.model.ExploreUser
 import com.example.feedbook.features.books.domain.model.ExploreSearchResults
+import com.example.feedbook.features.books.domain.model.FriendReading
 import com.example.feedbook.features.books.domain.model.ReadingProgress
 import com.example.feedbook.features.books.domain.model.Review
 import com.example.feedbook.features.books.domain.model.ReviewPart
@@ -19,6 +20,10 @@ class BookRepositoryImpl(
 
     override suspend fun getExploreUsers(): List<ExploreUser> {
         return remoteDataSource.getExploreUsers().map { dto -> dto.toDomain() }
+    }
+
+    override suspend fun getExploreUserById(id: String): ExploreUser {
+        return remoteDataSource.getExploreUserById(id).toDomain()
     }
 
     override suspend fun search(query: String): ExploreSearchResults {
@@ -52,5 +57,17 @@ class BookRepositoryImpl(
 
     override suspend fun toggleLike(bookId: String, reviewId: String): Review {
         return remoteDataSource.toggleLike(bookId, reviewId).toDomain()
+    }
+
+    override suspend fun getFriendsReading(bookId: String): List<FriendReading> {
+        return remoteDataSource.getFriendsReading(bookId).map { it.toDomain() }
+    }
+
+    override suspend fun getBookUsers(bookId: String): List<ExploreUser> {
+        return remoteDataSource.getBookUsers(bookId).map { it.toDomain() }
+    }
+
+    override suspend fun getAuthorUsers(authorId: String): List<ExploreUser> {
+        return remoteDataSource.getAuthorUsers(authorId).map { it.toDomain() }
     }
 }

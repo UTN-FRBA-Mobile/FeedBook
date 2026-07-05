@@ -6,6 +6,7 @@ import com.example.feedbook.core.session.SessionStorage
 import com.example.feedbook.features.authors.data.remote.dto.AuthorDto
 import com.example.feedbook.features.books.data.remote.dto.BookDto
 import com.example.feedbook.features.books.data.remote.dto.ExploreUserDto
+import com.example.feedbook.features.books.data.remote.dto.FriendReadingDto
 import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewsResponseDto
@@ -122,6 +123,9 @@ object NetworkModule {
         override suspend fun getExploreUsers(): List<ExploreUserDto> =
             currentServices.apiService.getExploreUsers()
 
+        override suspend fun getExploreUserById(id: String): ExploreUserDto =
+            currentServices.apiService.getExploreUserById(id)
+
         override suspend fun search(query: String): SearchResponseDto =
             currentServices.apiService.search(query)
 
@@ -222,8 +226,8 @@ object NetworkModule {
         override suspend fun getOwnPublicProfilePreview(): ProfileDto =
             currentServices.apiService.getOwnPublicProfilePreview()
 
-        override suspend fun getPublicProfile(): ProfileDto =
-            currentServices.apiService.getPublicProfile()
+        override suspend fun getPublicProfile(userId: String): ProfileDto =
+            currentServices.apiService.getPublicProfile(userId)
 
         override suspend fun getStats(): StatsDto =
             currentServices.apiService.getStats()
@@ -237,6 +241,13 @@ object NetworkModule {
         override suspend fun uploadOwnAvatar(image: okhttp3.MultipartBody.Part) =
             currentServices.apiService.uploadOwnAvatar(image)
 
+        override suspend fun toggleUserFollow(userId: String) {
+            currentServices.apiService.toggleUserFollow(userId)
+        }
+
+        override suspend fun getFriendsReading(bookId: String): List<FriendReadingDto> =
+            currentServices.apiService.getFriendsReading(bookId)
+
         override suspend fun registerPushToken(body: RegisterPushTokenRequestDto) {
             currentServices.apiService.registerPushToken(body)
         }
@@ -244,5 +255,11 @@ object NetworkModule {
         override suspend fun unlinkPushToken(body: UnlinkPushTokenRequestDto) {
             currentServices.apiService.unlinkPushToken(body)
         }
+
+        override suspend fun getBookUsers(bookId: String): List<ExploreUserDto> =
+            currentServices.apiService.getBookUsers(bookId)
+
+        override suspend fun getAuthorUsers(authorId: String): List<ExploreUserDto> =
+            currentServices.apiService.getAuthorUsers(authorId)
     }
 }

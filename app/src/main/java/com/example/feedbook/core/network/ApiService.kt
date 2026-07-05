@@ -3,6 +3,7 @@ package com.example.feedbook.core.network
 import com.example.feedbook.features.authors.data.remote.dto.AuthorDto
 import com.example.feedbook.features.books.data.remote.dto.BookDto
 import com.example.feedbook.features.books.data.remote.dto.ExploreUserDto
+import com.example.feedbook.features.books.data.remote.dto.FriendReadingDto
 import com.example.feedbook.features.books.data.remote.dto.ReadingProgressDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewDto
 import com.example.feedbook.features.books.data.remote.dto.ReviewsResponseDto
@@ -46,6 +47,9 @@ interface ApiService {
 
     @GET("explore/users")
     suspend fun getExploreUsers(): List<ExploreUserDto>
+
+    @GET("explore/users/{id}")
+    suspend fun getExploreUserById(@Path("id") id: String): ExploreUserDto
 
     @GET("search")
     suspend fun search(@Query("q") query: String): SearchResponseDto
@@ -161,8 +165,8 @@ interface ApiService {
     @GET("profile/me/preview")
     suspend fun getOwnPublicProfilePreview(): ProfileDto
 
-    @GET("profile/public")
-    suspend fun getPublicProfile(): ProfileDto
+    @GET("profile/{userId}")
+    suspend fun getPublicProfile(@Path("userId") userId: String): ProfileDto
 
     @GET("stats")
     suspend fun getStats(): StatsDto
@@ -180,8 +184,20 @@ interface ApiService {
     @POST("push/register")
     suspend fun registerPushToken(@Body body: RegisterPushTokenRequestDto)
 
+    @POST("profile/{userId}/follow")
+    suspend fun toggleUserFollow(@Path("userId") userId: String)
+
+    @GET("books/{bookId}/friends-reading")
+    suspend fun getFriendsReading(@Path("bookId") bookId: String): List<FriendReadingDto>
+
     @POST("push/unlink")
     suspend fun unlinkPushToken(@Body body: UnlinkPushTokenRequestDto)
+
+    @GET("books/{bookId}/users")
+    suspend fun getBookUsers(@Path("bookId") bookId: String): List<ExploreUserDto>
+
+    @GET("authors/{id}/users")
+    suspend fun getAuthorUsers(@Path("id") authorId: String): List<ExploreUserDto>
 }
 
 data class RegisterPushTokenRequestDto(

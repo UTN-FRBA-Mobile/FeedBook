@@ -3,6 +3,7 @@ package com.example.feedbook.features.books.domain.repository
 import com.example.feedbook.features.books.domain.model.Book
 import com.example.feedbook.features.books.domain.model.ExploreUser
 import com.example.feedbook.features.books.domain.model.ExploreSearchResults
+import com.example.feedbook.features.books.domain.model.FriendReading
 import com.example.feedbook.features.books.domain.model.ReadingProgress
 import com.example.feedbook.features.books.domain.model.Review
 import com.example.feedbook.features.books.domain.model.ReviewPart
@@ -10,6 +11,7 @@ import com.example.feedbook.features.books.domain.model.ReviewPart
 interface BookRepository {
     suspend fun getBooks(): List<Book>
     suspend fun getExploreUsers(): List<ExploreUser>
+    suspend fun getExploreUserById(id: String): ExploreUser
     suspend fun search(query: String): ExploreSearchResults
     suspend fun getBookById(bookId: String): Book
     suspend fun getBookByIsbn(isbn: String): Book
@@ -18,4 +20,7 @@ interface BookRepository {
     suspend fun getReadingProgress(bookId: String): ReadingProgress?
     suspend fun saveReadingProgress(bookId: String, currentPage: Int): ReadingProgress
     suspend fun toggleLike(bookId: String, reviewId: String): Review
+    suspend fun getFriendsReading(bookId: String): List<FriendReading>
+    suspend fun getBookUsers(bookId: String): List<ExploreUser>
+    suspend fun getAuthorUsers(authorId: String): List<ExploreUser>
 }

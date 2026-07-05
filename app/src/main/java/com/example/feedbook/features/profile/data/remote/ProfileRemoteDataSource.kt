@@ -30,7 +30,7 @@ class ProfileRemoteDataSource(
             }
         }
 
-    suspend fun getPublicProfile(): ProfileDto = apiService.getPublicProfile()
+    suspend fun getPublicProfile(userId: String): ProfileDto = apiService.getPublicProfile(userId)
 
     suspend fun uploadOwnAvatar(image: MultipartBody.Part): AvatarUploadResponseDto =
         apiService.uploadOwnAvatar(image)
@@ -40,5 +40,9 @@ class ProfileRemoteDataSource(
         ownProfileState.value = updatedProfile
         ownPublicPreviewState.value = apiService.getOwnPublicProfilePreview()
         return updatedProfile
+    }
+
+    suspend fun toggleUserFollow(userId: String) {
+        apiService.toggleUserFollow(userId)
     }
 }

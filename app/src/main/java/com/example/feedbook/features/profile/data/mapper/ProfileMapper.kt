@@ -15,7 +15,8 @@ fun ProfileDto.toDomain(): ReaderProfile = ReaderProfile(
     completedBooks = completedBooks,
     profileStats = profileStats.orEmpty().map(ProfileStatDto::toDomain),
     publicLibrary = publicLibrary.orEmpty().map(LibraryBookDto::toDomain),
-    featuredReviews = featuredReviews.orEmpty().map(FeaturedReviewDto::toDomain)
+    featuredReviews = featuredReviews.orEmpty().map(FeaturedReviewDto::toDomain),
+    isFollowing = isFollowing
 )
 
 fun UpdateProfileCommand.toDto(): UpdateProfileRequestDto = UpdateProfileRequestDto(

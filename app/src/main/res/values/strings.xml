@@ -10,6 +10,7 @@
 
     <string name="profile_action_edit">EDIT PROFILE</string>
     <string name="profile_action_follow">FOLLOW</string>
+    <string name="profile_action_following">FOLLOWING</string>
     <string name="profile_preview_public_view">Public preview</string>
     <string name="profile_public_summary">Curated shelves, annotated reviews and an intentionally public reading trail.</string>
     <string name="profile_topbar_title">FeedBook</string>
@@ -187,8 +188,7 @@
     <string name="book_detail_update_progress">UPDATE PROGRESS</string>
     <string name="book_detail_pages_of">%1$d of %2$d pages</string>
     <string name="book_detail_save_progress">Save progress</string>
-    <string name="book_detail_friends_who_read_this">FRIENDS WHO READ THIS</string>
-    <string name="book_detail_friends_text">Marcus, Elena and 12 others\nhave read this volume.</string>
+    <string name="book_detail_users_who_read">USERS WHO READ THIS</string>
     <string name="book_detail_community_reviews">Community reviews</string>
     <string name="book_detail_write_review">Write a review</string>
     <string name="book_detail_like">Like</string>
