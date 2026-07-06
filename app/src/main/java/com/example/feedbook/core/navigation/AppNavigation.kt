@@ -122,6 +122,7 @@ fun AppNavigation(
 ) {
     val navController = rememberNavController()
     val appContainer = (LocalContext.current.applicationContext as FeedBookApplication).container
+    val currentSession by appContainer.sessionManager.session.collectAsStateWithLifecycle(initialValue = null)
     val ownProfile by appContainer.observeOwnProfileUseCase()
         .collectAsStateWithLifecycle(initialValue = null)
     val topBarAvatar = ownProfile?.toAvatarPresentation()
@@ -293,6 +294,7 @@ fun AppNavigation(
             val state by viewModel.state.collectAsStateWithLifecycle()
             ReadingRoomScreen(
                 state = state,
+                currentUsername = currentSession?.username,
                 onBackClick = { navController.popBackStack() },
                 onInfoClick = { navController.navigate(AppRoutes.readingRoomInfo(roomId)) },
                 onJoinClick = viewModel::join,
@@ -313,13 +315,22 @@ fun AppNavigation(
             val state by viewModel.state.collectAsStateWithLifecycle()
             ReadingRoomInfoScreen(
                 state = state,
+                currentUsername = currentSession?.username,
                 onBackClick = { navController.popBackStack() },
                 onSaveDescription = viewModel::updateDescription,
                 onKick = viewModel::kick,
-                onDelete = { confirmation ->
-                    viewModel.delete(confirmation) {
+                onLeave = {
+                    viewModel.leave {
                         navController.navigate(AppRoutes.READING_ROOMS) {
                             popUpTo(AppRoutes.READING_ROOMS) { inclusive = true }
+                        }
+                    }
+                },
+                onDelete = { confirmation ->
+                    viewModel.delete(confirmation) {
+                        navController.navigate(AppRoutes.HOME) {
+                            popUpTo(AppRoutes.HOME) { inclusive = true }
+                            launchSingleTop = true
                         }
                     }
                 }

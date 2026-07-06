@@ -70,12 +70,12 @@ class AppContainer(
 
     private val authorRemoteDataSource = AuthorRemoteDataSource(apiService)
     private val authRemoteDataSource = AuthRemoteDataSource(authApiService)
-    private val homeRemoteDataSource = HomeRemoteDataSource(apiService)
+    private val homeRemoteDataSource = HomeRemoteDataSource(apiService, userContentRefreshBus)
     private val profileRemoteDataSource = ProfileRemoteDataSource(apiService, userContentRefreshBus)
     private val libraryRemoteDataSource = LibraryRemoteDataSource(apiService, userContentRefreshBus)
     private val statsRemoteDataSource = StatsRemoteDataSource(apiService)
     private val notificationsRemoteDataSource = NotificationsRemoteDataSource(apiService)
-    val readingRoomsRemoteDataSource = ReadingRoomsRemoteDataSource(apiService)
+    val readingRoomsRemoteDataSource = ReadingRoomsRemoteDataSource(apiService, userContentRefreshBus)
 
     private val authRepository = AuthRepositoryImpl(authRemoteDataSource)
     private val bookRepository = BookRepositoryImpl(bookRemoteDataSource, userContentRefreshBus)

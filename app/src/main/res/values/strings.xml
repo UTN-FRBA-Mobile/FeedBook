@@ -147,6 +147,7 @@
     <string name="home_top_book_subtitle">Most read on FeedBook</string>
 
     <string name="reading_rooms_title">Reading rooms</string>
+    <string name="reading_rooms_followed_title">FOLLOWED ROOMS</string>
     <string name="reading_rooms_other_title">Other groups</string>
     <string name="reading_rooms_create">Create</string>
     <string name="reading_rooms_search_hint">Search by name</string>
@@ -160,7 +161,12 @@
     <string name="reading_room_members_title">Members</string>
     <string name="reading_room_delete_title">Delete group</string>
     <string name="reading_room_delete_confirm">Delete permanently</string>
+    <string name="reading_room_edit_description">Edit description</string>
     <string name="reading_room_follow">+ follow</string>
+    <string name="reading_room_leave">Leave group</string>
+    <string name="reading_room_leave_title">Leave reading room</string>
+    <string name="reading_room_leave_message">Are you sure you want to leave %1$s?</string>
+    <string name="reading_room_leave_confirm">Leave</string>
     <string name="reading_room_active_since">Active since %1$s</string>
     <string name="reading_room_rating_period">%1$s - %2$s</string>
     <string name="reading_room_rating_average">Average %1$.1f</string>
@@ -177,7 +183,11 @@
     <string name="reading_room_short_description_label">Short description</string>
     <string name="reading_room_description_label">Description</string>
     <string name="reading_room_creator_label">Creator</string>
+    <string name="reading_room_owner_badge">Owner</string>
     <string name="reading_room_kick">Kick</string>
+    <string name="reading_room_remove_member_title">Remove member</string>
+    <string name="reading_room_remove_member_message">Remove %1$s from this reading room?</string>
+    <string name="reading_room_remove_member_confirm">Remove</string>
     <string name="reading_room_plus_18">+18</string>
 
     <string name="book_detail_see_all_reviews">See all %1$d reviews</string>
