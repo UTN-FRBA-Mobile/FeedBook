@@ -90,6 +90,13 @@ class ReadingRoomViewModel(
     }
 
     fun join() = updateRoom { remote.joinRoom(roomId) }
+    fun leave(onLeft: () -> Unit) {
+        viewModelScope.launch {
+            runCatching { remote.leaveRoom(roomId) }
+                .onSuccess { onLeft() }
+                .onFailure { _state.value = _state.value.copy(feedback = it.message ?: "Unable to leave the group") }
+        }
+    }
     fun changeBook(bookId: String) = updateRoom("You cannot activate the same book again") { remote.changeBook(roomId, bookId) }
     fun rate(rating: Float) = updateRoom { remote.rate(roomId, rating) }
     fun comment(text: String, parentCommentId: String? = null) = updateRoom { remote.comment(roomId, text, parentCommentId) }

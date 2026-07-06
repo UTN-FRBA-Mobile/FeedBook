@@ -178,7 +178,7 @@ fun ReadingRoomListScreen(
             val query = state.query.trim().lowercase()
             val followed = state.rooms?.followed.orEmpty().filter { it.name.lowercase().contains(query) }
             val other = state.rooms?.other.orEmpty().filter { it.name.lowercase().contains(query) }
-            item { SectionTitle(stringResource(R.string.library_followed_authors_title)) }
+            item { SectionTitle(stringResource(R.string.reading_rooms_followed_title)) }
             if (followed.isEmpty()) {
                 item { EmptyText(stringResource(R.string.reading_rooms_followed_empty)) }
             } else {
@@ -206,6 +206,7 @@ fun ReadingRoomListScreen(
 @Composable
 fun ReadingRoomScreen(
     state: ReadingRoomState,
+    currentUsername: String?,
     onBackClick: () -> Unit,
     onInfoClick: () -> Unit,
     onJoinClick: () -> Unit,
@@ -231,7 +232,7 @@ fun ReadingRoomScreen(
             } else if (room == null) {
                 Text(state.error ?: stringResource(R.string.reading_room_loading_error), color = ProfileColors.PrimaryText)
             } else {
-                RoomHeader(room, onInfoClick, onJoinClick)
+                RoomHeader(room, currentUsername = currentUsername, onInfoClick = onInfoClick, onJoinClick = onJoinClick)
                 LazyColumn(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -281,15 +282,19 @@ fun ReadingRoomScreen(
 @Composable
 fun ReadingRoomInfoScreen(
     state: ReadingRoomState,
+    currentUsername: String?,
     onBackClick: () -> Unit,
     onSaveDescription: (String) -> Unit,
     onKick: (String) -> Unit,
+    onLeave: () -> Unit,
     onDelete: (String) -> Unit
 ) {
     val room = state.room
     var editing by remember { mutableStateOf(false) }
     var description by remember(room?.description) { mutableStateOf(room?.description.orEmpty()) }
     var deleteName by remember { mutableStateOf("") }
+    var memberPendingKick by remember(room?.id) { mutableStateOf<ReadingRoomMemberDto?>(null) }
+    var showLeaveConfirm by remember(room?.id) { mutableStateOf(false) }
     ReadingRoomChrome(
         title = stringResource(R.string.reading_room_info_title),
         onBackClick = onBackClick
@@ -300,6 +305,7 @@ fun ReadingRoomInfoScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             if (room != null) {
+                val isOwner = room.creatorId == currentUsername
                 item {
                     Text(
                         stringResource(R.string.reading_room_info_title),
@@ -320,14 +326,16 @@ fun ReadingRoomInfoScreen(
                                     minLines = 4,
                                     colors = readableTextFieldColors()
                                 )
-                                Button(onClick = { editing = false; onSaveDescription(description) }) { Text(stringResource(R.string.common_save)) }
+                                Button(onClick = { editing = false; onSaveDescription(description) }) {
+                                    Text(stringResource(R.string.common_save), color = ProfileColors.PrimaryText)
+                                }
                             } else {
                                 Text(room.description, color = ProfileColors.PrimaryText)
-                                if (room.creatorId == "me") {
+                                if (isOwner) {
                                     OutlinedButton(onClick = { editing = true }) {
-                                        Icon(Icons.Outlined.Edit, contentDescription = null)
+                                        Icon(Icons.Outlined.Edit, contentDescription = null, tint = ProfileColors.PrimaryText)
                                         Spacer(Modifier.width(8.dp))
-                                        Text(stringResource(R.string.edit_profile_title))
+                                        Text(stringResource(R.string.reading_room_edit_description), color = ProfileColors.PrimaryText)
                                     }
                                 }
                             }
@@ -336,9 +344,23 @@ fun ReadingRoomInfoScreen(
                 }
                 item { SectionTitle(stringResource(R.string.reading_room_members)) }
                 items(room.members) { member ->
-                    MemberRow(member = member, canKick = room.creatorId == "me" && !member.isAdmin, onKick = onKick)
+                    MemberRow(
+                        member = member,
+                        canKick = isOwner && member.userId != currentUsername,
+                        onKick = { memberPendingKick = member }
+                    )
                 }
-                if (room.creatorId == "me") {
+                if (room.isMember && !isOwner) {
+                    item {
+                        OutlinedButton(
+                            onClick = { showLeaveConfirm = true },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(stringResource(R.string.reading_room_leave), color = ProfileColors.PrimaryText)
+                        }
+                    }
+                }
+                if (isOwner) {
                     item {
                         ProfileSurfaceCard(
                             containerColor = Color(0xFF3A2323),
@@ -365,10 +387,55 @@ fun ReadingRoomInfoScreen(
             }
         }
     }
+    if (showLeaveConfirm && room != null) {
+        AlertDialog(
+            onDismissRequest = { showLeaveConfirm = false },
+            title = { Text(stringResource(R.string.reading_room_leave_title)) },
+            text = { Text(stringResource(R.string.reading_room_leave_message, room.name)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showLeaveConfirm = false
+                        onLeave()
+                    }
+                ) {
+                    Text(stringResource(R.string.reading_room_leave_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLeaveConfirm = false }) {
+                    Text(stringResource(R.string.common_cancel))
+                }
+            }
+        )
+    }
+    memberPendingKick?.let { member ->
+        AlertDialog(
+            onDismissRequest = { memberPendingKick = null },
+            title = { Text(stringResource(R.string.reading_room_remove_member_title)) },
+            text = { Text(stringResource(R.string.reading_room_remove_member_message, member.name)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        memberPendingKick = null
+                        onKick(member.userId)
+                    }
+                ) {
+                    Text(stringResource(R.string.reading_room_remove_member_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { memberPendingKick = null }) {
+                    Text(stringResource(R.string.common_cancel))
+                }
+            }
+        )
+    }
 }
 
 @Composable
-private fun RoomHeader(room: ReadingRoomDetailDto, onInfoClick: () -> Unit, onJoinClick: () -> Unit) {
+private fun RoomHeader(room: ReadingRoomDetailDto, currentUsername: String?, onInfoClick: () -> Unit, onJoinClick: () -> Unit) {
+    val isOwner = room.creatorId == currentUsername
     ProfileSurfaceCard(onClick = onInfoClick) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             AsyncImage(room.creatorAvatarUrl, contentDescription = room.creatorName, modifier = Modifier.size(56.dp).clip(CircleShape))
@@ -378,6 +445,12 @@ private fun RoomHeader(room: ReadingRoomDetailDto, onInfoClick: () -> Unit, onJo
             }
             if (!room.isMember) {
                 Button(onClick = onJoinClick) { Text(stringResource(R.string.reading_room_follow)) }
+            } else if (isOwner) {
+                Text(
+                    text = stringResource(R.string.reading_room_owner_badge),
+                    color = ProfileColors.Accent,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }
@@ -524,7 +597,9 @@ private fun RatingInput(onRate: (Float) -> Unit) {
     Column {
         Text(stringResource(R.string.reading_room_rating_label, rating), color = ProfileColors.PrimaryText)
         Slider(value = rating, onValueChange = { rating = it }, valueRange = 0f..5f, steps = 9)
-        OutlinedButton(onClick = { onRate(rating) }) { Text(stringResource(R.string.reading_room_save_rating)) }
+        OutlinedButton(onClick = { onRate(rating) }) {
+            Text(stringResource(R.string.reading_room_save_rating), color = ProfileColors.PrimaryText)
+        }
     }
 }
 
@@ -660,7 +735,11 @@ private fun MemberRow(member: ReadingRoomMemberDto, canKick: Boolean, onKick: (S
             Text(member.name, color = ProfileColors.PrimaryText, fontWeight = if (member.isAdmin) FontWeight.Bold else FontWeight.Normal)
             if (member.isAdmin) Text(stringResource(R.string.reading_room_creator_label), color = ProfileColors.Accent)
         }
-        if (canKick) TextButton(onClick = { onKick(member.userId) }) { Text(stringResource(R.string.reading_room_kick)) }
+        if (canKick) {
+            TextButton(onClick = { onKick(member.userId) }) {
+                Text(stringResource(R.string.reading_room_kick), color = ProfileColors.Accent)
+            }
+        }
     }
 }
 
